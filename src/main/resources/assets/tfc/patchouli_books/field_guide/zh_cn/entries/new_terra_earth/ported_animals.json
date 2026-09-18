@@ -88,13 +88,13 @@
       "type": "patchouli:entity",
       "entity": "tfc:arctic_char",
       "scale": 0.7,
-      "name": "红点鲑",
+      "name": "北极红点鲑",
       "text": ""
     },
     {
       "type": "patchouli:text",
-      "title": "红点鲑",
-      "text": "红点鲑生活在河流或湖泊中，$(l:the_world/climate#temperature)温度$()为 -20~-8°C、$(l:the_world/climate#rainfall)降雨量$()为 150~400 mm。"
+      "title": "北极红点鲑",
+      "text": "北极红点鲑生活在河流或湖泊中，$(l:the_world/climate#temperature)温度$()为 -20~-8°C、$(l:the_world/climate#rainfall)降雨量$()为 150~400 mm。"
     },
     {
       "type": "patchouli:entity",
@@ -112,49 +112,49 @@
       "type": "patchouli:entity",
       "entity": "tfc:muksun",
       "scale": 0.7,
-      "name": "穆松白鲑",
+      "name": "宽鼻白鲑",
       "text": ""
     },
     {
       "type": "patchouli:text",
-      "title": "穆松白鲑",
-      "text": "穆松白鲑生活在河流或湖泊中，$(l:the_world/climate#temperature)温度$()为 -20~-10°C、$(l:the_world/climate#rainfall)降雨量$()至少 250 mm。"
+      "title": "宽鼻白鲑",
+      "text": "宽鼻白鲑生活在河流或湖泊中，$(l:the_world/climate#temperature)温度$()为 -20~-10°C、$(l:the_world/climate#rainfall)降雨量$()至少 250 mm。"
     },
     {
       "type": "patchouli:entity",
       "entity": "tfc:northern_pike",
       "scale": 0.7,
-      "name": "狗鱼",
+      "name": "白斑狗鱼",
       "text": ""
     },
     {
       "type": "patchouli:text",
-      "title": "狗鱼",
-      "text": "狗鱼生活在河流或湖泊中，$(l:the_world/climate#temperature)温度$()为 -14~-5°C、$(l:the_world/climate#rainfall)降雨量$()为 150~400 mm。"
+      "title": "白斑狗鱼",
+      "text": "白斑狗鱼生活在河流或湖泊中，$(l:the_world/climate#temperature)温度$()为 -14~-5°C、$(l:the_world/climate#rainfall)降雨量$()为 150~400 mm。"
     },
     {
       "type": "patchouli:entity",
       "entity": "tfc:peacock_bass",
       "scale": 0.7,
-      "name": "孔雀鲈",
+      "name": "眼斑孔雀鲈",
       "text": ""
     },
     {
       "type": "patchouli:text",
-      "title": "孔雀鲈",
-      "text": "孔雀鲈生活在河流或湖泊中，$(l:the_world/climate#temperature)温度$()为 12~25°C、$(l:the_world/climate#rainfall)降雨量$()为 200~400 mm。"
+      "title": "眼斑孔雀鲈",
+      "text": "眼斑孔雀鲈生活在河流或湖泊中，$(l:the_world/climate#temperature)温度$()为 12~25°C、$(l:the_world/climate#rainfall)降雨量$()为 200~400 mm。"
     },
     {
       "type": "patchouli:entity",
       "entity": "tfc:pacu",
       "scale": 0.7,
-      "name": "食人鲳",
+      "name": "巨脂鲤",
       "text": ""
     },
     {
       "type": "patchouli:text",
-      "title": "食人鲳",
-      "text": "食人鲳生活在河流或湖泊中，$(l:the_world/climate#temperature)温度$()为 20~35°C、$(l:the_world/climate#rainfall)降雨量$()高于 200 mm。"
+      "title": "巨脂鲤",
+      "text": "巨脂鲤生活在河流或湖泊中，$(l:the_world/climate#temperature)温度$()为 20~35°C、$(l:the_world/climate#rainfall)降雨量$()高于 200 mm。"
     },
     {
       "type": "patchouli:entity",
@@ -172,13 +172,13 @@
       "type": "patchouli:entity",
       "entity": "tfc:spotted_gudgeon",
       "scale": 0.7,
-      "name": "斑纹塘鳢",
+      "name": "斑点鮈",
       "text": ""
     },
     {
       "type": "patchouli:text",
-      "title": "斑纹塘鳢",
-      "text": "斑纹塘鳢生活在河流或湖泊中，$(l:the_world/climate#temperature)温度$()为 6~24°C、$(l:the_world/climate#rainfall)降雨量$()低于 250 mm。"
+      "title": "斑点鮈",
+      "text": "斑点鮈生活在河流或湖泊中，$(l:the_world/climate#temperature)温度$()为 6~24°C、$(l:the_world/climate#rainfall)降雨量$()低于 250 mm。"
     },
     {
       "type": "patchouli:entity",

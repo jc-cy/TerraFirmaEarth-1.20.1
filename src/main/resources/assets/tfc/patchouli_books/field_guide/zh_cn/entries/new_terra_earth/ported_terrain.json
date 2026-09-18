@@ -19,7 +19,7 @@
     {
       "type": "patchouli:text",
       "title": "常见区域",
-      "text": "常见区域包括平原（$(thing)tfc:plains$()）、丘陵（$(thing)tfc:hills$()）、绵延丘陵（$(thing)tfc:rolling_hills$()）、高地（$(thing)tfc:highlands$()）、山脉（$(thing)tfc:mountains$()）和古老山脉（$(thing)tfc:old_mountains$()）。括号内代码可直接用于定位对应生物群系。"
+      "text": "常见区域包括平原（$(thing)tfc:plains$()）、丘陵（$(thing)tfc:hills$()）、绵延丘陵（$(thing)tfc:rolling_hills$()）、高地（$(thing)tfc:highlands$()）、山脉（$(thing)tfc:mountains$()）和原始山脉（$(thing)tfc:old_mountains$()）。括号内代码可直接用于定位对应生物群系。"
     },
     {
       "type": "patchouli:text",
@@ -74,7 +74,7 @@
     {
       "type": "patchouli:text",
       "title": "火山（二）",
-      "text": "沉没火山（$(thing)tfc:sunken_shield_volcano$()）、火山山脉（$(thing)tfc:volcanic_mountains$()）和海洋火山山脉（$(thing)tfc:volcanic_oceanic_mountains$()）。"
+      "text": "沉没火山（$(thing)tfc:sunken_shield_volcano$()）、火山（$(thing)tfc:volcanic_mountains$()）和海洋火山（$(thing)tfc:volcanic_oceanic_mountains$()）。"
     },
     {
       "type": "patchouli:text",
@@ -84,7 +84,7 @@
     {
       "type": "patchouli:text",
       "title": "河流与溪流",
-      "text": "主河（$(thing)tfc:river$()）与源头溪流会连成完整水系。源头溪流沿自然下坡延伸，可形成弯流、急流、瀑布和扩散水流，并在接近主河时逐渐汇合；新增河谷、裂谷和裂谷湖见前面的新增群系列表。"
+      "text": "河流（$(thing)tfc:river$()）与源头溪流会连成完整水系。源头溪流沿自然下坡延伸，可形成弯流、急流、瀑布和扩散水流，并在接近河流时逐渐汇合；新增河谷、裂谷和裂谷湖见前面的新增群系列表。"
     },
     {
       "type": "patchouli:text",
