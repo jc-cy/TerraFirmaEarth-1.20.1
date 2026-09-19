@@ -43,6 +43,8 @@ import net.dries007.tfc.common.blocks.soil.SoilBlockType;
 import net.dries007.tfc.common.blocks.soil.TFCRootedDirtBlock;
 import net.dries007.tfc.common.items.JarItem;
 import net.dries007.tfc.common.items.TFCItems;
+import net.dries007.tfc.util.Helpers;
+import net.dries007.tfc.util.Metal;
 
 import com.newterraearth.tfe.NewTerraEarthMod;
 import com.newterraearth.tfe.common.block.ConnectedDuffBlock;
@@ -131,6 +133,20 @@ public final class NTEBlocks
         "steel_rope_anchor",
         () -> new NTEMetalRopeAnchorBlock(ExtendedProperties.of(MapColor.METAL).noOcclusion().randomTicks().strength(4f, 10f).requiresCorrectToolForDrops().sound(SoundType.METAL)),
         block -> new NTEProvidedBlockItem(block, new Item.Properties())
+    );
+    /**
+     * TFE 扩展的可制作金属绳锚：覆盖所有拥有金属棒的 TFC 金属，钢锚沿用上游已经存在的 {@code tfc:steel_rope_anchor}，
+     * 因此这里排除钢，避免重复注册同名方块。
+     */
+    public static final Map<Metal.Default, RegistryObject<Block>> METAL_ROPE_ANCHORS = Helpers.mapOfKeys(Metal.Default.class,
+        metal -> metal.hasParts() && metal != Metal.Default.STEEL,
+        metal -> register(
+            BLOCKS,
+            ITEMS,
+            metal.getSerializedName() + "_rope_anchor",
+            () -> new NTEMetalRopeAnchorBlock(ExtendedProperties.of(MapColor.METAL).noOcclusion().randomTicks().strength(4f, 10f).requiresCorrectToolForDrops().sound(SoundType.METAL)),
+            block -> new NTEProvidedBlockItem(block, new Item.Properties())
+        )
     );
 
     private static final Set<NTEPlant> TFC_NAMESPACE_PLANTS = EnumSet.of(

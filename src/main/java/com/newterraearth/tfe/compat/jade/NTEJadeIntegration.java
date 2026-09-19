@@ -29,6 +29,7 @@ import net.dries007.tfc.util.calendar.Calendars;
 import net.dries007.tfc.util.calendar.ICalendar;
 
 import com.newterraearth.tfe.NewTerraEarthMod;
+import com.newterraearth.tfe.common.block.rope.NTEMetalRopeAnchorBlock;
 import com.newterraearth.tfe.mixin.GrowingFruitTreeBranchBlockAccessor;
 import com.newterraearth.tfe.mixin.SeasonalPlantBlockAccessor;
 import com.newterraearth.tfe.world.NTESeasonalHelpers;
@@ -53,6 +54,7 @@ public final class NTEJadeIntegration implements snownee.jade.api.IWailaPlugin
     private static final ResourceLocation FRUIT_TREE_GROWTH_UID = new ResourceLocation(NewTerraEarthMod.MOD_ID, "fruit_tree_growth");
     private static final ResourceLocation FRUIT_TREE_BRANCH_UID = new ResourceLocation(NewTerraEarthMod.MOD_ID, "fruit_tree_branch");
     private static final ResourceLocation SEASONAL_PLANT_UID = new ResourceLocation(NewTerraEarthMod.MOD_ID, "seasonal_plant");
+    private static final ResourceLocation ROPE_ANCHOR_UID = new ResourceLocation(NewTerraEarthMod.MOD_ID, "metal_rope_anchor");
 
     @Override
     public void register(IWailaCommonRegistration registration)
@@ -68,6 +70,7 @@ public final class NTEJadeIntegration implements snownee.jade.api.IWailaPlugin
         registration.registerBlockComponent(new FruitTreeGrowthProvider(), GrowingFruitTreeBranchBlock.class);
         registration.registerBlockComponent(new FruitTreeBranchProvider(), FruitTreeBranchBlock.class);
         registration.registerBlockComponent(new SeasonalPlantProvider(), SeasonalPlantBlock.class);
+        registration.registerBlockComponent(new MetalRopeAnchorProvider(), NTEMetalRopeAnchorBlock.class);
     }
 
     private static final class FruitTreeGrowthProvider implements IBlockComponentProvider
@@ -363,6 +366,30 @@ public final class NTEJadeIntegration implements snownee.jade.api.IWailaPlugin
             if (blockEntity instanceof NTECropTemperatureAccess stress)
             {
                 data.putByte(PRESSURE_TAG, (byte) Mth.clamp(stress.tfe$getTemperatureStress(), 0, NTECropTemperatureModel.STRESS_LIMIT));
+            }
+        }
+    }
+
+    /** 金属绳锚的加固状态；敲满之前不能绑绳。 */
+    private static final class MetalRopeAnchorProvider implements IBlockComponentProvider
+    {
+        @Override
+        public ResourceLocation getUid()
+        {
+            return ROPE_ANCHOR_UID;
+        }
+
+        @Override
+        public void appendTooltip(ITooltip tooltip, BlockAccessor accessor, IPluginConfig config)
+        {
+            final int stage = accessor.getBlockState().getValue(NTEMetalRopeAnchorBlock.STAGE);
+            if (stage >= NTEMetalRopeAnchorBlock.MAX_STAGE)
+            {
+                tooltip.add(Component.translatable("tfe.jade.rope_anchor.reinforced"));
+            }
+            else
+            {
+                tooltip.add(Component.translatable("tfe.jade.rope_anchor.needs_reinforcement", stage, NTEMetalRopeAnchorBlock.MAX_STAGE));
             }
         }
     }

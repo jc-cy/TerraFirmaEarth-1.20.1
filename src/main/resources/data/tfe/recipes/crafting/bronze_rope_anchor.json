@@ -1,0 +1,10 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "G": { "item": "tfc:glue" },
+    "S": { "tag": "forge:rods/bronze" }
+  },
+  "pattern": ["S ", "SG"],
+  "result": { "item": "tfe:bronze_rope_anchor", "count": 1 }
+}

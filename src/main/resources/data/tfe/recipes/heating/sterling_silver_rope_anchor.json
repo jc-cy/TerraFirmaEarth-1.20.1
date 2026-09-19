@@ -1,0 +1,6 @@
+{
+  "type": "tfc:heating",
+  "ingredient": { "item": "tfe:sterling_silver_rope_anchor" },
+  "result_fluid": { "amount": 100, "fluid": "tfc:metal/sterling_silver" },
+  "temperature": 950.0
+}

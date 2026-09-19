@@ -6,21 +6,46 @@
   "pages": [
     {
       "type": "patchouli:text",
-      "text": "$(thing)绳索$()可以挂起来，用于攀下悬崖和竖井。要挂绳索，对$(thing)石锥$()的尖端或$(thing)钢绳锚$()按$(item)$(k:key.use)$()。这会把绳索系紧，并把该方块变成一个锚点。"
+      "text": "绳索可以挂起来，用于攀下悬崖和竖井。拿着绳索对$(thing)石锥$()的尖端或$(thing)金属绳锚$()按$(item)$(k:key.use)$()即可系绳，该方块随之成为锚点。"
     },
     {
       "type": "patchouli:text",
-      "text": "再次对绳索按$(item)$(k:key.use)$()会把它向你面朝的方向抛出，铺出一条可以攀爬的绳索。要收回绳索，空手对锚点按$(item)$(k:key.use)$()。绳索会被破坏，石锥会重新变回锚点，物品会归还给你。"
+      "text": "再次对绳索按$(item)$(k:key.use)$()会把它向你面朝的方向抛出，铺出一条可以攀爬的绳索。要收回绳索，空手对锚点按$(item)$(k:key.use)$()：绳索会逐段归还给你，石锥也会重新变回锚点。"
     },
     {
-      "type": "patchouli:crafting",
-      "recipe": "tfc:crafting/steel_rope_anchor",
-      "text": "$(thing)石锥$()无法被拾取，因此$(thing)钢绳锚$()可以制作并放置在任何你需要锚点的地方。"
+      "type": "patchouli:spotlight",
+      "item": "tfc:steel_rope_anchor,tfe:bismuth_rope_anchor,tfe:bismuth_bronze_rope_anchor,tfe:black_bronze_rope_anchor,tfe:bronze_rope_anchor,tfe:brass_rope_anchor,tfe:copper_rope_anchor,tfe:gold_rope_anchor,tfe:nickel_rope_anchor,tfe:rose_gold_rope_anchor,tfe:silver_rope_anchor,tfe:tin_rope_anchor,tfe:zinc_rope_anchor,tfe:sterling_silver_rope_anchor,tfe:wrought_iron_rope_anchor,tfe:cast_iron_rope_anchor,tfe:black_steel_rope_anchor,tfe:blue_steel_rope_anchor,tfe:red_steel_rope_anchor",
+      "title": "各种绳锚",
+      "link_recipe": true,
+      "text": "$(thing)石锥$()无法被拾取，因此需要锚点的地方可以用$(thing)金属绳锚$()替代。除钢以外，所有拥有$(thing)金属棒$()的金属都能制成对应的绳锚。$(br2)用该金属的 2 根$(thing)金属棒$()加 1 份$(thing)胶水$()即可合成。"
+    },
+    {
+      "type": "patchouli:text",
+      "title": "加固绳锚",
+      "text": "刚放下的$(thing)金属绳锚$()尚未固定，会占据2格高，也无法系绳。手持任意$(thing)锤子$()对它按$(item)$(k:key.use)$()敲击，每敲一下都会埋得更深；敲满三次固定完成后，它会变成1格高，这时才能系绳。"
     }
   ],
   "read_by_default": true,
   "extra_recipe_mappings": {
     "tfc:rope": 0,
-    "tfc:steel_rope_anchor": 0
+    "tfc:steel_rope_anchor": 0,
+    "tfe:bismuth_rope_anchor": 0,
+    "tfe:bismuth_bronze_rope_anchor": 0,
+    "tfe:black_bronze_rope_anchor": 0,
+    "tfe:bronze_rope_anchor": 0,
+    "tfe:brass_rope_anchor": 0,
+    "tfe:copper_rope_anchor": 0,
+    "tfe:gold_rope_anchor": 0,
+    "tfe:nickel_rope_anchor": 0,
+    "tfe:rose_gold_rope_anchor": 0,
+    "tfe:silver_rope_anchor": 0,
+    "tfe:tin_rope_anchor": 0,
+    "tfe:zinc_rope_anchor": 0,
+    "tfe:sterling_silver_rope_anchor": 0,
+    "tfe:wrought_iron_rope_anchor": 0,
+    "tfe:cast_iron_rope_anchor": 0,
+    "tfe:black_steel_rope_anchor": 0,
+    "tfe:blue_steel_rope_anchor": 0,
+    "tfe:red_steel_rope_anchor": 0
   }
 }

@@ -1,0 +1,7 @@
+{
+  "__comment__": "This file was automatically created by mcresources",
+  "parent": "tfe:block/metal_rope_anchor_stage2",
+  "textures": {
+    "texture": "tfc:block/metal/smooth/tin"
+  }
+}

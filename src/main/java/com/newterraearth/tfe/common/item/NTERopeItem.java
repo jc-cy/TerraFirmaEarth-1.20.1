@@ -62,7 +62,7 @@ public class NTERopeItem extends Item
             return InteractionResult.sidedSuccess(level.isClientSide);
         }
 
-        if (state.getBlock() instanceof NTEMetalRopeAnchorBlock && !state.getValue(NTEMetalRopeAnchorBlock.HAS_ROPE) && state.getFluidState().isEmpty())
+        if (state.getBlock() instanceof NTEMetalRopeAnchorBlock anchor && anchor.isReinforced(state) && !state.getValue(NTEMetalRopeAnchorBlock.HAS_ROPE) && state.getFluidState().isEmpty())
         {
             if (!level.isClientSide && player != null) bindToAnchor(player, level, pos);
             return InteractionResult.sidedSuccess(level.isClientSide);
@@ -129,6 +129,7 @@ public class NTERopeItem extends Item
 
         BlockState state = level.getBlockState(cursor);
         RopeState previous = RopeState.HORIZONTAL;
+        BlockPos descentRampPos = null;
         if (state.getBlock() instanceof NTERopeAnchorBlock)
         {
             BlockState anchorState = state.setValue(facing, dir);
@@ -153,18 +154,23 @@ public class NTERopeItem extends Item
                 cursor.move(0, 1, 0);
                 if (canRopeReplace(state))
                 {
-                    if (!hangingRope.canSurvive(level, cursor)) return;
+                    if (!hangingRope.canSurvive(level, cursor)) break;
                     level.setBlockAndUpdate(cursor, hangingRope);
                     if (!player.isCreative()) stack.shrink(1);
                     cursor.move(0, -1, 0);
                 }
-                else
+                else if (slopeRope.canSurvive(level, cursor))
                 {
-                    if (!slopeRope.canSurvive(level, cursor)) return;
                     level.setBlockAndUpdate(cursor, slopeRope);
                     if (!player.isCreative()) stack.shrink(1);
+                    descentRampPos = cursor.immutable();
                     previous = RopeState.SLOPE;
                     cursor.move(dir);
+                }
+                else
+                {
+                    endWithHangingSegment(level, cursor, player, stack, hangingRope);
+                    break;
                 }
             }
             else
@@ -178,19 +184,25 @@ public class NTERopeItem extends Item
                     cursor.move(0, 1, 0);
                     if (canRopeReplace(state))
                     {
-                        if (!hangingRope.canSurvive(level, cursor)) return;
+                        if (!hangingRope.canSurvive(level, cursor)) break;
                         level.setBlockAndUpdate(cursor, hangingRope);
                         if (!player.isCreative()) stack.shrink(1);
                         cursor.move(0, -1, 0);
+                        descentRampPos = null;
                         previous = RopeState.VERTICAL;
+                    }
+                    else if (slopeRope.canSurvive(level, cursor))
+                    {
+                        level.setBlockAndUpdate(cursor, slopeRope);
+                        if (!player.isCreative()) stack.shrink(1);
+                        descentRampPos = null;
+                        previous = RopeState.SLOPE;
+                        cursor.move(dir);
                     }
                     else
                     {
-                        if (!slopeRope.canSurvive(level, cursor)) return;
-                        level.setBlockAndUpdate(cursor, slopeRope);
-                        if (!player.isCreative()) stack.shrink(1);
-                        previous = RopeState.SLOPE;
-                        cursor.move(dir);
+                        if (endWithHangingSegment(level, cursor, player, stack, hangingRope)) descentRampPos = null;
+                        break;
                     }
                 }
                 else
@@ -199,15 +211,32 @@ public class NTERopeItem extends Item
                     state = level.getBlockState(cursor);
                     if (canRopeReplace(state))
                     {
-                        if (!horizontalRope.canSurvive(level, cursor)) return;
+                        if (!horizontalRope.canSurvive(level, cursor)) break;
                         level.setBlockAndUpdate(cursor, horizontalRope);
                         if (!player.isCreative()) stack.shrink(1);
+                        descentRampPos = null;
                         previous = RopeState.HORIZONTAL;
                         cursor.move(dir);
                     }
                 }
             }
         }
+        if (descentRampPos != null && hangingRope.canSurvive(level, descentRampPos))
+        {
+            // The descent stopped on a ramp, so the throw ended diagonally. The block below the ramp is solid, so
+            // the rope can end straight in that cell instead of trailing off in a slope.
+            level.setBlockAndUpdate(descentRampPos, hangingRope);
+        }
+    }
+
+    private static boolean endWithHangingSegment(Level level, BlockPos pos, Player player, ItemStack stack, BlockState hangingRope)
+    {
+        // No support for a ramp (flowing water, or any surface the rope cannot rest on). End the throw with a
+        // straight segment flush above the surface rather than stalling a block short of it.
+        if (!hangingRope.canSurvive(level, pos)) return false;
+        level.setBlockAndUpdate(pos, hangingRope);
+        if (!player.isCreative()) stack.shrink(1);
+        return true;
     }
 
     private static boolean canRopeReplace(BlockState state)

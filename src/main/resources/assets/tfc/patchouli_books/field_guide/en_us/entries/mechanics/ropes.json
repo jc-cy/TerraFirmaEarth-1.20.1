@@ -6,21 +6,46 @@
   "pages": [
     {
       "type": "patchouli:text",
-      "text": "$(thing)Rope$() can be strung up to climb down cliffs and shafts. To hang a rope, $(item)$(k:key.use)$() it on the tip of a $(thing)Rock Spike$(), or on a $(thing)Steel Rope Anchor$(). This ties off the rope and turns the block into an anchor."
+      "text": "Rope can be strung up to climb down cliffs and shafts. Use it on the tip of a $(thing)Rock Spike$() or on a $(thing)Metal Rope Anchor$() with $(item)$(k:key.use)$() to tie it off; the block then becomes an anchor."
     },
     {
       "type": "patchouli:text",
-      "text": "$(item)$(k:key.use)$() the rope again to throw it out in the direction you are facing, laying down rope that you can climb. To recall the rope, $(item)$(k:key.use)$() the anchor with an empty hand. The rope will be destroyed, the spike will turn back into an anchor, and the items returned to you."
+      "text": "Using $(item)$(k:key.use)$() on the rope again throws it out in the direction you are facing, laying down a rope you can climb. To recall the rope, use an empty hand on the anchor with $(item)$(k:key.use)$(): the rope is returned to you piece by piece, and the spike turns back into an anchor."
     },
     {
-      "type": "patchouli:crafting",
-      "recipe": "tfc:crafting/steel_rope_anchor",
-      "text": "$(thing)Rock Spikes$() cannot be picked up, so the $(thing)Steel Rope Anchor$() can be crafted and placed wherever you need an anchor instead."
+      "type": "patchouli:spotlight",
+      "item": "tfc:steel_rope_anchor,tfe:bismuth_rope_anchor,tfe:bismuth_bronze_rope_anchor,tfe:black_bronze_rope_anchor,tfe:bronze_rope_anchor,tfe:brass_rope_anchor,tfe:copper_rope_anchor,tfe:gold_rope_anchor,tfe:nickel_rope_anchor,tfe:rose_gold_rope_anchor,tfe:silver_rope_anchor,tfe:tin_rope_anchor,tfe:zinc_rope_anchor,tfe:sterling_silver_rope_anchor,tfe:wrought_iron_rope_anchor,tfe:cast_iron_rope_anchor,tfe:black_steel_rope_anchor,tfe:blue_steel_rope_anchor,tfe:red_steel_rope_anchor",
+      "title": "Rope Anchors",
+      "link_recipe": true,
+      "text": "$(thing)Rock Spikes$() cannot be picked up, so a $(thing)Metal Rope Anchor$() can be used wherever an anchor is needed. Apart from steel, every metal that has $(thing)Rods$() can be made into one.$(br2)Craft one from two $(thing)Rods$() of that metal and one $(thing)Glue$()."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Reinforcing An Anchor",
+      "text": "A freshly placed $(thing)Metal Rope Anchor$() is not secured yet: it takes up two blocks of height and no rope can be tied to it. Strike it with any $(thing)Hammer$() using $(item)$(k:key.use)$(); every strike drives it deeper, and after three strikes it is secured, drops to a single block, and a rope can be tied to it."
     }
   ],
   "read_by_default": true,
   "extra_recipe_mappings": {
     "tfc:rope": 0,
-    "tfc:steel_rope_anchor": 0
+    "tfc:steel_rope_anchor": 0,
+    "tfe:bismuth_rope_anchor": 0,
+    "tfe:bismuth_bronze_rope_anchor": 0,
+    "tfe:black_bronze_rope_anchor": 0,
+    "tfe:bronze_rope_anchor": 0,
+    "tfe:brass_rope_anchor": 0,
+    "tfe:copper_rope_anchor": 0,
+    "tfe:gold_rope_anchor": 0,
+    "tfe:nickel_rope_anchor": 0,
+    "tfe:rose_gold_rope_anchor": 0,
+    "tfe:silver_rope_anchor": 0,
+    "tfe:tin_rope_anchor": 0,
+    "tfe:zinc_rope_anchor": 0,
+    "tfe:sterling_silver_rope_anchor": 0,
+    "tfe:wrought_iron_rope_anchor": 0,
+    "tfe:cast_iron_rope_anchor": 0,
+    "tfe:black_steel_rope_anchor": 0,
+    "tfe:blue_steel_rope_anchor": 0,
+    "tfe:red_steel_rope_anchor": 0
   }
 }

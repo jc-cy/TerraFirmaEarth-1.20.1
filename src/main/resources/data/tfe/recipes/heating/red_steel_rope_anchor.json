@@ -1,0 +1,6 @@
+{
+  "type": "tfc:heating",
+  "ingredient": { "item": "tfe:red_steel_rope_anchor" },
+  "result_fluid": { "amount": 100, "fluid": "tfc:metal/red_steel" },
+  "temperature": 1540.0
+}

@@ -14,7 +14,7 @@
     {
       "type": "patchouli:text",
       "title": "Using Ropes",
-      "text": "Ropes can be attached to rock anchors, steel-rope anchors, and knots for climbing and controlled descents. Check that an anchor is secure before relying on it.$(br2)See the complete $(l:mechanics/ropes)TFC Ropes chapter$() for recipes, controls, and safety notes."
+      "text": "Ropes can be tied to rock anchors, metal rope anchors and knots for climbing and controlled descents. A freshly placed metal rope anchor has to be struck three times with a hammer before a rope can be tied to it.$(br2)See the complete $(l:mechanics/ropes)TFC Ropes chapter$() for recipes, controls, and safety notes."
     }
   ],
   "read_by_default": true

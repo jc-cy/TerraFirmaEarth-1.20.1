@@ -92,6 +92,7 @@ public final class NTEClientEventHandler
             ItemBlockRenderTypes.setRenderLayer(NTEBlocks.ROPE.get(), cutout);
             ItemBlockRenderTypes.setRenderLayer(NTEBlocks.HANGING_ROPE.get(), cutout);
             ItemBlockRenderTypes.setRenderLayer(NTEBlocks.STEEL_ROPE_ANCHOR.get(), cutout);
+            NTEBlocks.METAL_ROPE_ANCHORS.values().forEach(anchor -> ItemBlockRenderTypes.setRenderLayer(anchor.get(), cutout));
             NTERockBlocks.TFC_ROPE_ANCHORS.values().forEach(anchor -> ItemBlockRenderTypes.setRenderLayer(anchor.get(), cutout));
             ItemBlockRenderTypes.setRenderLayer(NTERockBlocks.TUFF_ROPE_ANCHOR.get(), cutout);
             for (NTEFluid fluid : NTEFluid.values())

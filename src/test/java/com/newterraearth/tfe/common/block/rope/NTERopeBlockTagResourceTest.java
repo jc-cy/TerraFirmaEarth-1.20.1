@@ -34,6 +34,27 @@ class NTERopeBlockTagResourceTest
         "tfe:rock/rope_anchor/tuff"
     };
 
+    private static final String[] METAL_ANCHORS = {
+        "tfe:bismuth_rope_anchor",
+        "tfe:bismuth_bronze_rope_anchor",
+        "tfe:black_bronze_rope_anchor",
+        "tfe:bronze_rope_anchor",
+        "tfe:brass_rope_anchor",
+        "tfe:copper_rope_anchor",
+        "tfe:gold_rope_anchor",
+        "tfe:nickel_rope_anchor",
+        "tfe:rose_gold_rope_anchor",
+        "tfe:silver_rope_anchor",
+        "tfe:tin_rope_anchor",
+        "tfe:zinc_rope_anchor",
+        "tfe:sterling_silver_rope_anchor",
+        "tfe:wrought_iron_rope_anchor",
+        "tfe:cast_iron_rope_anchor",
+        "tfe:black_steel_rope_anchor",
+        "tfe:blue_steel_rope_anchor",
+        "tfe:red_steel_rope_anchor"
+    };
+
     @Test
     void ropeBlocksAreRegisteredInTheExpectedMinecraft120Tags() throws IOException
     {
@@ -42,6 +63,7 @@ class NTERopeBlockTagResourceTest
         assertTagContains(resources.resolve("data/minecraft/tags/blocks/climbable.json"), "tfc:rope", "tfc:hanging_rope");
         assertTagContains(resources.resolve("data/minecraft/tags/blocks/mineable/pickaxe.json"), "tfc:steel_rope_anchor");
         assertTagContains(resources.resolve("data/minecraft/tags/blocks/mineable/pickaxe.json"), ROCK_ANCHORS);
+        assertTagContains(resources.resolve("data/minecraft/tags/blocks/mineable/pickaxe.json"), METAL_ANCHORS);
     }
 
     private static void assertTagContains(Path path, String... ids) throws IOException

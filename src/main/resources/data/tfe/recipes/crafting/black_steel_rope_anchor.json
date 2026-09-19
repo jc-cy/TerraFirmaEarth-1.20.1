@@ -1,0 +1,10 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "G": { "item": "tfc:glue" },
+    "S": { "tag": "forge:rods/black_steel" }
+  },
+  "pattern": ["S ", "SG"],
+  "result": { "item": "tfe:black_steel_rope_anchor", "count": 1 }
+}

@@ -1,0 +1,6 @@
+{
+  "type": "tfc:heating",
+  "ingredient": { "item": "tfe:copper_rope_anchor" },
+  "result_fluid": { "amount": 100, "fluid": "tfc:metal/copper" },
+  "temperature": 1080.0
+}

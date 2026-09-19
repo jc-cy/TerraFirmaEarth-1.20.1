@@ -1,0 +1,6 @@
+{
+  "type": "tfc:heating",
+  "ingredient": { "item": "tfe:bismuth_bronze_rope_anchor" },
+  "result_fluid": { "amount": 100, "fluid": "tfc:metal/bismuth_bronze" },
+  "temperature": 985.0
+}
