@@ -7,181 +7,92 @@ modId = "tfe"
 version = "${file.jarVersion}"
 displayName = "TerraFirmaEarth"
 authors = "交错次元"
-credits = "修正和测试: witzig_heidi(鱼) | 谢鸣: 10MeV(尘梦)"
+credits = "测试兼修正: witzig_heidi(鱼) | 吉祥物: 10MeV(尘梦)"
+logoFile = "logo.png"
 description = '''
 TerraFirmaEarth / 群峦地球
 
-面向 Minecraft 1.20.1 Forge 的 TerraFirmaCraft 附属模组。把高版本 TFC 的新地形与新内容反向移植到 1.20，让因依赖锁定无法升级 1.21 的玩家、服务器和整合包也能体验到。
+面向 1.20TFC 的附属模组,同步大量高版本内容，且也额外新增和重置了大量内容。
 
-移植自高版本 TFC 的内容
+注：本mod所有内容均可从游戏内帕秋莉手册查阅，且为唯一准确的地方，内容多且杂，此处仅象征性介绍，以游戏内帕秋莉为准。
+
+移植自高版本 TFC 的内容（此处不保证全有介绍，以帕秋莉为准）
+
 - 积雪逻辑移植，积雪现在是在对应的气候立即生效，冬天外出不会慢慢积雪，夏天外出不会慢慢化雪。
 - 新地形群系和过渡：当前世界共有 125 种新地形群系，覆盖海岭、裂谷、河谷、环礁、火山弧、火山岛以及冰川等海洋和陆地地貌。
 - 气候与季节：新的气候(总共31种)与面板日历显示、运行时天气与降雨判定。
 - 植物季相：树叶、花草、莲花、向日葵等的动态季相外观(风景美化)。
 - 作物与农田杂草花朵：完整移植.
+- 土壤肥力：移植高版本的土壤肥力设定，作物健康按当地肥力与气候判定。
 - 新生物与刷新：野牛、海豹等新生物按高版本气候口径接入；北极熊、冰原狼按高版本气候口径运行。
 - 害虫系统：跟随气候变化的多种老鼠。
-- 帕秋莉手册：在 TFC 手册首页新增"群峦地球 / New Terra Earth"独立分类，整理作物、气候、地形与其他功能的查询入口。
+- 帕秋莉手册:全功能均整理在群峦地球页的帕秋莉中。
 
-额外的内容
+本模组新增与重做的内容（此处不保证全有介绍，以帕秋莉为准）
+
+- 溪流：河流叶端形成地形感知的源头溪流，含弯流、急流、瀑布、落地摊流、动态水生成和地下溪流。
+- 修复了死亡不掉落凿锤死亡崩溃游戏的异常。
+- 绳索与绳锚：绳索、绳锚进行了修改，具体机制见帕秋莉。
+- 勘探系统重做：TFE 自有的矿物识别与结果显示，具体机制见手册勘探页。
+- 船只：重做浮力，船可以沿水流上升。
+- 作物果树灌木气候：全作物气候和条件重新分配，部分作物进行补强修改或直接重做。
+- 地势与山峰：山区地势抬升系统与平滑山峰生成，相关参数在配置中开放。
+- 地下河过渡：原生普通河流与地下河之间新增切割过渡层，减少洞口与河谷交界的硬切线。
+- 地形与地物等杂项：海床由淤泥改为更浅的砂砾、沿海沙滩与火山地势修正、木堆可自由放置；仙人掌木质循环与整株砍伐掉落、炉灶 / 炉灶锅移植、红木等地物兼容。
+- 作物用途：大量弱势作物进行增强如苜蓿可作为更多常见动物的饲料，油菜新增油菜籽榨油路线，香蕉补强切砍伐不再摧毁树木等等。
+- 全球温度重做，更贴近现实的温度变化，内容较多请查看帕秋莉。
 - 果树作物灌木等湿度，直接取决于当前降雨量，且可以读取环境水源。
 - 海洋地形：普通海、海礁、深海和海沟使用连续的深度过渡；TFE 仍保留深水海床薄砂砾与火山海岸表面适配。
 - 区域地形：补齐 ocean ridge、rift valley、river valley、环礁和基础 stratovolcano centered-feature；TFE 的地势溪流与河床保护继续叠加。
 - 高低版本兼容层：让高版本的生物、气候、植物等数据在 1.20 端正常工作，兼容了1.20提前注册的物品。
-- AFC 兼容：兼容林海传说
-- 地图mod 兼容。
+- AFC 兼容：兼容林海传说.
 - FirmalifeEnhanced 温室地窖重置兼容,温室范围内，作物、果树、浆果灌木等会按年均温度和湿度判定，不受外部天气影响。
 - TFCModernLife群峦现代化生活兼容：温室范围是以当前温度为基准进行控温。且建议使用此模组作为本模组温室、地窖和电力厨房相关拓展，勿重复启用.
 - 数据包接入说明：随附 GitHub 上的《数据包兼容写法教程》，方便个人使用者或整合包作者添加生物刷新、追加 fauna、协调 AFC 兼容。
 
-2.1.0 更新概括
-- 移植最新版 TFC 的地形、气候、生物、植物与相关内容。
-- 移植了土壤肥力设定。
-- 优化了全部地形的生成减少了地形破坏类概率，现在全部地形整体更干净平坦统一。
-- 新增绳索及相关交互功能。
-- 增加作物全状态 Jade 显示，新增作物健康机制。
-- 优化勘探系统，调整果树气候条件。
-- 优化并补充 TFE 帕秋莉手册，整理各项功能的目录与说明。
-- 具体机制与参数均可查阅帕秋莉手册。
-
-2.0.1 更新概括
-- 新增全新的河流群系溪流。
-- 减少河流群系高岸上的砂砾。
-- 修复死亡不掉落时，手持锤子和凿子对准石块死亡可能导致的崩溃。
-- 重做勘探系统，具体机制请查看帕秋莉手册。
-- 重做船的浮力，现在船可以沿水流上升。
-- 重做全部作物的气候条件，具体数据请查看帕秋莉手册。
-- 重做全局温度算法,见帕秋莉。
-- 优化 TFE 的帕秋莉手册。
-- 修复其他若干问题。
- 
-1.1.3 更新概括
-- 海洋的淤泥海床替换为更浅的砂砾海床。
-- 将注册进tfc的物品带上tfe的标记，jei上搜索@tfe也能显示本mod的全部物品了。
-
-1.1.2 更新概括
-- 修复沿海沙滩等地形生成异常。
-- 优化火山的地势选择。
-- 优化木薯营养值。
-- 灌木和果树的生长条件对齐 1.21，并额外将温度需求改为当前温度。
-- 气候不适宜不再导致灌木和果树树苗死亡，而是停止生长。
-- TFCModernLife群峦现代化生活兼容：温室范围是以当前温度为基准进行控温。且建议使用此模组作为本模组温室、地窖和电力厨房相关拓展，勿重复启用.
-
-1.1.1 更新概括
-- 修复香蕉树自然生成时底部可能插进土里的问题。
-- 修复凝灰岩砂砾陶盘阶段模型显示异常。
-- 修复炉灶锅液面、产物与锅内物品客户端显示位置异常。
-- 增强小萝卜，栽培成熟收获产量翻倍。
-- 调整平均湿度提示，参考值不再显示太高 / 太低警告。
-
-1.1.0 更新概括
-- 高阶地地形优化。
-- 修复山区河道入海口概率被堵的问题。
-- 平滑山体山峰生成。
-- 森林生成更匹配地形。
-- 高岭土刷新在腐殖土内时增加一层高岭土草方块覆盖。
-
-1.0.2 更新概括
-- 增加了自由放置木堆。
-- 修复了浮空树，浮空腐殖土。去掉了死火山的地势。补全了水生成逻辑水-死火山水坑生成较少的问题.
-
-1.0.1 更新概括
-- 新增 TFC 结构与森林树池兼容修复，改善 TFC Structures / AFC 等联动下的树配置、森林层与腐殖层表现。
-- 补齐和修复一批移植植物贴图、模型与地物资源。
-- 新增山区地势设计，修复水下浮空石锥，并开放相关地势配置。
-- 补充仙人掌木材循环、仙人掌整株砍伐掉落、炉灶 / 炉灶锅移植与红木等地物兼容。
-- 新增地下河与普通河流切割过渡层，减少洞口和河谷交界处的硬切线。
-- 修复旧存档或外部数据包导致的群系兼容崩溃，并修正作物湿度范围与耕地平均湿度显示。
-- 重写苜蓿和油菜用途：苜蓿可作为更多常见动物饲料，油菜新增油菜籽榨油路线。
 
 授权与声明
 - 本模组采用分区许可：TFC 派生代码按 EUPL v1.2；TFC 派生美术 / 模型 / 数据包 JSON 等资源按 CC BY-SA 4.0；作者原创代码、兼容实现、自有数据与自有资源按 ARR 处理。
 - TFC 上游和其他第三方材料继续遵守其原始许可；完整条款详见随附 LICENSE / LICENSE-MAP.md / NOTICE / DISCLAIMER.md。
 
 English Summary
-TerraFirmaEarth is a back-port addon for TerraFirmaCraft on Minecraft 1.20.1 Forge. It brings the newer-version TFC content to 1.20, including:
+TerraFirmaEarth is an addon for TFC on 1.20: it ports a large amount of newer-version content, and also adds and reworks a great deal of its own.
 
-Ported from newer TFC versions
+Note: everything in this mod can be looked up in the in-game Patchouli field guide, which is the only accurate source. The content is large and varied, so this page is only a symbolic introduction — the in-game field guide is authoritative.
+
+Ported from newer TFC versions (not an exhaustive list; the field guide is authoritative)
+
 - Snow logic: snow accumulation and melting now react to climate immediately — no more slowly building up in winter or slowly melting in summer.
 - New terrain biomes and transitions: the world uses 125 new terrain biomes, covering ocean ridges, rifts, river valleys, atolls, volcanic arcs, islands, and glacial landforms.
 - Climate and seasons: 31 climate types ported, with the new climate panel and calendar display, runtime weather and rainfall.
 - Seasonal plants: dynamic seasonal appearance for leaves, flowers, lotus, sunflower and more (visual polish).
 - Crops, farmland, weeds and flowers: fully ported.
+- Soil fertility: the newer-version soil fertility settings are ported, and crop health follows local fertility and climate.
 - New fauna and spawning: bison, leopard seal and other new mobs follow newer-version climate rules; polar bear and dire wolf also run on newer climate logic.
 - Pest system: multiple climate-driven rodents (lemming / mongoose / jerboa).
-- Field guide: a dedicated "TerraFirmaEarth / 群峦地球" category added to the TFC field guide, with organized entries for crops, climate, terrain, and other features.
+- Field guide: every feature is organized in the "TerraFirmaEarth / 群峦地球" page of the Patchouli field guide.
 
-Extras
+Added or reworked by this mod (not an exhaustive list; the field guide is authoritative)
+
+- Streams: river ends form terrain-aware headwater streams with bends, rapids, waterfalls, spreading flow, dynamic water generation and underground streams.
+- Fixed a crash that could occur when dying with no item drops while holding a hammer and chisel.
+- Ropes and anchors: ropes and rope anchors have been reworked; see the field guide for the details.
+- Reworked prospecting: TFE's own ore identification and result display; see the field guide's prospecting page.
+- Boats: reworked buoyancy, so boats can travel upward with flowing water.
+- Crop, fruit-tree and bush climate: climate requirements and conditions were redistributed for all crops, and some crops were strengthened, adjusted or fully reworked.
+- Terrain and peaks: the mountain terrain uplift system and smoothed peak generation, with the related parameters exposed in the config.
+- Underground river transition: a new incised transition layer between normal rivers and underground rivers, reducing hard cuts at cave mouths and river valleys.
+- Terrain and features (misc): ocean seabeds changed from mud to a thinner gravel surface, coastal beach and volcano terrain fixes, and freely placeable log piles; cactus wood loop with whole-saguaro harvest drops, the stove / stove pot port, redwood and related feature compatibility.
+- Crop uses: many weak crops were strengthened — alfalfa now feeds more common animals, canola has a dedicated oilseed route for oil pressing, bananas no longer destroy the tree when chopped or harvested, and more.
+- Global temperature reworked: temperature behaviour is closer to reality; see the field guide for the details.
 - Crops, fruit trees and bushes draw their hydration directly from current rainfall, and can read nearby water sources.
 - Rewritten ocean depth curve: smooth transitions across ocean / reef / deep ocean / trench, with the trench core gradually descending deeper.
+- Regional terrain: added ocean ridge, rift valley, river valley, atoll and basic stratovolcano centered features; TFE's terrain-aware streams and bed protection continue to stack on top.
 - High-version-to-1.20 compatibility layer: makes newer-version fauna, climate and plant data work cleanly on 1.20, including handling items already registered on the 1.20 side.
 - AFC compatibility: works with Another Forest Compat (林海传说).
-- Map mod compatibility (e.g. JourneyMap colour support for ported terrain).
 - FirmalifeEnhanced greenhouse / cellar reset compatibility (requires FirmalifeEnhanced 0.1.3 or later): inside a controlled greenhouse, crops, fruit trees and berry bushes use annual-average temperature and hydration and ignore outside weather.
 - TFCModernLife (群峦现代化生活) compatibility: greenhouse control is based on current temperature. It is recommended as the greenhouse, cellar and electric kitchen expansion for this mod; do not enable duplicate greenhouse expansions at the same time.
 - Datapack integration: a separate "Datapack Compatibility Guide" is provided on GitHub for personal users or modpack authors who want to add fauna spawning, extend fauna entries, or coordinate AFC compatibility.
-
-2.1.0 Update Summary
-- Ported the latest TFC terrain, climate, fauna, flora, and related content.
-- Ported the soil fertility settings.
-- Optimized terrain generation across all terrain types to reduce terrain-damaging probabilities, making the overall terrain cleaner, flatter, and more consistent.
-- Added ropes and related interactions.
-- Added full crop-state information to Jade and introduced crop health.
-- Improved the prospecting system and adjusted fruit-tree climate conditions.
-- Improved and expanded the TFE Patchouli field guide with organized entries for each feature.
-- See the Patchouli field guide for detailed mechanics and parameters.
-
-2.0.1 Update Summary
-- Added brand-new streams to river biomes.
-- Reduced gravel on high river-biome banks.
-- Fixed a crash that could occur when dying with no item drops while holding a hammer and chisel and aiming at a stone block.
-- Reworked the prospecting system; see the Patchouli field guide for details.
-- Reworked boat buoyancy, allowing boats to travel upward with flowing water.
-- Reworked climate requirements for all crops; see the Patchouli field guide for details.
-- Reworked the global temperature algorithm; see the Patchouli field guide for details.
-- Improved the TFE Patchouli field guide.
-- Fixed several other issues.
-
-1.1.3 Update Summary
-- Replaced ocean mud seabeds with a thinner gravel surface layer.
-- Marked this mod's items registered under the tfc namespace as TFE-provided, so searching @tfe in JEI now shows all items from this mod.
-
-1.1.2 Update Summary
-- Fixed terrain generation issues around coastal beaches and related shore terrain.
-- Optimize the terrain selection for volcanoes
-- Improved cassava nutrition values.
-- Aligned berry bush and fruit tree growth conditions with TFC 1.21, and changed their temperature checks to use current temperature.
-- Unsuitable climate no longer kills berry bushes or fruit tree saplings; affected plants now stop growing instead.
-- TFCModernLife (群峦现代化生活) compatibility: greenhouse control is based on current temperature. It is recommended as the greenhouse, cellar and electric kitchen expansion for this mod; do not enable duplicate greenhouse expansions at the same time.
-
-1.1.1 Update Summary
-- Fixed naturally generated banana plants sometimes sinking into terrain.
-- Fixed tuff gravel pan stage model rendering.
-- Fixed client-side rendering offsets for stove pot fluid, outputs and contents.
-- Improved radishes: cultivated mature harvest yield is doubled.
-- Adjusted average hydration display: reference values no longer show too high / too low warnings.
-
-1.1.0 Update Summary
-- Optimized terrace terrain.
-- Fixed mountain river mouths sometimes being blocked at the sea.
-- Smoothed mountain peak generation.
-- Made forest generation fit terrain more closely.
-- Added a kaolin clay grass cover layer when kaolin generates inside humus.
-
-1.0.2 Update Summary
-- Added freely placeable log piles.
-- Fixed the floating trees and floating humus soil. Removed the terrain of the extinct volcano. Completed the logic for generating water - reducing the issue of fewer water pits being generated.
-
-1.0.1 Update Summary
-- Added TFC Structures and forest-tree compatibility fixes, improving tree entries, forest layers and humus behavior with TFC Structures / AFC setups.
-- Fixed and completed a batch of ported plant textures, models and feature resources.
-- Added the mountain terrain uplift system, fixed underwater floating cave spikes, and exposed the related terrain config.
-- Added the cactus wood loop, whole-saguaro harvest drops, stove / stove pot port, redwood and related feature compatibility.
-- Added a transition layer between normal rivers and underground rivers to reduce hard cuts near cave mouths and river valleys.
-- Fixed compatibility crashes from old saves or external datapacks, and corrected crop hydration ranges plus average farmland hydration display.
-- Reworked alfalfa and canola usage: alfalfa now feeds more common animals, and canola uses a dedicated oilseed route for oil pressing.
-
-Aimed at players, servers, and modpacks that cannot upgrade to 1.21 yet still want the newer content.
 
 License Notice
 This mod uses path-based mixed licensing.

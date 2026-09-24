@@ -7,7 +7,7 @@ plugins {
 }
 
 group = 'com.newterraearth'
-version = '2.1.0'
+version = '2.2.0'
 
 base {
     archivesName = 'Wildfire_TerraFirmaEarth-1.20.1-forge'
