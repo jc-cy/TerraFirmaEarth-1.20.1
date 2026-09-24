@@ -23,6 +23,11 @@
     },
     {
       "type": "patchouli:text",
+      "title": "Underground Streams",
+      "text": "Deeper stream sections turn into underground streams. They tend to appear in higher-terrain biomes, showing up where the stream goes deep underground."
+    },
+    {
+      "type": "patchouli:text",
       "title": "Generation Scope",
       "text": "Streams appear only in new worlds or previously ungenerated chunks. They avoid the full banks of unrelated main rivers and protect material around a wet bed without filling entire natural caves."
     }

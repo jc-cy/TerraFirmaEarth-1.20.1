@@ -362,12 +362,12 @@ public abstract class ChunkNoiseFillerMixin
             final int effectiveBedY = NTERiverHydrology.effectiveBedBlockY(riverProfile, riverTerrainHeight);
             if (riverProfile.subterranean() && riverProfile.inChannel())
             {
-                // The covered creek section owns a rounded, noise shaped rock cavity
-                // instead of a rectangular box: full channel width from the bed up to
-                // the carving centre, then a lens taper into the arch. The height
-                // stage stays ambient, so this is the only place the tunnel exists.
+                // The covered creek section owns a noise shaped arched rock cavity. Its
+                // ceiling is bounded both by the planned rock ceiling and by this
+                // column's realized surface, so a graded cave mouth keeps its floor
+                // intact instead of being carved into from below.
                 final int waterY = riverProfile.waterBlockY();
-                if (NTERiverHydrology.carvesTunnelCavity(riverProfile, y, blockX, blockZ))
+                if (NTERiverHydrology.carvesTunnelCavity(riverProfile, y, blockX, blockZ, riverTerrainHeight))
                 {
                     return Blocks.AIR.defaultBlockState();
                 }
@@ -460,9 +460,8 @@ public abstract class ChunkNoiseFillerMixin
         // open, the channel floor is the creek bed itself and must be owned by the
         // creek surface builder, otherwise the reachable water line grows grass.
         final boolean exposedCoveredBed = riverProfile != null
-            && riverProfile.subterranean()
-            && riverProfile.inChannel()
-            && riverProfile.terrainIncision() > 0d;
+            && riverProfile.gradedMouth()
+            && riverProfile.inChannel();
         if (biomeAt.hasRivers() && (
             (height <= SEA_LEVEL_Y + 1 && info != null && info.normDistSq() < 1.1d)
                 || (riverProfile != null && riverProfile.surfaceVisible() && riverProfile.inWaterCore())

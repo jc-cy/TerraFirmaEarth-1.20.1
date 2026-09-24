@@ -12,6 +12,8 @@ import net.dries007.tfc.world.region.RiverEdge;
 import net.dries007.tfc.world.river.River;
 import net.dries007.tfc.world.river.Flow;
 
+import com.newterraearth.tfe.config.NTECommonConfig;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -81,11 +83,11 @@ class NTERiverHydrologyTest
         final NTERiverHydrology.ColumnProfile tunnel = coveredCreek(0d, 4242L);
         final int waterY = tunnel.waterBlockY();
 
-        assertFalse(NTERiverHydrology.carvesTunnelCavity(tunnel, waterY, blockX, blockZ),
+        assertFalse(NTERiverHydrology.carvesTunnelCavity(tunnel, waterY, blockX, blockZ, 96d),
             "the water surface itself must stay water instead of being carved out");
-        assertFalse(NTERiverHydrology.carvesTunnelCavity(tunnel, waterY - 1, blockX, blockZ),
+        assertFalse(NTERiverHydrology.carvesTunnelCavity(tunnel, waterY - 1, blockX, blockZ, 96d),
             "the bed under the covered creek must stay solid");
-        assertTrue(NTERiverHydrology.carvesTunnelCavity(tunnel, waterY + 1, blockX, blockZ),
+        assertTrue(NTERiverHydrology.carvesTunnelCavity(tunnel, waterY + 1, blockX, blockZ, 96d),
             "a covered creek must open its cavity directly above the water");
 
         final int centreTop = carvedTop(tunnel, blockX, blockZ);
@@ -114,15 +116,97 @@ class NTERiverHydrologyTest
 
     private static int carvedTop(NTERiverHydrology.ColumnProfile profile, int blockX, int blockZ)
     {
+        return carvedTop(profile, blockX, blockZ, profile.tunnelCeilingY() + 32d);
+    }
+
+    private static int carvedTop(
+        NTERiverHydrology.ColumnProfile profile,
+        int blockX,
+        int blockZ,
+        double terrainHeight
+    )
+    {
         int top = Integer.MIN_VALUE;
         for (int y = profile.bedBlockY() - 1; y <= profile.tunnelCeilingBlockY() + 2; y++)
         {
-            if (NTERiverHydrology.carvesTunnelCavity(profile, y, blockX, blockZ))
+            if (NTERiverHydrology.carvesTunnelCavity(profile, y, blockX, blockZ, terrainHeight))
             {
                 top = y;
             }
         }
         return top;
+    }
+
+    @Test
+    void coveredCreekCavityOpensThroughAGradedMouthFloor()
+    {
+        final int blockX = -934;
+        final int blockZ = -1775;
+        final NTERiverHydrology.ColumnProfile mouth = coveredCreekIncision(0d, 62d, 80d, 4242L, 12d);
+        final int roof = NTECommonConfig.getHeadwaterTunnelRoof();
+        // A graded cave mouth lowers this column from its ambient terrain (about 88) to a
+        // funnel floor at 73, which is only about one block above the arch: rock that thin
+        // is not a roof, it is a floating shell over the creek.
+        final double mouthFloor = 73.3d;
+
+        assertEquals((int) mouthFloor, carvedTop(mouth, blockX, blockZ, mouthFloor),
+            "a graded mouth floor thinner than the tunnel roof must be carved through, not preserved");
+        assertFalse(
+            NTERiverHydrology.carvesTunnelCavity(mouth, (int) mouthFloor + 1, blockX, blockZ, mouthFloor),
+            "the opened mouth must stop at its own surface"
+        );
+        assertTrue(
+            NTERiverHydrology.carvesTunnelCavity(mouth, (int) mouthFloor - 1, blockX, blockZ, mouthFloor),
+            "the whole floor below the surface is opened"
+        );
+        // The graded mouth also reaches its shoulder, so a lip left outside the channel is
+        // opened as well instead of hanging over the creek.
+        assertEquals((int) mouthFloor, carvedTop(coveredCreekIncision(1.2d, 62d, 80d, 4242L, 12d), blockX, blockZ, mouthFloor),
+            "the graded mouth opens through its shoulder too");
+        // A column with a full roof above its arch keeps that roof.
+        final NTERiverHydrology.ColumnProfile tunnel = coveredCreek(0d, 62d, 80d, 4242L);
+        final double roofedFloor = tunnel.tunnelCeilingY() + roof + 1d;
+        assertEquals(carvedTop(tunnel, blockX, blockZ), carvedTop(tunnel, blockX, blockZ, roofedFloor),
+            "a thick roof must be left alone");
+        assertTrue(carvedTop(tunnel, blockX, blockZ, roofedFloor) < (int) roofedFloor - roof,
+            "the arch must stay below a roofed column's own surface");
+    }
+
+    @Test
+    void coveredCreekRealizesItsGradedMouthEvenWhenTheSharedFieldsAllowFilling()
+    {
+        // A covered section reuses the ordinary creek's fields, fill flag included, but it never
+        // shapes its own surface. Skipping the mouth cut there left the cave mouth ungraded, the
+        // covered water capped by the planned bed (a flat one block channel) while the adjacent
+        // open-air row filled the whole V, and the rock above the tunnel standing as a wall.
+        final NTERiverHydrology.ColumnProfile roofed = withFillAllowed(coveredCreek(0d, 4242L), true);
+        final NTERiverHydrology.ColumnProfile mouth = withFillAllowed(
+            coveredCreekIncision(0d, 70.996d, 77d, 4242L, 18.714d),
+            true
+        );
+
+        assertTrue(roofed.fillAllowed(), "the shared fill flag reaches the covered profile");
+        assertFalse(roofed.forcesTerrainCut(),
+            "a covered column without a graded mouth must leave the terrain alone");
+        assertTrue(mouth.forcesTerrainCut(),
+            "a graded cave mouth must be excavated no matter what the shared fill flag says");
+        assertEquals(86.645d - 18.714d, mouth.terrainCutCeiling(86.645d), 1.0e-9d,
+            "a covered creek must realize its planned mouth incision instead of keeping its surface");
+        assertEquals(67, NTERiverHydrology.effectiveBedBlockY(mouth, mouth.terrainCutCeiling(86.645d)),
+            "the excavated mouth floor must own the water column depth");
+        assertEquals(3, mouth.waterBlockY() - NTERiverHydrology.effectiveBedBlockY(
+            mouth,
+            mouth.terrainCutCeiling(86.645d)
+        ), "the graded mouth must carry the same three block V as the adjacent open-air row");
+
+        final NTERiverHydrology.ColumnProfile openAirCut = withFillAllowed(surfaceCreekProfile(), false);
+        final NTERiverHydrology.ColumnProfile openAirFill = withFillAllowed(surfaceCreekProfile(), true);
+        assertTrue(openAirCut.forcesTerrainCut(),
+            "cut-only ownership keeps realizing an ordinary creek's planned incision");
+        assertFalse(openAirFill.forcesTerrainCut(),
+            "an ordinary creek still only cuts where its fill transition may not raise terrain");
+        assertEquals(80d, openAirFill.terrainCutCeiling(80d), 1.0e-9d,
+            "an ordinary filling profile must not cut its own surface");
     }
 
     @Test
@@ -285,6 +369,37 @@ class NTERiverHydrologyTest
             0d,
             0L,
             Flow.EEE
+        );
+    }
+
+    private static NTERiverHydrology.ColumnProfile withFillAllowed(
+        NTERiverHydrology.ColumnProfile base,
+        boolean fillAllowed
+    )
+    {
+        return new NTERiverHydrology.ColumnProfile(
+            base.waterSurfaceY(),
+            base.centerBedY(),
+            base.bedY(),
+            base.normalizedDistanceSq(),
+            base.channelRadius(),
+            base.bankRaise(),
+            base.terrainIncision(),
+            base.mouthWaterDrop(),
+            base.bankFillWeight(),
+            base.waterCoreRadiusSq(),
+            fillAllowed,
+            base.waterAllowed(),
+            base.sourceWaterAllowed(),
+            base.receiverBlendWeight(),
+            base.receiverBedBlendWeight(),
+            base.waterfallLanding(),
+            base.headwater(),
+            base.kind(),
+            base.mode(),
+            base.tunnelCeilingY(),
+            base.caveSeed(),
+            base.flow()
         );
     }
 

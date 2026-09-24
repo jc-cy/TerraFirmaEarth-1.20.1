@@ -61,7 +61,6 @@ public final class NTECommonConfig
     private static final ForgeConfigSpec.IntValue HEADWATER_TUNNEL_ROOF;
     private static final ForgeConfigSpec.IntValue HEADWATER_TUNNEL_AIR_MIN;
     private static final ForgeConfigSpec.IntValue HEADWATER_TUNNEL_AIR_MAX;
-    private static final ForgeConfigSpec.IntValue HEADWATER_TUNNEL_WATER_DEPTH;
     private static final ForgeConfigSpec.DoubleValue HEADWATER_TUNNEL_CARVING_NOISE;
     private static final ForgeConfigSpec.DoubleValue HEADWATER_MOUTH_LATERAL_RISE;
     private static final ForgeConfigSpec.DoubleValue HEADWATER_MOUTH_NOISE;
@@ -205,9 +204,6 @@ public final class NTECommonConfig
         HEADWATER_TUNNEL_AIR_MAX = builder
             .comment("地下溪流水面以上的洞腔高度上限，单位为方块；洞口越宽越接近该值。")
             .defineInRange("tunnel_air_max", 5, 1, 24);
-        HEADWATER_TUNNEL_WATER_DEPTH = builder
-            .comment("地下溪流的水道深度，单位为方块。")
-            .defineInRange("tunnel_water_depth", 1, 1, 8);
         HEADWATER_TUNNEL_CARVING_NOISE = builder
             .comment("地下洞腔雕琢噪声幅度，单位为方块。数值越大洞顶与洞壁起伏越明显；0 表示光滑管道。")
             .defineInRange("tunnel_carving_noise", 1.5d, 0.0d, 8.0d);
@@ -600,11 +596,6 @@ public final class NTECommonConfig
     public static int getHeadwaterTunnelAirMax()
     {
         return Math.max(getHeadwaterTunnelAirMin(), worldGenValue(HEADWATER_TUNNEL_AIR_MAX));
-    }
-
-    public static int getHeadwaterTunnelWaterDepth()
-    {
-        return worldGenValue(HEADWATER_TUNNEL_WATER_DEPTH);
     }
 
     public static double getHeadwaterTunnelCarvingNoise()

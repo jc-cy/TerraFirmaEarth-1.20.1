@@ -188,6 +188,10 @@ final class NTEHeadwaterNetwork
      * length grows with the drop so a deep mouth becomes a gorge instead of a
      * vertical slot, and noise which breaks the otherwise machine cut rim.
      * The cut is one sided: it may lower terrain but never raise it.
+     *
+     * @param waterY the water level the mouth is graded toward. A covered creek
+     *               passes its already descended water, so the funnel floor is the
+     *               bed the tunnel really carries instead of a level above it.
      */
     static double mouthCutAt(
         long caveSeed,
@@ -241,7 +245,13 @@ final class NTEHeadwaterNetwork
                     0.09d
                 );
             final double funnelFloor = bedY
-                + Math.max(0d, normalizedDistanceSq) * NTECommonConfig.getHeadwaterMouthLateralRise()
+                // Inside the channel's own core the floor stays exactly the creek bed, so the
+                // channel and its water are untouched. Beyond it the floor climbs at the creek's
+                // bank slope (the same slope limit the longitudinal ramp uses) instead of the
+                // steep lateral rise, which used to leave the graded mouth's rim standing as a
+                // wall beside the water. The mouth is therefore the bank profile turned across
+                // the flow, and it blends outward into a basin.
+                + lateralMouthRise(normalizedDistanceSq, channelRadius)
                 + floorNoise;
             return weight * Math.max(0d, terrainY - Math.min(funnelFloor, terrainY));
         }
@@ -1025,7 +1035,12 @@ final class NTEHeadwaterNetwork
         );
     }
 
-    static double mouthReceiverBlendWeight(double distanceToOutlet, double transitionLength)
+    /**
+     * Wet-corridor ownership inside the final fan. Deliberately independent of the bank
+     * transition length: the creek core keeps its own distance field until the fan
+     * actually reaches the receiver, so this is not a function of the mouth window.
+     */
+    static double mouthReceiverBlendWeight(double distanceToOutlet)
     {
         return smootherStep(Mth.clamp(
             (MOUTH_FAN_LENGTH - distanceToOutlet) / MOUTH_FAN_LENGTH,
@@ -1055,7 +1070,7 @@ final class NTEHeadwaterNetwork
         final double outerBankWeight = mouthOuterBankLateralWeight(streamNormalizedDistanceSq);
         return Mth.lerp(
             outerBankWeight,
-            mouthReceiverBlendWeight(distanceToOutlet, transitionLength),
+            mouthReceiverBlendWeight(distanceToOutlet),
             mouthOuterBankReceiverBlendWeight(distanceToOutlet, transitionLength)
         );
     }
@@ -1089,6 +1104,25 @@ final class NTEHeadwaterNetwork
     static double mouthBankIncision(double mouthWaterDrop, double normalizedDistanceSq)
     {
         return mouthWaterDrop * mouthBankIncisionLateralWeight(normalizedDistanceSq);
+    }
+
+    /**
+     * Lateral rise of a graded cave mouth's floor. The channel's own core keeps the creek bed
+     * exactly where it was, so no channel or water geometry changes; outside the core the floor
+     * climbs at the creek's bank slope instead of the steep configured rise, which is what used
+     * to leave the mouth's rim standing as a wall next to the water.
+     */
+    static double lateralMouthRise(double normalizedDistanceSq, double channelRadius)
+    {
+        final double distanceSq = Math.max(0d, normalizedDistanceSq);
+        final double coreRadiusSq = NTERiverHydrology.SUPPLEMENTAL_WATER_CORE_RADIUS_SQ;
+        final double configuredRise = NTECommonConfig.getHeadwaterMouthLateralRise();
+        if (distanceSq <= coreRadiusSq)
+        {
+            return distanceSq * configuredRise;
+        }
+        final double bankRise = channelRadius * NTECommonConfig.getHeadwaterMouthMaxSlope();
+        return coreRadiusSq * configuredRise + (distanceSq - coreRadiusSq) * bankRise;
     }
 
     /**
@@ -4684,25 +4718,26 @@ final class NTEHeadwaterNetwork
             final int nearestNode = bestDelta < 0.5d ? bestIndex : bestIndex + 1;
             if (subterranean[nearestNode])
             {
-                // Inside the tunnel the surface never grows a channel: the height
-                // stage ignores this profile and the density stage opens the rock.
-                // The core is generated as source-like water so a covered descent
-                // cannot drain dry, and the tunnel keeps the route's own flow.
+                // A covered section is the open-air creek plus a roof, not a second kind of
+                // creek: the cross-section, the receiver transition and its weights are the
+                // very same values, and the tunnel only adds its ceiling, its noise and the
+                // graded mouth cut. Anything else (bed, water depth, hand-over) is adapted
+                // downstream from these fields instead of being computed twice.
                 traceTargetSample(blockX, blockZ, ambientHeight, localWaterY, rawNormalizedDistanceSq, normalizedDistanceSq, turnConnector, "subterranean");
                 return new Sample(
                     localWaterY,
                     normalizedDistanceSq,
                     localRadius,
-                    0d,
-                    0d,
-                    1d,
+                    extraIncision,
+                    mouthWaterDrop,
+                    bankFillWeight,
                     waterCoreRadiusSq,
-                    false,
+                    fillAllowed,
+                    waterAllowed,
                     true,
-                    true,
-                    0d,
-                    0d,
-                    false,
+                    receiverBlendWeight,
+                    receiverBedBlendWeight,
+                    waterfallLanding,
                     along / totalLength < 0.15d,
                     true,
                     tunnelCeilingY[nearestNode],
@@ -4713,7 +4748,11 @@ final class NTEHeadwaterNetwork
                         along,
                         localRadius,
                         terrainY[nearestNode],
-                        localWaterY,
+                        // The covered profile's water is the already descended one, so the
+                        // graded mouth must take its floor from that same level: anchoring it
+                        // to the pre-descent water left the fresh cut sitting the whole
+                        // receiver drop above the water actually flowing through the mouth.
+                        plannedWaterY,
                         normalizedDistanceSq,
                         blockX,
                         blockZ

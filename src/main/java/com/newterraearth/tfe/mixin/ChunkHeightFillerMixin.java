@@ -502,9 +502,7 @@ public abstract class ChunkHeightFillerMixin implements NTEChunkHeightFillerAcce
             height = tfe$currentRiverHydrologyProfile.applyBankFillTransition(preSupplementalRiverHeight, height);
         }
         if (tfe$currentRiverHydrologyProfile != null
-            && (!tfe$currentRiverHydrologyProfile.subterranean()
-                || tfe$currentRiverHydrologyProfile.terrainIncision() > 0d)
-            && !tfe$currentRiverHydrologyProfile.fillAllowed())
+            && tfe$currentRiverHydrologyProfile.forcesTerrainCut())
         {
             height = Math.min(
                 height,
@@ -796,8 +794,7 @@ public abstract class ChunkHeightFillerMixin implements NTEChunkHeightFillerAcce
             height = tfe$currentRiverHydrologyProfile.applyBankFillTransition(preSupplementalRiverHeight, height);
         }
         if (tfe$currentRiverHydrologyProfile != null
-            && !tfe$currentRiverHydrologyProfile.subterranean()
-            && !tfe$currentRiverHydrologyProfile.fillAllowed())
+            && tfe$currentRiverHydrologyProfile.forcesTerrainCut())
         {
             height = Math.min(
                 height,

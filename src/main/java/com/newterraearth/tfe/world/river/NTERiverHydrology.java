@@ -40,6 +40,8 @@ public final class NTERiverHydrology
     private static final long COVERED_SPIKE_SALT = 0x6F1B3C9A47D8E205L;
     /** A covered creek's ceiling is this many blocks lower at the channel edge than at its apex. */
     private static final double TUNNEL_ARCH_RISE = 2d;
+    /** Laterally the covered creek is carved out to its own channel; the graded mouth reaches further. */
+    private static final double MOUTH_SHOULDER_SQ = 2.25d;
     private static final int MAX_HEIGHT_CACHE_SIZE = 131072;
     private static final ThreadLocal<GenerationContext> ACTIVE_GENERATION = new ThreadLocal<>();
     /** Height probes must not start a terrain-aware creek route search. */
@@ -136,6 +138,12 @@ public final class NTERiverHydrology
             return mode == ChannelMode.SUBTERRANEAN;
         }
 
+        /** A covered creek section whose terrain is graded down into the creek: a cave mouth. */
+        public boolean gradedMouth()
+        {
+            return mode == ChannelMode.SUBTERRANEAN && terrainIncision > 0d;
+        }
+
         public int tunnelCeilingBlockY()
         {
             return Mth.floor(tunnelCeilingY);
@@ -180,11 +188,25 @@ public final class NTERiverHydrology
          */
         public double terrainCutCeiling(double terrainHeight)
         {
-            if (fillAllowed)
+            // A covered creek never builds its own surface, so its graded cave mouth is
+            // realized as a pure cut even where the shared downstream fields would allow
+            // an ordinary profile to fill.
+            if (fillAllowed && !subterranean())
             {
                 return terrainHeight;
             }
             return terrainHeight - Math.max(0d, terrainIncision);
+        }
+
+        /**
+         * Whether the height stage must realize this profile's planned erosion. The ordinary
+         * creek only cuts where its fill transition may not raise the terrain; a covered creek
+         * grades its cave mouth open regardless of the shared fill flag, because a covered
+         * section never shapes the surface itself.
+         */
+        public boolean forcesTerrainCut()
+        {
+            return subterranean() ? terrainIncision > 0d : !fillAllowed;
         }
     }
 
@@ -462,16 +484,42 @@ public final class NTERiverHydrology
      * from the channel centre to the channel edge. This is the scaled down form of
      * the vanilla cave river's vertical lens: the roof is shaped from the water
      * surface outward instead of the tunnel staying a rectangle with a flat top.
+     *
+     * @param terrainHeight the column's realized surface height. A graded cave mouth
+     *                      lowers the surface to its funnel floor, which can come within
+     *                      a few blocks of the arch above the water. Rock that thin is
+     *                      not a roof: keeping it leaves a floating shell over the
+     *                      creek, so a graded mouth is opened through to its realized
+     *                      surface instead. The covered run keeps the arch and its roof
+     *                      untouched.
      */
-    public static boolean carvesTunnelCavity(ColumnProfile profile, int y, int blockX, int blockZ)
+    public static boolean carvesTunnelCavity(
+        ColumnProfile profile,
+        int y,
+        int blockX,
+        int blockZ,
+        double terrainHeight
+    )
     {
-        if (!profile.subterranean() || !profile.inChannel() || y <= profile.waterBlockY())
+        if (!profile.subterranean() || y <= profile.waterBlockY())
         {
             return false;
         }
-        final double lateralDistanceSq = Mth.clamp(profile.normalizedDistanceSq(), 0d, 1d);
-        final double ceilingY = tunnelArchApexY(profile, blockX, blockZ) - TUNNEL_ARCH_RISE * lateralDistanceSq;
-        return y <= Mth.floor(ceilingY);
+        final double lateralDistanceSq = profile.normalizedDistanceSq();
+        // A covered run is carved out to its own channel; a graded cave mouth reaches its shoulder.
+        final double carvedLateralDistanceSq = profile.gradedMouth() ? MOUTH_SHOULDER_SQ : 1d;
+        if (lateralDistanceSq > carvedLateralDistanceSq)
+        {
+            return false;
+        }
+        final double archTopY = tunnelArchApexY(profile, blockX, blockZ)
+            - TUNNEL_ARCH_RISE * Mth.clamp(lateralDistanceSq, 0d, 1d);
+        if (profile.gradedMouth()
+            && terrainHeight - archTopY <= NTECommonConfig.getHeadwaterTunnelRoof())
+        {
+            return y <= Mth.floor(terrainHeight);
+        }
+        return lateralDistanceSq <= 1d && y <= Mth.floor(archTopY);
     }
 
     /**
@@ -1049,28 +1097,35 @@ public final class NTERiverHydrology
     {
         if (sample.subterranean())
         {
-            // A subterranean section keeps its own water grade and rock ceiling;
-            // the ordinary cross-section depth would have cut a surface channel.
-            final double tunnelDepth = Math.max(1d, NTECommonConfig.getHeadwaterTunnelWaterDepth());
+            // A covered section is the open-air creek with a roof, not a second kind of creek:
+            // the bed cross-section, the receiver transition and its weights are the very same
+            // fields, computed by the very same shape function. The roof only keeps the covered
+            // descent supplied by source-like water and adds its ceiling for the cavity carve.
+            final double roofedWaterDepth = supplementalLocalDepth(
+                baseCenterDepth(sample.channelRadius()),
+                sample.extraIncision(),
+                sample.normalizedDistanceSq()
+            );
+            final double roofedWaterSurfaceY = sample.waterSurfaceY() - sample.mouthWaterDrop();
             return new ColumnProfile(
-                sample.waterSurfaceY(),
-                sample.waterSurfaceY() - tunnelDepth,
-                sample.waterSurfaceY() - tunnelDepth,
+                roofedWaterSurfaceY,
+                roofedWaterSurfaceY - roofedWaterDepth,
+                roofedWaterSurfaceY - roofedWaterDepth,
                 sample.normalizedDistanceSq(),
                 sample.channelRadius(),
                 0d,
                 Math.max(0d, sample.entranceCut()),
-                0d,
-                1d,
+                sample.mouthWaterDrop(),
+                sample.bankFillWeight(),
                 sample.waterCoreRadiusSq(),
-                false,
+                sample.fillAllowed(),
+                sample.waterAllowed(),
                 true,
-                false,
-                0d,
-                0d,
-                false,
-                false,
-                ChannelKind.STREAM,
+                sample.receiverBlendWeight(),
+                sample.receiverBedBlendWeight(),
+                sample.waterfallLanding(),
+                sample.headwater(),
+                sample.channelRadius() < 3.5d ? ChannelKind.STREAM : ChannelKind.TRIBUTARY,
                 ChannelMode.SUBTERRANEAN,
                 sample.tunnelCeilingY(),
                 sample.caveSeed(),

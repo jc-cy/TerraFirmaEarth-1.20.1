@@ -28,7 +28,6 @@ import net.minecraft.world.level.WorldGenLevel;
 import net.minecraft.world.level.StructureManager;
 import net.minecraft.world.level.biome.BiomeManager;
 import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.LiquidBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.ChunkAccess;
 import net.minecraft.world.level.chunk.LevelChunkSection;
@@ -57,7 +56,6 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import net.dries007.tfc.mixin.accessor.ChunkAccessAccessor;
-import net.dries007.tfc.common.fluids.TFCFluids;
 import net.dries007.tfc.world.BiomeNoiseSampler;
 import net.dries007.tfc.world.ChunkBaseBlockSource;
 import net.dries007.tfc.world.ChunkBiomeSampler;
@@ -279,7 +277,7 @@ public abstract class TFCChunkGeneratorMixin
         try
         {
             tfe$trimRetainedWaterAbovePlannedMouth(chunk, noiseProfiles, cursor);
-            tfe$bakeSupplementalWaterfalls(level, chunk, noiseProfiles, cursor);
+            tfe$bakeSupplementalWaterfalls(chunk, noiseProfiles, cursor);
             for (int localX = 0; localX < 16; localX++)
             {
                 final int blockX = chunkPos.getBlockX(localX);
@@ -374,7 +372,6 @@ public abstract class TFCChunkGeneratorMixin
 
     @Unique
     private void tfe$bakeSupplementalWaterfalls(
-        WorldGenRegion level,
         ChunkAccess chunk,
         @Nullable NTERiverHydrology.ColumnProfile[] noiseProfiles,
         BlockPos.MutableBlockPos cursor
@@ -453,20 +450,20 @@ public abstract class TFCChunkGeneratorMixin
             }
         }
 
-        tfe$bakeSettledSpills(level, chunk, chunkPos, spillFronts, flowLevels, spillFlows, cursor);
+        tfe$bakeSettledSpills(chunk, chunkPos, noiseProfiles, spillFronts, flowLevels, spillFlows, cursor);
     }
 
     /**
-     * Pre-bake the small part of vanilla water settling that cannot happen
-     * until a new chunk starts ticking: fall through open air, spread over a
-     * ledge with decaying levels, then continue falling from the ledge edge.
-     * The bounded queue prevents a creek waterfall from becoming a cave flood.
+     * Pre-bake the creek's descent: every step between two planned water surfaces is
+     * filled with the creek's own river water and the walk continues from that surface
+     * to the next downstream column. The bounded queue prevents a creek waterfall from
+     * becoming a cave flood.
      */
     @Unique
     private void tfe$bakeSettledSpills(
-        WorldGenRegion level,
         ChunkAccess chunk,
         ChunkPos chunkPos,
+        @Nullable NTERiverHydrology.ColumnProfile[] noiseProfiles,
         ArrayDeque<BlockPos> fronts,
         ArrayDeque<Integer> flowLevels,
         ArrayDeque<Flow> flows,
@@ -490,14 +487,13 @@ public abstract class TFCChunkGeneratorMixin
             }
 
             final int landingY = tfe$bakeFlowingDrop(
-                level,
                 chunk,
                 front.getX(),
                 front.getZ(),
                 front.getY(),
                 Math.max(chunk.getMinBuildHeight(), front.getY() - 64),
-                flowLevel,
                 flow,
+                tfe$plannedWaterY(noiseProfiles, chunkPos, front.getX(), front.getZ()),
                 cursor
             );
             if (landingY == Integer.MIN_VALUE || flowLevel >= TFE_WATER_HORIZONTAL_RANGE)
@@ -574,59 +570,63 @@ public abstract class TFCChunkGeneratorMixin
 
     @Unique
     private int tfe$bakeFlowingDrop(
-        WorldGenRegion level,
         ChunkAccess chunk,
         int blockX,
         int blockZ,
         int startY,
         int minimumY,
-        int flowLevel,
         Flow flow,
+        int localWaterY,
         BlockPos.MutableBlockPos cursor
     )
     {
-        final BlockState fallingWater = Blocks.WATER.defaultBlockState().setValue(LiquidBlock.LEVEL, 8);
-        final BlockState spreadingWater = Blocks.WATER.defaultBlockState().setValue(
-            LiquidBlock.LEVEL,
-            Math.min(7, Math.max(1, flowLevel))
-        );
-        for (int y = startY; y > minimumY; y--)
+        // A descending creek keeps its own planned water surface: a step is filled down to
+        // that surface and never into the planner's headroom above it. Filling down to the
+        // first solid block instead turned every mouth step into a pool standing above the
+        // graded floor.
+        //
+        // The step water is written as the creek's own directional river water, never as
+        // vanilla source water: a vanilla source cannot merge with the receiver's river
+        // water, so it kept spreading downhill after the chunk started ticking and piled
+        // the mouth's descent up several blocks above its planned surface.
+        final BlockState stepWater = NTERiverHydrology.directionalRiverWaterState(flow);
+        final int stopY = Math.max(minimumY, localWaterY);
+        boolean filledStep = false;
+        for (int y = startY; y > stopY; y--)
         {
             cursor.set(blockX, y, blockZ);
             final BlockState current = chunk.getBlockState(cursor);
-            if (current.getFluidState().is(FluidTags.WATER) && current.getFluidState().isSource())
-            {
-                return Integer.MIN_VALUE;
-            }
             if (!current.isAir() && !current.getFluidState().is(FluidTags.WATER))
             {
                 return Integer.MIN_VALUE;
             }
-
-            cursor.set(blockX, y - 1, blockZ);
-            final BlockState below = chunk.getBlockState(cursor);
-            final boolean landsHere = !below.isAir() && below.getFluidState().isEmpty();
-            cursor.set(blockX, y, blockZ);
-            final boolean joinsDirectionalReceiver = y <= SEA_LEVEL_Y - 1
-                || below.getFluidState().getType() == TFCFluids.RIVER_WATER.get();
-            final BlockState water = joinsDirectionalReceiver
-                ? NTERiverHydrology.directionalRiverWaterState(flow)
-                : landsHere ? spreadingWater : fallingWater;
-            chunk.setBlockState(cursor, water, false);
-            if (!joinsDirectionalReceiver)
-            {
-                level.scheduleTick(cursor.immutable(), water.getFluidState().getType(), 1);
-            }
-            if (landsHere)
-            {
-                return y;
-            }
-            if (joinsDirectionalReceiver || below.getFluidState().is(FluidTags.WATER))
-            {
-                return Integer.MIN_VALUE;
-            }
+            chunk.setBlockState(cursor, stepWater, false);
+            filledStep = true;
         }
-        return Integer.MIN_VALUE;
+        // The fall ended on this column's own water surface: keep walking the descent from
+        // the planned surface instead of digging a pool below it.
+        return filledStep && localWaterY > minimumY ? localWaterY : Integer.MIN_VALUE;
+    }
+
+    /** Planned water surface of one column, or the world floor when no creek owns it. */
+    @Unique
+    private static int tfe$plannedWaterY(
+        @Nullable NTERiverHydrology.ColumnProfile[] noiseProfiles,
+        ChunkPos chunkPos,
+        int blockX,
+        int blockZ
+    )
+    {
+        if (noiseProfiles == null
+            || blockX < chunkPos.getMinBlockX() || blockX > chunkPos.getMaxBlockX()
+            || blockZ < chunkPos.getMinBlockZ() || blockZ > chunkPos.getMaxBlockZ())
+        {
+            return Integer.MIN_VALUE;
+        }
+        final NTERiverHydrology.ColumnProfile profile = noiseProfiles[
+            (blockX - chunkPos.getMinBlockX()) + 16 * (blockZ - chunkPos.getMinBlockZ())
+        ];
+        return profile == null ? Integer.MIN_VALUE : profile.waterBlockY();
     }
 
     @Unique

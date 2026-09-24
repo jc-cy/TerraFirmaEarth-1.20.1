@@ -1124,10 +1124,10 @@ class NTEHeadwaterNetworkTest
         assertEquals(0.5d, NTEHeadwaterNetwork.mouthBankFillWeight(16d, BASELINE_MOUTH_WINDOW), 1.0e-9d);
         assertEquals(0d, NTEHeadwaterNetwork.mouthBankFillWeight(8d, BASELINE_MOUTH_WINDOW), 1.0e-9d);
         assertEquals(0d, NTEHeadwaterNetwork.mouthBankFillWeight(0d, BASELINE_MOUTH_WINDOW), 1.0e-9d);
-        assertEquals(0d, NTEHeadwaterNetwork.mouthReceiverBlendWeight(24d, BASELINE_MOUTH_WINDOW), 1.0e-9d);
-        assertEquals(0d, NTEHeadwaterNetwork.mouthReceiverBlendWeight(8d, BASELINE_MOUTH_WINDOW), 1.0e-9d);
-        assertEquals(0.5d, NTEHeadwaterNetwork.mouthReceiverBlendWeight(4d, BASELINE_MOUTH_WINDOW), 1.0e-9d);
-        assertEquals(1d, NTEHeadwaterNetwork.mouthReceiverBlendWeight(0d, BASELINE_MOUTH_WINDOW), 1.0e-9d);
+        assertEquals(0d, NTEHeadwaterNetwork.mouthReceiverBlendWeight(24d), 1.0e-9d);
+        assertEquals(0d, NTEHeadwaterNetwork.mouthReceiverBlendWeight(8d), 1.0e-9d);
+        assertEquals(0.5d, NTEHeadwaterNetwork.mouthReceiverBlendWeight(4d), 1.0e-9d);
+        assertEquals(1d, NTEHeadwaterNetwork.mouthReceiverBlendWeight(0d), 1.0e-9d);
         assertEquals(0d, NTEHeadwaterNetwork.mouthOuterBankReceiverBlendWeight(24d, BASELINE_MOUTH_WINDOW), 1.0e-9d);
         assertEquals(0.5d, NTEHeadwaterNetwork.mouthOuterBankReceiverBlendWeight(16d, BASELINE_MOUTH_WINDOW), 1.0e-9d);
         assertEquals(1d, NTEHeadwaterNetwork.mouthOuterBankReceiverBlendWeight(8d, BASELINE_MOUTH_WINDOW), 1.0e-9d,
@@ -1326,8 +1326,11 @@ class NTEHeadwaterNetworkTest
 
         assertTrue(centre > channelEdge && channelEdge > shoulder,
             "the mouth must be a funnel: deepest at the channel centre and rising outward");
-        assertTrue(shoulder < centre * 0.5d,
+        // The lateral rise now obeys mouth_max_slope, so a narrow creek no longer walls itself
+        // in with a steep rim. The mouth must still fall away outward, just more gently.
+        assertTrue(shoulder < centre * 0.9d,
             "the mouth must fall away laterally instead of cutting one flat slab at full depth");
+        assertTrue(centre > shoulder * 1.1d, "the lateral rise must stay a funnel");
         assertTrue(centre <= terrainY - bedY + 4d,
             "the mouth may never dig deeper than the drop to its own bed plus rim noise");
         assertEquals(centre, NTEHeadwaterNetwork.mouthCutAt(
