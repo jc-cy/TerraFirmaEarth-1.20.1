@@ -86,6 +86,39 @@ public abstract class CaveSpikesFeatureMixin
         }
     }
 
+    /**
+     * Every spike formation is judged once, before TFC writes any of its blocks. The
+     * thinning and the stacking test both key on the formation's own root block, so a
+     * formation is placed whole or not at all: nothing is ever cut out afterwards, and
+     * the hardened cap TFC writes above the root is skipped together with the spike.
+     */
+    @Inject(
+        method = "placeSmallSpike(Lnet/minecraft/world/level/WorldGenLevel;Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/level/block/state/BlockState;Lnet/minecraft/world/level/block/state/BlockState;Lnet/minecraft/core/Direction;F)V",
+        at = @At("HEAD"),
+        cancellable = true,
+        remap = false
+    )
+    private void tfe$filterWholeSpike(
+        WorldGenLevel level,
+        BlockPos pos,
+        BlockState spike,
+        BlockState raw,
+        Direction direction,
+        float sizeWeight,
+        CallbackInfo ci
+    )
+    {
+        final NTERiverHydrology.ColumnProfile profile = NTERiverHydrology.activeGenerationProfile(
+            pos.getX(),
+            pos.getZ()
+        );
+        if (NTERiverHydrology.blocksCaveSpike(profile, pos.getX(), pos.getY(), pos.getZ())
+            || NTERiverHydrology.blocksStackedCaveSpike(level, profile, pos, direction, sizeWeight))
+        {
+            ci.cancel();
+        }
+    }
+
     private static boolean tfe$isTerraceCliffBiome(WorldGenLevel level, BlockPos pos)
     {
         if (tfe$isTerraceCliffBiomeAt(level, pos))

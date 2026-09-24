@@ -22,6 +22,8 @@ import net.dries007.tfc.world.region.RiverEdge;
 import net.dries007.tfc.world.region.Units;
 import net.dries007.tfc.world.river.Flow;
 
+import com.newterraearth.tfe.config.NTECommonConfig;
+
 /**
  * Lazily plans a fine, terrain-sampled creek for each replaceable TFC leaf edge.
  * The TFC graph remains authoritative: the receiving edge is the outlet, while
@@ -77,8 +79,13 @@ final class NTEHeadwaterNetwork
     private static final double SOURCE_ALIGNMENT_TARGET_CONTACT_DOT = 0.90d;
     private static final double SOURCE_ALIGNMENT_SUPPRESSION_WIDTH_SCALE = 1.35d;
     private static final double FLOW_DIRECTION_SAMPLE_RADIUS = 4d;
-    private static final double MOUTH_BANK_TRANSITION_LENGTH = 24d;
+    /** Reference offset used to measure how far the mouth must descend before the transition is sized. */
+    private static final double MOUTH_DROP_REFERENCE_LENGTH = 24d;
     private static final double MOUTH_FAN_LENGTH = 8d;
+    /** Salt for the per-creek transition tier, so the tier does not reuse the route seed itself. */
+    private static final long TRANSITION_TIER_SALT = 0x51A7C3D9B2E64F1DL;
+    /** Salt which separates the mouth floor noise from the mouth rim noise. */
+    private static final long MOUTH_FLOOR_SALT = 0x13C6B0A5D9E7428FL;
     /** Allow a global leaf to descend through the final coastal water shelf. */
     private static final double SEA_MOUTH_WATER_TRANSITION_LENGTH = 16d;
     private static final double OUTLET_ADAPTER_LENGTH = SOURCE_ALIGNMENT_LENGTH + 40d;
@@ -129,6 +136,12 @@ final class NTEHeadwaterNetwork
         double receiverBedBlendWeight,
         boolean waterfallLanding,
         boolean headwater,
+        boolean subterranean,
+        double tunnelCeilingY,
+        /** Seed of this creek; drives the deterministic cavity and mouth noise. */
+        long caveSeed,
+        /** Terrain cut that grades a covered section open at its ends (0 = none). */
+        double entranceCut,
         Flow flow
     ) {}
 
@@ -152,9 +165,88 @@ final class NTEHeadwaterNetwork
             || Math.abs(waterDelta) <= 1.0e-9d && candidate.flow().ordinal() < current.flow().ordinal();
     }
 
-    record DiagnosticPoint(double x, double z, double terrainY, double waterY, double radius) {}
+    record DiagnosticPoint(
+        double x,
+        double z,
+        double terrainY,
+        double waterY,
+        double radius,
+        boolean subterranean,
+        double tunnelCeilingY
+    ) {}
 
     record Vec(double x, double z) {}
+
+    /** Along-route extent of one covered section, used to grade its ends open. */
+    record SubterraneanRun(double startAlong, double endAlong) {}
+
+    /**
+     * Terrain cut which turns the end of a covered section into a cave mouth.
+     * The shape follows the vanilla cave river's mouth language, scaled to this
+     * creek: a lateral funnel which reaches the bed at the channel centre and
+     * climbs with the squared normalised radius, a longitudinal ramp whose
+     * length grows with the drop so a deep mouth becomes a gorge instead of a
+     * vertical slot, and noise which breaks the otherwise machine cut rim.
+     * The cut is one sided: it may lower terrain but never raise it.
+     */
+    static double mouthCutAt(
+        long caveSeed,
+        List<SubterraneanRun> runs,
+        double along,
+        double channelRadius,
+        double terrainY,
+        double waterY,
+        double normalizedDistanceSq,
+        int blockX,
+        int blockZ
+    )
+    {
+        if (runs.isEmpty())
+        {
+            return 0d;
+        }
+        final double bedY = waterY - NTERiverHydrology.baseCenterDepth(channelRadius);
+        final double radiusRamp = Mth.clamp(2d * channelRadius, 4d, 12d);
+        final double noise = NTECommonConfig.getHeadwaterMouthNoise();
+        final double rimNoise = noise <= 0d
+            ? 0d
+            : noise * NTERiverCaveNoise.noise(caveSeed, NTERiverCaveNoise.SALT_MOUTH, blockX, blockZ, 0.045d);
+        for (SubterraneanRun run : runs)
+        {
+            final double inward = Math.min(along - run.startAlong(), run.endAlong() - along);
+            if (inward < 0d)
+            {
+                continue;
+            }
+            final double drop = Math.max(0d, terrainY - bedY);
+            final double slopeRamp = drop / NTECommonConfig.getHeadwaterMouthMaxSlope();
+            final double rampLimit = Math.max(radiusRamp, NTECommonConfig.getHeadwaterMouthMaxLength());
+            final double ramp = Mth.clamp(
+                Math.max(radiusRamp, slopeRamp) * (1d + 0.3d * rimNoise),
+                radiusRamp * 0.5d,
+                rampLimit
+            );
+            if (inward > ramp)
+            {
+                continue;
+            }
+            final double weight = smootherStep(1d - inward / ramp);
+            final double floorNoise = noise <= 0d
+                ? 0d
+                : noise * NTERiverCaveNoise.noise(
+                    caveSeed,
+                    NTERiverCaveNoise.SALT_MOUTH ^ MOUTH_FLOOR_SALT,
+                    blockX,
+                    blockZ,
+                    0.09d
+                );
+            final double funnelFloor = bedY
+                + Math.max(0d, normalizedDistanceSq) * NTECommonConfig.getHeadwaterMouthLateralRise()
+                + floorNoise;
+            return weight * Math.max(0d, terrainY - Math.min(funnelFloor, terrainY));
+        }
+        return 0d;
+    }
 
     private record SearchNode(int index, double score) {}
 
@@ -752,9 +844,78 @@ final class NTEHeadwaterNetwork
         );
     }
 
-    static double mouthBankFillWeight(double distanceToOutlet)
+    /**
+     * Deterministic per-creek transition tier: 0.5 / 1.0 / 1.5 by default. The
+     * tier comes from the creek's own planned seed, so the same world seed always
+     * yields the same tier for the same creek without any sequential randomness.
+     */
+    static double transitionTierMultiplier(long creekSeed)
     {
-        if (distanceToOutlet >= MOUTH_BANK_TRANSITION_LENGTH)
+        final int tier = (int) Math.floorMod(mix64(creekSeed ^ TRANSITION_TIER_SALT), 3L);
+        return NTECommonConfig.getHeadwaterTransitionTier(tier);
+    }
+
+    /**
+     * A fixed transition window compressed every mouth drop into the same 24
+     * blocks. From the configured baseline on, each extra block of drop adds one
+     * block of window, scaled by the creek's own tier and capped. The window may
+     * never exceed half of the route, so a short route cannot become one long
+     * mouth ramp.
+     */
+    static double mouthTransitionLength(double envelopeDrop, double tierMultiplier, double totalLength)
+    {
+        final double base = NTECommonConfig.getHeadwaterTransitionBase();
+        final double limit = Math.max(base, NTECommonConfig.getHeadwaterTransitionMax());
+        final double extended = base
+            + Math.max(0d, envelopeDrop - base)
+                * NTECommonConfig.getHeadwaterTransitionSlope()
+                * Math.max(0d, tierMultiplier);
+        final double bounded = Mth.clamp(extended, base, limit);
+        return Math.max(
+            Math.min(bounded, Math.max(base, totalLength * 0.5d)),
+            MOUTH_FAN_LENGTH + 1d
+        );
+    }
+
+    /** Interpolates a per-node profile value at an along-route distance. */
+    static double sampleProfileAtAlong(double[] values, double[] distance, double targetAlong)
+    {
+        final int last = values.length - 1;
+        if (targetAlong <= 0d)
+        {
+            return values[0];
+        }
+        if (targetAlong >= distance[last])
+        {
+            return values[last];
+        }
+        int lowerBound = 1;
+        int upperBound = last;
+        while (lowerBound < upperBound)
+        {
+            final int middle = (lowerBound + upperBound) >>> 1;
+            if (distance[middle] < targetAlong)
+            {
+                lowerBound = middle + 1;
+            }
+            else
+            {
+                upperBound = middle;
+            }
+        }
+        final int upper = lowerBound;
+        final int lower = upper - 1;
+        final double segmentLength = distance[upper] - distance[lower];
+        final double delta = segmentLength <= 1.0e-9d
+            ? 0d
+            : (targetAlong - distance[lower]) / segmentLength;
+        return Mth.lerp(delta, values[lower], values[upper]);
+    }
+
+    static double mouthBankFillWeight(double distanceToOutlet, double transitionLength)
+    {
+        final double transition = Math.max(MOUTH_FAN_LENGTH + 1d, transitionLength);
+        if (distanceToOutlet >= transition)
         {
             return 1d;
         }
@@ -764,20 +925,20 @@ final class NTEHeadwaterNetwork
         }
         return smootherStep(Mth.clamp(
             (distanceToOutlet - MOUTH_FAN_LENGTH)
-                / (MOUTH_BANK_TRANSITION_LENGTH - MOUTH_FAN_LENGTH),
+                / (transition - MOUTH_FAN_LENGTH),
             0d,
             1d
         ));
     }
 
-    static double mouthWaterDrop(double distanceToOutlet, double localWaterY, double receiverWaterY)
+    static double mouthWaterDrop(double distanceToOutlet, double localWaterY, double receiverWaterY, double transitionLength)
     {
         // Water ownership starts transferring with the dry banks and is
         // complete before the final cut-only fan. Capping this at the fan's
         // two-block erosion allowance left a higher replacement-water shelf
         // after the bed had already yielded to a lower retained receiver.
         return Math.max(0d, localWaterY - receiverWaterY)
-            * (1d - mouthBankFillWeight(distanceToOutlet));
+            * (1d - mouthBankFillWeight(distanceToOutlet, transitionLength));
     }
 
     static double mouthBankIncisionLateralWeight(double normalizedDistanceSq)
@@ -800,10 +961,11 @@ final class NTEHeadwaterNetwork
     static double mouthGeometryNormalizedDistanceSq(
         double streamNormalizedDistanceSq,
         double receiverNormalizedDistanceSq,
-        double distanceToOutlet
+        double distanceToOutlet,
+        double transitionLength
     )
     {
-        final double receiverInfluence = mouthOuterBankReceiverBlendWeight(distanceToOutlet);
+        final double receiverInfluence = mouthOuterBankReceiverBlendWeight(distanceToOutlet, transitionLength);
         if (receiverInfluence <= 0d)
         {
             return streamNormalizedDistanceSq;
@@ -863,7 +1025,7 @@ final class NTEHeadwaterNetwork
         );
     }
 
-    static double mouthReceiverBlendWeight(double distanceToOutlet)
+    static double mouthReceiverBlendWeight(double distanceToOutlet, double transitionLength)
     {
         return smootherStep(Mth.clamp(
             (MOUTH_FAN_LENGTH - distanceToOutlet) / MOUTH_FAN_LENGTH,
@@ -872,14 +1034,15 @@ final class NTEHeadwaterNetwork
         ));
     }
 
-    static double mouthOuterBankReceiverBlendWeight(double distanceToOutlet)
+    static double mouthOuterBankReceiverBlendWeight(double distanceToOutlet, double transitionLength)
     {
-        return 1d - mouthBankFillWeight(distanceToOutlet);
+        return 1d - mouthBankFillWeight(distanceToOutlet, transitionLength);
     }
 
     static double mouthReceiverBlendWeight(
         double streamNormalizedDistanceSq,
-        double distanceToOutlet
+        double distanceToOutlet,
+        double transitionLength
     )
     {
         // Bank ownership and wet-corridor ownership cannot use one scalar.
@@ -892,8 +1055,8 @@ final class NTEHeadwaterNetwork
         final double outerBankWeight = mouthOuterBankLateralWeight(streamNormalizedDistanceSq);
         return Mth.lerp(
             outerBankWeight,
-            mouthReceiverBlendWeight(distanceToOutlet),
-            mouthOuterBankReceiverBlendWeight(distanceToOutlet)
+            mouthReceiverBlendWeight(distanceToOutlet, transitionLength),
+            mouthOuterBankReceiverBlendWeight(distanceToOutlet, transitionLength)
         );
     }
 
@@ -1190,6 +1353,10 @@ final class NTEHeadwaterNetwork
             sample.receiverBedBlendWeight(),
             sample.waterfallLanding(),
             sample.headwater(),
+            sample.subterranean(),
+            sample.tunnelCeilingY(),
+            sample.caveSeed(),
+            sample.entranceCut(),
             sample.flow()
         );
     }
@@ -1675,7 +1842,21 @@ final class NTEHeadwaterNetwork
             radius[i] = radii[i];
         }
         headwater.route = new Route(
-            x, z, terrain, water, radius, distance, distance[size - 1], false, null, endWaterY
+            x,
+            z,
+            terrain,
+            water,
+            radius,
+            distance,
+            distance[size - 1],
+            false,
+            null,
+            endWaterY,
+            mouthTransitionLength(0d, transitionTierMultiplier(1L), distance[size - 1]),
+            new boolean[size],
+            new double[size],
+            List.of(),
+            1L
         );
         headwater.attempted = true;
         headwater.replacement = replacement;
@@ -1816,6 +1997,12 @@ final class NTEHeadwaterNetwork
         boolean valid()
         {
             return headwater.route() != null;
+        }
+
+        double mouthTransitionLength()
+        {
+            final Route route = headwater.route();
+            return route == null ? 0d : route.mouthTransitionLength;
         }
 
         int attemptedDrainageCandidates()
@@ -2664,6 +2851,24 @@ final class NTEHeadwaterNetwork
             // never climbing downstream. A second pass caps only genuinely
             // vertical drops at one block per horizontal block, allowing
             // terraces and cascades instead of forcing a sea-level trench.
+            // The mouth transition is sized from the terrain envelope at the
+            // reference offset: a drop at or below the configured baseline keeps
+            // the historical 24-block window unchanged, while a deeper drop
+            // spreads the same descent over a longer, gentler window. The
+            // per-creek tier comes from this creek's own seed, so it is stable
+            // for a given world seed and never depends on generation order.
+            final double mouthEnvelopeWaterY = sampleProfileAtAlong(
+                capacity,
+                distance,
+                Math.max(0d, totalLength - MOUTH_DROP_REFERENCE_LENGTH)
+            );
+            final double mouthTransition = mouthTransitionLength(
+                Math.max(0d, mouthEnvelopeWaterY - outletWater),
+                transitionTierMultiplier(seed),
+                totalLength
+            );
+            final boolean[] subterranean = new boolean[pointCount];
+            final double[] tunnelCeilingY = new double[pointCount];
             final double[] waterY = new double[pointCount];
             waterY[0] = capacity[0];
             for (int i = 1; i < pointCount; i++)
@@ -2676,6 +2881,13 @@ final class NTEHeadwaterNetwork
                 final double segmentLength = Math.max(1.0e-6d, distance[i + 1] - distance[i]);
                 waterY[i] = Math.min(waterY[i], waterY[i + 1] + segmentLength * MAX_CASCADE_SLOPE);
             }
+            // Strict decision only: the planned water grade is never touched. Nodes
+            // inside a sustained run whose exposed cut exceeds the threshold are
+            // marked as an underground section, and that section is then carved as
+            // a covered cavity instead of an open cut.
+            final List<SubterraneanRun> subterraneanRuns = NTECommonConfig.isHeadwaterUndergroundEnabled()
+                ? markSubterranean(terrainY, waterY, radius, distance, pointCount, drainRadius, subterranean, tunnelCeilingY)
+                : List.of();
 
             return new Route(
                 x,
@@ -2687,7 +2899,12 @@ final class NTEHeadwaterNetwork
                 totalLength,
                 outlet.receiverMouth(),
                 outlet.alignment(),
-                outletWater
+                outletWater,
+                mouthTransition,
+                subterranean,
+                tunnelCeilingY,
+                subterraneanRuns,
+                seed
             );
         }
 
@@ -2698,6 +2915,79 @@ final class NTEHeadwaterNetwork
          * artificial trenches grow quadratically and are avoided whenever a
          * gentler candidate exists.
          */
+        /**
+         * Strict underground decision. Only the exposed cut depth and its
+         * sustained length are considered: the planned water grade, bed, widths and
+         * mouth handling are never touched, so a creek which is not converted keeps
+         * exactly its previous generation. Nodes inside a qualifying run are carved
+         * as a covered cavity instead of an open cut.
+         */
+        private List<SubterraneanRun> markSubterranean(
+            double[] terrainY,
+            double[] waterY,
+            double[] radius,
+            double[] distance,
+            int pointCount,
+            double drainRadius,
+            boolean[] subterranean,
+            double[] tunnelCeilingY
+        )
+        {
+            final List<SubterraneanRun> runs = new ArrayList<>();
+            final int minimumCut = NTECommonConfig.getHeadwaterSinkMinCut();
+            final int minimumRun = NTECommonConfig.getHeadwaterSinkMinRun();
+            final int roof = NTECommonConfig.getHeadwaterTunnelRoof();
+            final int airMin = NTECommonConfig.getHeadwaterTunnelAirMin();
+            final int airMax = NTECommonConfig.getHeadwaterTunnelAirMax();
+            // The density stage shapes each column's arch with its own noise, so
+            // the planned ceiling keeps a noise sized budget on top of the base
+            // air height. The planned ceiling stays the upper bound: cave
+            // protection and the carved arch can never exceed it.
+            final double noiseBudget = NTECommonConfig.getHeadwaterTunnelCarvingNoise();
+            final double radiusRange = Math.max(1.0e-6d, drainRadius - SOURCE_CHANNEL_RADIUS);
+            int runStart = -1;
+            double runLength = 0d;
+            for (int i = 0; i <= pointCount; i++)
+            {
+                final boolean deep = i < pointCount
+                    && visibleIncisionDepth(terrainY[i], waterY[i]) >= minimumCut;
+                if (deep)
+                {
+                    if (runStart < 0)
+                    {
+                        runStart = i;
+                        runLength = 0d;
+                    }
+                    else if (i > 0)
+                    {
+                        runLength += Math.max(1.0e-6d, distance[i] - distance[i - 1]);
+                    }
+                    continue;
+                }
+                if (runStart >= 0 && runLength >= minimumRun)
+                {
+                    for (int node = runStart; node < i; node++)
+                    {
+                        final double widthProgress = Mth.clamp(
+                            (radius[node] - SOURCE_CHANNEL_RADIUS) / radiusRange,
+                            0d,
+                            1d
+                        );
+                        final double air = Mth.clamp(
+                            airMin + (airMax - airMin) * widthProgress + noiseBudget,
+                            airMin,
+                            airMax + noiseBudget
+                        );
+                        subterranean[node] = true;
+                        tunnelCeilingY[node] = Math.min(waterY[node] + air, terrainY[node] - roof);
+                    }
+                    runs.add(new SubterraneanRun(distance[runStart], distance[i - 1]));
+                }
+                runStart = -1;
+                runLength = 0d;
+            }
+            return List.copyOf(runs);
+        }
         private static IncisionRisk evaluateIncisionRisk(
             Route route,
             double normalPreferredIncision,
@@ -2926,6 +3216,18 @@ final class NTEHeadwaterNetwork
                 final double segmentLength = Math.max(1.0e-6d, distance[i + 1] - distance[i]);
                 waterY[i] = Math.min(waterY[i], waterY[i + 1] + segmentLength * MAX_CASCADE_SLOPE);
             }
+            final double feederEnvelopeWaterY = sampleProfileAtAlong(
+                capacity,
+                distance,
+                Math.max(0d, totalLength - MOUTH_DROP_REFERENCE_LENGTH)
+            );
+            final boolean[] subterranean = new boolean[pointCount];
+            final double[] tunnelCeilingY = new double[pointCount];
+            // Feeder sections follow exactly the same strict decision as a full
+            // replacement; the planned grade itself stays untouched.
+            final List<SubterraneanRun> subterraneanRuns = NTECommonConfig.isHeadwaterUndergroundEnabled()
+                ? markSubterranean(terrainY, waterY, radius, distance, pointCount, joinRadius, subterranean, tunnelCeilingY)
+                : List.of();
             return new Route(
                 x,
                 z,
@@ -2936,7 +3238,16 @@ final class NTEHeadwaterNetwork
                 totalLength,
                 outlet.receiverMouth(),
                 outlet.alignment(),
-                minimumWater
+                minimumWater,
+                mouthTransitionLength(
+                    Math.max(0d, feederEnvelopeWaterY - minimumWater),
+                    transitionTierMultiplier(seed),
+                    totalLength
+                ),
+                subterranean,
+                tunnelCeilingY,
+                subterraneanRuns,
+                seed
             );
         }
 
@@ -4017,6 +4328,14 @@ final class NTEHeadwaterNetwork
         private final boolean receiverMouth;
         @Nullable private final ReceiverAlignment receiverAlignment;
         private final double receiverWaterY;
+        private final double mouthTransitionLength;
+        /** Per-node flag: this node's water runs inside a covered rock tunnel. */
+        private final boolean[] subterranean;
+        /** Per-node rock ceiling of a subterranean node; zero for surface nodes. */
+        private final double[] tunnelCeilingY;
+        private final List<SubterraneanRun> subterraneanRuns;
+        /** This creek's own seed; shapes the covered cavity and the cave mouth. */
+        private final long caveSeed;
         private final Set<Long> turnConnectorColumns;
         private final Map<Long, int[]> segmentsByChunk;
         private final Set<Long> spatialChunks;
@@ -4033,7 +4352,12 @@ final class NTEHeadwaterNetwork
             double totalLength,
             boolean receiverMouth,
             @Nullable ReceiverAlignment receiverAlignment,
-            double receiverWaterY
+            double receiverWaterY,
+            double mouthTransitionLength,
+            boolean[] subterranean,
+            double[] tunnelCeilingY,
+            List<SubterraneanRun> subterraneanRuns,
+            long caveSeed
         )
         {
             this(
@@ -4047,6 +4371,11 @@ final class NTEHeadwaterNetwork
                 receiverMouth,
                 receiverAlignment,
                 receiverWaterY,
+                mouthTransitionLength,
+                subterranean,
+                tunnelCeilingY,
+                subterraneanRuns,
+                caveSeed,
                 List.of()
             );
         }
@@ -4062,6 +4391,11 @@ final class NTEHeadwaterNetwork
             boolean receiverMouth,
             @Nullable ReceiverAlignment receiverAlignment,
             double receiverWaterY,
+            double mouthTransitionLength,
+            boolean[] subterranean,
+            double[] tunnelCeilingY,
+            List<SubterraneanRun> subterraneanRuns,
+            long caveSeed,
             List<JunctionFlowAnchor> junctionFlowAnchors
         )
         {
@@ -4079,6 +4413,11 @@ final class NTEHeadwaterNetwork
             this.receiverMouth = receiverMouth;
             this.receiverAlignment = receiverAlignment;
             this.receiverWaterY = receiverWaterY;
+            this.mouthTransitionLength = mouthTransitionLength;
+            this.subterranean = subterranean;
+            this.tunnelCeilingY = tunnelCeilingY;
+            this.subterraneanRuns = subterraneanRuns;
+            this.caveSeed = caveSeed;
             this.turnConnectorColumns = rasterizeTurnConnectors(x, z);
             this.segmentsByChunk = indexSegmentsByChunk(x, z, radius);
             this.spatialChunks = indexRouteChunks(x, z, SPATIAL_INDEX_MARGIN);
@@ -4105,6 +4444,72 @@ final class NTEHeadwaterNetwork
         private boolean suppresses(RiverEdge edge, int blockX, int blockZ)
         {
             return receiverAlignment != null && receiverAlignment.suppresses(edge, blockX, blockZ);
+        }
+
+        /**
+         * Junction and shared-drainage rebuilds create a new node list for the
+         * same route. The subterranean section is a step function along the
+         * route, so it is re-sampled by along-distance instead of being dropped.
+         */
+        private static boolean[] resampleSubterranean(
+            boolean[] source,
+            double[] sourceDistance,
+            double[] targetDistance,
+            int size
+        )
+        {
+            final boolean[] result = new boolean[size];
+            for (int i = 0; i < size; i++)
+            {
+                result[i] = source[nearestNodeIndex(sourceDistance, targetDistance[i])];
+            }
+            return result;
+        }
+
+        private static double[] resampleCeiling(
+            double[] source,
+            double[] sourceDistance,
+            double[] targetDistance,
+            int size
+        )
+        {
+            final double[] result = new double[size];
+            for (int i = 0; i < size; i++)
+            {
+                result[i] = source[nearestNodeIndex(sourceDistance, targetDistance[i])];
+            }
+            return result;
+        }
+
+        private static int nearestNodeIndex(double[] distance, double target)
+        {
+            final int last = distance.length - 1;
+            if (target <= distance[0])
+            {
+                return 0;
+            }
+            if (target >= distance[last])
+            {
+                return last;
+            }
+            int lowerBound = 1;
+            int upperBound = last;
+            while (lowerBound < upperBound)
+            {
+                final int middle = (lowerBound + upperBound) >>> 1;
+                if (distance[middle] < target)
+                {
+                    lowerBound = middle + 1;
+                }
+                else
+                {
+                    upperBound = middle;
+                }
+            }
+            final int upper = lowerBound;
+            return target - distance[upper - 1] <= distance[upper] - target
+                ? upper - 1
+                : upper;
         }
 
         @Nullable
@@ -4152,7 +4557,13 @@ final class NTEHeadwaterNetwork
             }
             final double mouthNormalizedDistanceSq = receiverAlignment == null || retainedReceiverJoin
                 ? rawNormalizedDistanceSq
-                : receiverAlignment.mouthNormalizedDistanceSq(rawNormalizedDistanceSq, blockX, blockZ, distanceToOutlet);
+                : receiverAlignment.mouthNormalizedDistanceSq(
+                    rawNormalizedDistanceSq,
+                    blockX,
+                    blockZ,
+                    distanceToOutlet,
+                    mouthTransitionLength
+                );
             // Do not four-connect every diagonal step. Only a short diagonal
             // transition between perpendicular cardinal runs receives its
             // inside-corner cells, so a real bend stays connected without
@@ -4192,14 +4603,15 @@ final class NTEHeadwaterNetwork
             final double waterCoreRadiusSq = NTERiverHydrology.SUPPLEMENTAL_WATER_CORE_RADIUS_SQ;
             final double mouthWaterDrop = receiverAlignment == null || retainedReceiverJoin
                 ? 0d
-                : mouthWaterDrop(distanceToOutlet, localWaterY, receiverWaterY);
+                : mouthWaterDrop(distanceToOutlet, localWaterY, receiverWaterY, mouthTransitionLength);
             final double downstreamDistanceToOutlet = Math.max(0d, totalLength - (along + 1d));
             final double downstreamMouthWaterDrop = receiverAlignment == null || retainedReceiverJoin
                 ? 0d
                 : mouthWaterDrop(
                     downstreamDistanceToOutlet,
                     downstreamWaterY,
-                    receiverWaterY
+                    receiverWaterY,
+                    mouthTransitionLength
                 );
             final double secondDownstreamWaterY = sampleWaterYAtAlong(along + 2d);
             final double secondDownstreamDistanceToOutlet = Math.max(0d, totalLength - (along + 2d));
@@ -4208,7 +4620,8 @@ final class NTEHeadwaterNetwork
                 : mouthWaterDrop(
                     secondDownstreamDistanceToOutlet,
                     secondDownstreamWaterY,
-                    receiverWaterY
+                    receiverWaterY,
+                    mouthTransitionLength
                 );
             final double plannedWaterY = localWaterY - mouthWaterDrop;
             final double downstreamPlannedWaterY = downstreamWaterY - downstreamMouthWaterDrop;
@@ -4230,10 +4643,10 @@ final class NTEHeadwaterNetwork
                 : mouthBankIncision(mouthWaterDrop, normalizedDistanceSq);
             final double bankFillWeight = receiverAlignment == null
                 ? 1d
-                : mouthBankFillWeight(distanceToOutlet);
+                : mouthBankFillWeight(distanceToOutlet, mouthTransitionLength);
             final double receiverBlendWeight = receiverAlignment == null || retainedReceiverJoin
                 ? 0d
-                : mouthReceiverBlendWeight(rawNormalizedDistanceSq, distanceToOutlet);
+                : mouthReceiverBlendWeight(rawNormalizedDistanceSq, distanceToOutlet, mouthTransitionLength);
             final double receiverBedBlendWeight = receiverAlignment == null || retainedReceiverJoin
                 ? 0d
                 : mouthReceiverBedBlendWeight(distanceToOutlet, waterCutLength);
@@ -4250,7 +4663,8 @@ final class NTEHeadwaterNetwork
                     streamDirection,
                     blockX,
                     blockZ,
-                    distanceToOutlet
+                    distanceToOutlet,
+                    mouthTransitionLength
                 );
             final double angle = Mth.atan2(-flowDirection.z(), flowDirection.x());
             final Flow flow = junctionFlowAtAlong(along, Flow.fromAngle(angle));
@@ -4267,6 +4681,46 @@ final class NTEHeadwaterNetwork
                 && (receiverAlignment == null
                     || retainedReceiverJoin
                     || mouthSourceWaterAllowed(distanceToOutlet, waterCutLength, mouthWaterDrop));
+            final int nearestNode = bestDelta < 0.5d ? bestIndex : bestIndex + 1;
+            if (subterranean[nearestNode])
+            {
+                // Inside the tunnel the surface never grows a channel: the height
+                // stage ignores this profile and the density stage opens the rock.
+                // The core is generated as source-like water so a covered descent
+                // cannot drain dry, and the tunnel keeps the route's own flow.
+                traceTargetSample(blockX, blockZ, ambientHeight, localWaterY, rawNormalizedDistanceSq, normalizedDistanceSq, turnConnector, "subterranean");
+                return new Sample(
+                    localWaterY,
+                    normalizedDistanceSq,
+                    localRadius,
+                    0d,
+                    0d,
+                    1d,
+                    waterCoreRadiusSq,
+                    false,
+                    true,
+                    true,
+                    0d,
+                    0d,
+                    false,
+                    along / totalLength < 0.15d,
+                    true,
+                    tunnelCeilingY[nearestNode],
+                    caveSeed,
+                    mouthCutAt(
+                        caveSeed,
+                        subterraneanRuns,
+                        along,
+                        localRadius,
+                        terrainY[nearestNode],
+                        localWaterY,
+                        normalizedDistanceSq,
+                        blockX,
+                        blockZ
+                    ),
+                    flow
+                );
+            }
             traceTargetSample(blockX, blockZ, ambientHeight, localWaterY, rawNormalizedDistanceSq, normalizedDistanceSq, turnConnector, "accepted");
             return new Sample(
                 localWaterY,
@@ -4283,6 +4737,10 @@ final class NTEHeadwaterNetwork
                 receiverBedBlendWeight,
                 waterfallLanding,
                 along / totalLength < 0.15d,
+                false,
+                0d,
+                0L,
+                0d,
                 flow
             );
         }
@@ -4365,7 +4823,15 @@ final class NTEHeadwaterNetwork
             final List<DiagnosticPoint> points = new ArrayList<>(x.length);
             for (int i = 0; i < x.length; i++)
             {
-                points.add(new DiagnosticPoint(x[i], z[i], terrainY[i], waterY[i], radius[i]));
+                points.add(new DiagnosticPoint(
+                    x[i],
+                    z[i],
+                    terrainY[i],
+                    waterY[i],
+                    radius[i],
+                    subterranean[i],
+                    tunnelCeilingY[i]
+                ));
             }
             return List.copyOf(points);
         }
@@ -4373,12 +4839,21 @@ final class NTEHeadwaterNetwork
         private String summary()
         {
             final int middle = x.length / 2;
+            int tunnelPoints = 0;
+            for (boolean value : subterranean)
+            {
+                if (value)
+                {
+                    tunnelPoints++;
+                }
+            }
             return String.format(
-                "start=(%.1f,%.1f,water=%.1f) middle=(%.1f,%.1f,water=%.1f) end=(%.1f,%.1f,water=%.1f) turnConnectors=%d%s",
+                "start=(%.1f,%.1f,water=%.1f) middle=(%.1f,%.1f,water=%.1f) end=(%.1f,%.1f,water=%.1f) turnConnectors=%d tunnel=%d%s",
                 x[0], z[0], waterY[0],
                 x[middle], z[middle], waterY[middle],
                 x[x.length - 1], z[z.length - 1], waterY[waterY.length - 1],
                 turnConnectorColumns.size(),
+                tunnelPoints,
                 tracedGeometry()
             );
         }
@@ -4758,6 +5233,11 @@ final class NTEHeadwaterNetwork
                 receiverMouth,
                 receiverAlignment,
                 receiverWaterY,
+                mouthTransitionLength,
+                resampleSubterranean(subterranean, distance, coordinatedDistance, size),
+                resampleCeiling(tunnelCeilingY, distance, coordinatedDistance, size),
+                subterraneanRuns,
+                caveSeed,
                 junctionFlowAnchors
             );
         }
@@ -4884,6 +5364,11 @@ final class NTEHeadwaterNetwork
                 receiverMouth,
                 receiverAlignment,
                 receiverWaterY,
+                mouthTransitionLength,
+                resampleSubterranean(subterranean, distance, coordinatedDistance, size),
+                resampleCeiling(tunnelCeilingY, distance, coordinatedDistance, size),
+                subterraneanRuns,
+                caveSeed,
                 coordinatedFlowAnchors
             );
         }
@@ -4993,7 +5478,8 @@ final class NTEHeadwaterNetwork
             double streamNormalizedDistanceSq,
             int blockX,
             int blockZ,
-            double distanceToOutlet
+            double distanceToOutlet,
+            double transitionLength
         )
         {
             final double receiverRadius = matchedReceiverRadius(receiverWidth);
@@ -5004,7 +5490,8 @@ final class NTEHeadwaterNetwork
             return mouthGeometryNormalizedDistanceSq(
                 streamNormalizedDistanceSq,
                 receiverNormalizedDistanceSq,
-                distanceToOutlet
+                distanceToOutlet,
+                transitionLength
             );
         }
 
@@ -5012,7 +5499,8 @@ final class NTEHeadwaterNetwork
             Vec streamDirection,
             int blockX,
             int blockZ,
-            double distanceToOutlet
+            double distanceToOutlet,
+            double transitionLength
         )
         {
             final Vec point = new Vec(blockX, blockZ);
@@ -5022,7 +5510,7 @@ final class NTEHeadwaterNetwork
                 Math.min(polylineLength(receiverPath), receiverAlong + 1.0e-3d)
             );
             final double weight = smootherStep(
-                1d - distanceToOutlet / MOUTH_BANK_TRANSITION_LENGTH
+                1d - distanceToOutlet / Math.max(1.0e-6d, transitionLength)
             );
             final Vec blended = new Vec(
                 Mth.lerp(weight, streamDirection.x(), receiverDirection.x()),

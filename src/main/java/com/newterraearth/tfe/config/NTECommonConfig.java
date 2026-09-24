@@ -49,6 +49,24 @@ public final class NTECommonConfig
     private static final ForgeConfigSpec.DoubleValue TERRAIN_UPLIFT_SOURCE_HEIGHT;
     private static final ForgeConfigSpec.IntValue TERRAIN_UPLIFT_SOURCE_FALLOFF_DISTANCE;
     private static final ForgeConfigSpec.IntValue TERRAIN_UPLIFT_SMALL_PLATFORM_RADIUS;
+    private static final ForgeConfigSpec.DoubleValue HEADWATER_TRANSITION_BASE;
+    private static final ForgeConfigSpec.DoubleValue HEADWATER_TRANSITION_SLOPE;
+    private static final ForgeConfigSpec.DoubleValue HEADWATER_TRANSITION_MAX;
+    private static final ForgeConfigSpec.DoubleValue HEADWATER_TIER_LOW;
+    private static final ForgeConfigSpec.DoubleValue HEADWATER_TIER_MID;
+    private static final ForgeConfigSpec.DoubleValue HEADWATER_TIER_HIGH;
+    private static final ForgeConfigSpec.BooleanValue HEADWATER_UNDERGROUND_ENABLED;
+    private static final ForgeConfigSpec.IntValue HEADWATER_SINK_MIN_CUT;
+    private static final ForgeConfigSpec.IntValue HEADWATER_SINK_MIN_RUN;
+    private static final ForgeConfigSpec.IntValue HEADWATER_TUNNEL_ROOF;
+    private static final ForgeConfigSpec.IntValue HEADWATER_TUNNEL_AIR_MIN;
+    private static final ForgeConfigSpec.IntValue HEADWATER_TUNNEL_AIR_MAX;
+    private static final ForgeConfigSpec.IntValue HEADWATER_TUNNEL_WATER_DEPTH;
+    private static final ForgeConfigSpec.DoubleValue HEADWATER_TUNNEL_CARVING_NOISE;
+    private static final ForgeConfigSpec.DoubleValue HEADWATER_MOUTH_LATERAL_RISE;
+    private static final ForgeConfigSpec.DoubleValue HEADWATER_MOUTH_NOISE;
+    private static final ForgeConfigSpec.DoubleValue HEADWATER_MOUTH_MAX_SLOPE;
+    private static final ForgeConfigSpec.DoubleValue HEADWATER_MOUTH_MAX_LENGTH;
 
     static
     {
@@ -146,6 +164,65 @@ public final class NTECommonConfig
         TERRAIN_UPLIFT_SMALL_PLATFORM_RADIUS = builder
             .comment("普通山地抬高源中心平缓平台半径，单位为方块。巨型火山仍使用自己的动态平台大小。")
             .defineInRange("small_platform_radius", 10, 0, 256);
+        builder.pop();
+
+        builder.comment("补充溪流的河口过渡参数。改动只影响新生成区块；已有区块不会回刷，请在新地图使用。");
+        builder.push("headwater_streams");
+        HEADWATER_TRANSITION_BASE = builder
+            .comment("河口过渡的基础长度，单位为方块。落差不超过该值时，溪流剖面与旧版完全一致。")
+            .defineInRange("transition_base", 24.0d, 8.0d, 64.0d);
+        HEADWATER_TRANSITION_SLOPE = builder
+            .comment("落差超过基础长度后，每多 1 格落差额外增加的过渡长度倍率。默认 1.0 表示一比一增加。")
+            .defineInRange("transition_slope", 1.0d, 0.0d, 4.0d);
+        HEADWATER_TRANSITION_MAX = builder
+            .comment("过渡长度的硬上限，单位为方块。超过上限的落差不会继续拉长地表过渡。")
+            .defineInRange("transition_max", 64.0d, 24.0d, 256.0d);
+        HEADWATER_TIER_LOW = builder
+            .comment("每条溪流自己的随机倍率档位之一，数值越小河口过渡越陡。")
+            .defineInRange("random_tier_low", 0.5d, 0.0d, 4.0d);
+        HEADWATER_TIER_MID = builder
+            .comment("每条溪流自己的随机倍率档位之一，默认 1.0 表示按原样增长。")
+            .defineInRange("random_tier_mid", 1.0d, 0.0d, 4.0d);
+        HEADWATER_TIER_HIGH = builder
+            .comment("每条溪流自己的随机倍率档位之一，数值越大河口过渡越平缓。")
+            .defineInRange("random_tier_high", 1.5d, 0.0d, 4.0d);
+        HEADWATER_UNDERGROUND_ENABLED = builder
+            .comment("切割过深时是否让溪流转入地下。设为 false 时只保留动态过渡，用于对照排查。")
+            .define("underground_enabled", true);
+        HEADWATER_SINK_MIN_CUT = builder
+            .comment("触发转入地下的可见切割深度阈值，单位为方块。低于该深度的切割继续按地表溪流开挖；"
+                + "该值必须明显高于洞口开挖带能吸收的深度，否则临界处会留下薄壁。")
+            .defineInRange("sink_min_cut", 15, 1, 64);
+        HEADWATER_SINK_MIN_RUN = builder
+            .comment("触发转入地下所需的连续超标长度，单位为方块；用于排除单点噪声。")
+            .defineInRange("sink_min_run", 15, 1, 256);
+        HEADWATER_TUNNEL_ROOF = builder
+            .comment("地下溪流洞顶到地表的最小岩层厚度，单位为方块。")
+            .defineInRange("tunnel_roof", 4, 1, 32);
+        HEADWATER_TUNNEL_AIR_MIN = builder
+            .comment("地下溪流水面以上的洞腔高度下限，单位为方块。")
+            .defineInRange("tunnel_air_min", 2, 1, 16);
+        HEADWATER_TUNNEL_AIR_MAX = builder
+            .comment("地下溪流水面以上的洞腔高度上限，单位为方块；洞口越宽越接近该值。")
+            .defineInRange("tunnel_air_max", 5, 1, 24);
+        HEADWATER_TUNNEL_WATER_DEPTH = builder
+            .comment("地下溪流的水道深度，单位为方块。")
+            .defineInRange("tunnel_water_depth", 1, 1, 8);
+        HEADWATER_TUNNEL_CARVING_NOISE = builder
+            .comment("地下洞腔雕琢噪声幅度，单位为方块。数值越大洞顶与洞壁起伏越明显；0 表示光滑管道。")
+            .defineInRange("tunnel_carving_noise", 1.5d, 0.0d, 8.0d);
+        HEADWATER_MOUTH_LATERAL_RISE = builder
+            .comment("洞口漏斗每单位归一化半径²抬升的高度，单位为方块；决定洞口是窄槽还是开阔漏斗。")
+            .defineInRange("mouth_lateral_rise", 12.0d, 0.0d, 64.0d);
+        HEADWATER_MOUTH_NOISE = builder
+            .comment("洞口开挖面的噪声幅度，单位为方块。用于打散人工直线边坡。")
+            .defineInRange("mouth_noise", 2.0d, 0.0d, 16.0d);
+        HEADWATER_MOUTH_MAX_SLOPE = builder
+            .comment("洞口纵向斜坡的最大坡度，单位为方块/方块。默认 1.0 表示落差大的洞口会被拉成缓坡峡谷而不是竖井。")
+            .defineInRange("mouth_max_slope", 1.0d, 0.05d, 4.0d);
+        HEADWATER_MOUTH_MAX_LENGTH = builder
+            .comment("洞口纵向斜坡的长度上限，单位为方块。超过上限的落差只能靠更陡的坡度吸收。")
+            .defineInRange("mouth_max_length", 48.0d, 4.0d, 256.0d);
         builder.pop();
 
         SPEC = builder.build();
@@ -448,4 +525,111 @@ public final class NTECommonConfig
     {
         return TERRAIN_UPLIFT_SMALL_PLATFORM_RADIUS.get();
     }
+
+    public static double getHeadwaterTransitionBase()
+    {
+        return worldGenValue(HEADWATER_TRANSITION_BASE);
+    }
+
+    public static double getHeadwaterTransitionSlope()
+    {
+        return worldGenValue(HEADWATER_TRANSITION_SLOPE);
+    }
+
+    public static double getHeadwaterTransitionMax()
+    {
+        return worldGenValue(HEADWATER_TRANSITION_MAX);
+    }
+
+    /** Tier index 0 / 1 / 2 maps to the low / mid / high multiplier. */
+    public static double getHeadwaterTransitionTier(int tier)
+    {
+        return switch (tier)
+        {
+            case 0 -> worldGenValue(HEADWATER_TIER_LOW);
+            case 1 -> worldGenValue(HEADWATER_TIER_MID);
+            default -> worldGenValue(HEADWATER_TIER_HIGH);
+        };
+    }
+
+    /**
+     * World-generation values are read through the spec; when the spec is not
+     * loaded (dedicated unit tests run without a config) the spec's own default is
+     * used, so the exercised behaviour is exactly the documented default.
+     */
+    private static double worldGenValue(ForgeConfigSpec.DoubleValue value)
+    {
+        return SPEC.isLoaded() ? value.get() : value.getDefault();
+    }
+
+    private static int worldGenValue(ForgeConfigSpec.IntValue value)
+    {
+        return SPEC.isLoaded() ? value.get() : value.getDefault();
+    }
+
+    private static boolean worldGenValue(ForgeConfigSpec.BooleanValue value)
+    {
+        return SPEC.isLoaded() ? value.get() : value.getDefault();
+    }
+
+    public static boolean isHeadwaterUndergroundEnabled()
+    {
+        return worldGenValue(HEADWATER_UNDERGROUND_ENABLED);
+    }
+
+    public static int getHeadwaterSinkMinCut()
+    {
+        return worldGenValue(HEADWATER_SINK_MIN_CUT);
+    }
+
+    public static int getHeadwaterSinkMinRun()
+    {
+        return worldGenValue(HEADWATER_SINK_MIN_RUN);
+    }
+
+    public static int getHeadwaterTunnelRoof()
+    {
+        return worldGenValue(HEADWATER_TUNNEL_ROOF);
+    }
+
+    public static int getHeadwaterTunnelAirMin()
+    {
+        return worldGenValue(HEADWATER_TUNNEL_AIR_MIN);
+    }
+
+    public static int getHeadwaterTunnelAirMax()
+    {
+        return Math.max(getHeadwaterTunnelAirMin(), worldGenValue(HEADWATER_TUNNEL_AIR_MAX));
+    }
+
+    public static int getHeadwaterTunnelWaterDepth()
+    {
+        return worldGenValue(HEADWATER_TUNNEL_WATER_DEPTH);
+    }
+
+    public static double getHeadwaterTunnelCarvingNoise()
+    {
+        return Math.max(0d, worldGenValue(HEADWATER_TUNNEL_CARVING_NOISE));
+    }
+
+    public static double getHeadwaterMouthLateralRise()
+    {
+        return Math.max(0d, worldGenValue(HEADWATER_MOUTH_LATERAL_RISE));
+    }
+
+    public static double getHeadwaterMouthNoise()
+    {
+        return Math.max(0d, worldGenValue(HEADWATER_MOUTH_NOISE));
+    }
+
+    public static double getHeadwaterMouthMaxSlope()
+    {
+        return Math.max(0.05d, worldGenValue(HEADWATER_MOUTH_MAX_SLOPE));
+    }
+
+    public static double getHeadwaterMouthMaxLength()
+    {
+        return Math.max(4d, worldGenValue(HEADWATER_MOUTH_MAX_LENGTH));
+    }
+
 }

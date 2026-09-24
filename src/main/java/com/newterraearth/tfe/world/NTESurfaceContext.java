@@ -94,7 +94,12 @@ public final class NTESurfaceContext
 
         public NTERiverHydrology.ColumnProfile riverProfile(BlockPos pos)
         {
-            return riverProfiles[(pos.getX() & 15) + 16 * (pos.getZ() & 15)];
+            return riverProfile(pos.getX(), pos.getZ());
+        }
+
+        public NTERiverHydrology.ColumnProfile riverProfile(int blockX, int blockZ)
+        {
+            return riverProfiles[(blockX & 15) + 16 * (blockZ & 15)];
         }
 
         public boolean isDryRiverBank(BlockPos pos)

@@ -63,6 +63,21 @@ public class NTERiverSurfaceBuilder implements SurfaceBuilder
             }
             return;
         }
+        if (exposesSubterraneanCreekBed(riverProfile, startY))
+        {
+            // A covered creek normally keeps the ambient biome surface far above
+            // its rock cavity. Where the creek grades its own cave mouth open, the
+            // channel floor is exposed and is the creek bed itself: it must follow
+            // the creek bed rules instead of growing a lawn, or the flowing water
+            // ends up lined with grass at its own water line.
+            context.originalBiome().createSurfaceBuilder(seed).buildSurface(context, startY, endY);
+            demoteOrganicSoil(
+                context,
+                Math.min(startY, riverProfile.waterBlockY()),
+                Math.max(endY, riverProfile.bedBlockY() - 3)
+            );
+            return;
+        }
 
         final BiomeExtension biome = context.originalBiome();
         if (biome.isShore())
@@ -89,6 +104,20 @@ public class NTERiverSurfaceBuilder implements SurfaceBuilder
     }
 
     /**
+     * A covered creek section whose terrain has already been cut down into its own
+     * cavity: that channel column is an open creek bed and owns the creek bed
+     * material rather than the ambient biome surface. A column which is still
+     * covered keeps its ambient terrain far above the planned ceiling.
+     */
+    static boolean exposesSubterraneanCreekBed(@Nullable NTERiverHydrology.ColumnProfile profile, int startY)
+    {
+        return profile != null
+            && profile.subterranean()
+            && profile.inChannel()
+            && startY <= profile.tunnelCeilingBlockY() + 1;
+    }
+
+    /**
      * The original biome owns the river-bed material. At raised water levels
      * its surface builder can still regard the bed as dry because TFC compares
      * against the global sea level. Only remove living/organic top blocks here;
@@ -101,8 +130,15 @@ public class NTERiverSurfaceBuilder implements SurfaceBuilder
         int endY
     )
     {
-        final int topY = Math.min(startY, profile.waterBlockY() - 1);
-        final int bottomY = Math.max(endY, profile.bedBlockY() - 3);
+        demoteOrganicSoil(
+            context,
+            Math.min(startY, profile.waterBlockY() - 1),
+            Math.max(endY, profile.bedBlockY() - 3)
+        );
+    }
+
+    private static void demoteOrganicSoil(SurfaceBuilderContext context, int topY, int bottomY)
+    {
         for (int y = topY; y >= bottomY; y--)
         {
             final BlockState replacement = nonOrganicSoil(context.getBlockState(y));

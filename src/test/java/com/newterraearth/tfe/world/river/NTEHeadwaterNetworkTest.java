@@ -24,6 +24,12 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class NTEHeadwaterNetworkTest
 {
     private static final int SEA_LEVEL = 63;
+    /**
+     * The historical fixed mouth window. The dynamic window must reproduce every
+     * curve below this value exactly, so these reference assertions still pin the
+     * baseline shape rather than the configured maximum.
+     */
+    private static final double BASELINE_MOUTH_WINDOW = 24d;
 
     @Test
     void validatedHeadwaterKeepsTheTfcDrainAndWidensDownstream()
@@ -229,6 +235,12 @@ class NTEHeadwaterNetworkTest
             "8346b033026a282c"
         );
 
+        // The underground decision and the cave mouth only change how a
+        // qualifying section is carved, never its planned water grade, so every
+        // pre-existing baseline hash - including the highland trench fixture -
+        // must stay bit identical. Covered section coverage is asserted by
+        // deepSurfaceCutTurnsIntoACoveredTunnelAndStaysTunable instead, whose
+        // fixture is deep enough for the configured threshold.
         for (int index = 0; index < streams.size(); index++)
         {
             final NTEHeadwaterNetwork.TestStream stream = streams.get(index);
@@ -647,6 +659,8 @@ class NTEHeadwaterNetworkTest
             true,
             NTERiverHydrology.ChannelKind.STREAM,
             NTERiverHydrology.ChannelMode.SURFACE,
+            0d,
+            0L,
             Flow.NONE
         );
 
@@ -1106,37 +1120,180 @@ class NTEHeadwaterNetworkTest
     @Test
     void alignedMouthUsesOneContinuousBankAndWaterTransition()
     {
-        assertEquals(1d, NTEHeadwaterNetwork.mouthBankFillWeight(24d), 1.0e-9d);
-        assertEquals(0.5d, NTEHeadwaterNetwork.mouthBankFillWeight(16d), 1.0e-9d);
-        assertEquals(0d, NTEHeadwaterNetwork.mouthBankFillWeight(8d), 1.0e-9d);
-        assertEquals(0d, NTEHeadwaterNetwork.mouthBankFillWeight(0d), 1.0e-9d);
-        assertEquals(0d, NTEHeadwaterNetwork.mouthReceiverBlendWeight(24d), 1.0e-9d);
-        assertEquals(0d, NTEHeadwaterNetwork.mouthReceiverBlendWeight(8d), 1.0e-9d);
-        assertEquals(0.5d, NTEHeadwaterNetwork.mouthReceiverBlendWeight(4d), 1.0e-9d);
-        assertEquals(1d, NTEHeadwaterNetwork.mouthReceiverBlendWeight(0d), 1.0e-9d);
-        assertEquals(0d, NTEHeadwaterNetwork.mouthOuterBankReceiverBlendWeight(24d), 1.0e-9d);
-        assertEquals(0.5d, NTEHeadwaterNetwork.mouthOuterBankReceiverBlendWeight(16d), 1.0e-9d);
-        assertEquals(1d, NTEHeadwaterNetwork.mouthOuterBankReceiverBlendWeight(8d), 1.0e-9d,
+        assertEquals(1d, NTEHeadwaterNetwork.mouthBankFillWeight(24d, BASELINE_MOUTH_WINDOW), 1.0e-9d);
+        assertEquals(0.5d, NTEHeadwaterNetwork.mouthBankFillWeight(16d, BASELINE_MOUTH_WINDOW), 1.0e-9d);
+        assertEquals(0d, NTEHeadwaterNetwork.mouthBankFillWeight(8d, BASELINE_MOUTH_WINDOW), 1.0e-9d);
+        assertEquals(0d, NTEHeadwaterNetwork.mouthBankFillWeight(0d, BASELINE_MOUTH_WINDOW), 1.0e-9d);
+        assertEquals(0d, NTEHeadwaterNetwork.mouthReceiverBlendWeight(24d, BASELINE_MOUTH_WINDOW), 1.0e-9d);
+        assertEquals(0d, NTEHeadwaterNetwork.mouthReceiverBlendWeight(8d, BASELINE_MOUTH_WINDOW), 1.0e-9d);
+        assertEquals(0.5d, NTEHeadwaterNetwork.mouthReceiverBlendWeight(4d, BASELINE_MOUTH_WINDOW), 1.0e-9d);
+        assertEquals(1d, NTEHeadwaterNetwork.mouthReceiverBlendWeight(0d, BASELINE_MOUTH_WINDOW), 1.0e-9d);
+        assertEquals(0d, NTEHeadwaterNetwork.mouthOuterBankReceiverBlendWeight(24d, BASELINE_MOUTH_WINDOW), 1.0e-9d);
+        assertEquals(0.5d, NTEHeadwaterNetwork.mouthOuterBankReceiverBlendWeight(16d, BASELINE_MOUTH_WINDOW), 1.0e-9d);
+        assertEquals(1d, NTEHeadwaterNetwork.mouthOuterBankReceiverBlendWeight(8d, BASELINE_MOUTH_WINDOW), 1.0e-9d,
             "only the dry outer bank completes its handoff before the cut-only fan begins");
 
         double previous = 1d;
         for (int distanceToOutlet = 23; distanceToOutlet >= 0; distanceToOutlet--)
         {
-            final double current = NTEHeadwaterNetwork.mouthBankFillWeight(distanceToOutlet);
+            final double current = NTEHeadwaterNetwork.mouthBankFillWeight(distanceToOutlet, BASELINE_MOUTH_WINDOW);
             assertTrue(current <= previous, "bank construction must fade monotonically toward cut-only ownership");
             previous = current;
         }
 
-        assertEquals(0.4d, NTEHeadwaterNetwork.mouthWaterDrop(4d, 65.4d, 65d), 1.0e-9d,
+        assertEquals(0.4d, NTEHeadwaterNetwork.mouthWaterDrop(4d, 65.4d, 65d, BASELINE_MOUTH_WINDOW), 1.0e-9d,
             "a flat confluence may not lower supplemental water below the receiver surface");
-        assertEquals(5.9d, NTEHeadwaterNetwork.mouthWaterDrop(4d, 67.9d, 62d), 1.0e-9d,
+        assertEquals(5.9d, NTEHeadwaterNetwork.mouthWaterDrop(4d, 67.9d, 62d, BASELINE_MOUTH_WINDOW), 1.0e-9d,
             "the final fan must finish water-level handoff instead of retaining a raised shelf");
-        assertEquals(2.95d, NTEHeadwaterNetwork.mouthWaterDrop(16d, 67.9d, 62d), 1.0e-9d,
+        assertEquals(2.95d, NTEHeadwaterNetwork.mouthWaterDrop(16d, 67.9d, 62d, BASELINE_MOUTH_WINDOW), 1.0e-9d,
             "water descends smoothly while the dry banks transfer to the receiver");
-        assertEquals(0d, NTEHeadwaterNetwork.mouthWaterDrop(0d, 65d, 65d), 1.0e-9d);
+        assertEquals(0d, NTEHeadwaterNetwork.mouthWaterDrop(0d, 65d, 65d, BASELINE_MOUTH_WINDOW), 1.0e-9d);
         assertEquals(0d, NTERiverHydrology.wideShapeWeight(3d), 1.0e-9d);
         assertEquals(0.5d, NTERiverHydrology.wideShapeWeight(3.5d), 1.0e-9d);
         assertEquals(1d, NTERiverHydrology.wideShapeWeight(4d), 1.0e-9d);
+    }
+
+    @Test
+    void mouthWindowOnlyGrowsAboveTheBaselineAndStopsAtTheConfiguredCap()
+    {
+        assertEquals(BASELINE_MOUTH_WINDOW, NTEHeadwaterNetwork.mouthTransitionLength(0d, 1d, 400d), 1.0e-9d,
+            "a flat mouth keeps the historical window");
+        assertEquals(BASELINE_MOUTH_WINDOW, NTEHeadwaterNetwork.mouthTransitionLength(24d, 1.5d, 400d), 1.0e-9d,
+            "a drop at the baseline is still the historical window for every tier");
+        assertEquals(40d, NTEHeadwaterNetwork.mouthTransitionLength(40d, 1d, 400d), 1.0e-9d,
+            "each extra block of drop adds one block of window at the middle tier");
+        assertEquals(32d, NTEHeadwaterNetwork.mouthTransitionLength(40d, 0.5d, 400d), 1.0e-9d,
+            "the steep tier adds half of the extra drop");
+        assertEquals(48d, NTEHeadwaterNetwork.mouthTransitionLength(40d, 1.5d, 400d), 1.0e-9d,
+            "the gentle tier adds one and a half times the extra drop");
+        assertEquals(64d, NTEHeadwaterNetwork.mouthTransitionLength(400d, 1.5d, 800d), 1.0e-9d,
+            "a very deep drop stops at the configured maximum window");
+        assertEquals(30d, NTEHeadwaterNetwork.mouthTransitionLength(40d, 1d, 60d), 1.0e-9d,
+            "a short route may never turn more than half of itself into one mouth ramp");
+        assertEquals(BASELINE_MOUTH_WINDOW, NTEHeadwaterNetwork.mouthTransitionLength(40d, 1d, 20d), 1.0e-9d,
+            "the half-route limit may not shrink the window below the historical baseline");
+
+        double previous = 0d;
+        for (double drop = 0d; drop <= 120d; drop += 4d)
+        {
+            final double window = NTEHeadwaterNetwork.mouthTransitionLength(drop, 1d, 900d);
+            assertTrue(window >= previous, "the window must never shrink as the drop grows");
+            assertTrue(window >= BASELINE_MOUTH_WINDOW && window <= 64d,
+                "the window must stay inside the configured baseline and cap");
+            previous = window;
+        }
+    }
+
+    @Test
+    void transitionTierIsStablePerCreekAndCoversEveryTier()
+    {
+        for (long seed = -50L; seed <= 50L; seed++)
+        {
+            assertEquals(
+                NTEHeadwaterNetwork.transitionTierMultiplier(seed),
+                NTEHeadwaterNetwork.transitionTierMultiplier(seed),
+                1.0e-9d,
+                "the same creek seed must always resolve to the same tier"
+            );
+        }
+
+        final Set<Double> tiers = new java.util.HashSet<>();
+        for (long seed = 0L; seed < 400L; seed++)
+        {
+            final double tier = NTEHeadwaterNetwork.transitionTierMultiplier(seed);
+            assertTrue(tier == 0.5d || tier == 1.0d || tier == 1.5d,
+                "only the three configured tiers may appear, found " + tier);
+            tiers.add(tier);
+        }
+        assertEquals(3, tiers.size(), "all three tiers must occur across a population of creeks");
+    }
+
+    @Test
+    void gentleMouthKeepsTheHistoricalWindowWhileASteepMouthWidensIt()
+    {
+        final NTEHeadwaterNetwork.TestStream gentle = NTEHeadwaterNetwork.planTestStream(
+            918273645L,
+            SEA_LEVEL,
+            320d,
+            0d,
+            0d,
+            0d,
+            16,
+            (x, z) -> 64d + Math.max(0d, x) * 0.18d + Math.abs(z) * 0.04d
+        );
+        assertTrue(gentle.valid(), "the gentle fixture must still plan a stream");
+        assertEquals(BASELINE_MOUTH_WINDOW, gentle.mouthTransitionLength(), 1.0e-9d,
+            "a creek that already reaches the receiver at the baseline keeps its historical window");
+
+        final NTEHeadwaterNetwork.TestStream steep = NTEHeadwaterNetwork.planTestStream(
+            918273645L,
+            SEA_LEVEL,
+            320d,
+            0d,
+            0d,
+            0d,
+            16,
+            (x, z) -> 100d + Math.max(0d, x) * 0.02d + Math.abs(z) * 0.04d
+        );
+        assertTrue(steep.valid(), "the steep fixture must still plan a stream");
+        assertTrue(steep.mouthTransitionLength() > BASELINE_MOUTH_WINDOW,
+            "a creek that must still lose dozens of blocks at the mouth has to widen its transition");
+        assertTrue(steep.mouthTransitionLength() <= 64d,
+           "the widened transition still respects the configured cap");
+    }
+
+    @Test
+    void deepSurfaceCutTurnsIntoACoveredTunnelAndStaysTunable()
+    {
+        final NTEHeadwaterNetwork.TestStream shallow = NTEHeadwaterNetwork.planTestStream(
+            24681357L,
+            SEA_LEVEL,
+            320d,
+            0d,
+            0d,
+            0d,
+            16,
+            (x, z) -> 64d + Math.max(0d, x) * 0.18d + Math.abs(z) * 0.04d
+        );
+        assertTrue(shallow.valid());
+        assertTrue(
+            shallow.points().stream().noneMatch(NTEHeadwaterNetwork.DiagnosticPoint::subterranean),
+            "a creek whose cut stays shallow must keep flowing on the surface"
+        );
+
+        final NTEHeadwaterNetwork.TestStream deep = NTEHeadwaterNetwork.planTestStream(
+            24681357L,
+            SEA_LEVEL,
+            320d,
+            0d,
+            0d,
+            0d,
+            16,
+            // Deep enough that the sustained run clears the configured
+            // sink_min_cut / sink_min_run defaults with margin.
+            (x, z) -> 112d + Math.max(0d, x) * 0.02d + Math.abs(z) * 0.04d
+        );
+        assertTrue(deep.valid());
+        final List<NTEHeadwaterNetwork.DiagnosticPoint> points = deep.points();
+        final long tunnelPoints = points.stream()
+            .filter(NTEHeadwaterNetwork.DiagnosticPoint::subterranean)
+            .count();
+        assertTrue(tunnelPoints > 0,
+            "a creek cut far deeper than the threshold must be marked as an underground section");
+
+        double previousWater = Double.POSITIVE_INFINITY;
+        for (final NTEHeadwaterNetwork.DiagnosticPoint point : points)
+        {
+            assertTrue(point.waterY() <= previousWater + 1.0e-6d, "water may never climb downstream");
+            previousWater = point.waterY();
+            if (point.subterranean())
+            {
+                assertTrue(point.tunnelCeilingY() <= point.terrainY() - 4d + 1.0e-6d,
+                    "a covered section must keep its rock cover");
+                assertTrue(point.waterY() <= point.tunnelCeilingY() - 2d + 1.0e-6d,
+                    "a covered section must keep headroom above its own water surface");
+            }
+        }
     }
 
     @Test
@@ -1146,6 +1303,71 @@ class NTEHeadwaterNetworkTest
             "a fractional 5.10-height difference still exposes only five vertical blocks");
         assertEquals(7, NTEHeadwaterNetwork.visibleIncisionDepth(91.43d, 83.95d),
             "a genuinely deep fallback trench must remain rejected");
+    }
+
+    @Test
+    void caveMouthCutsAFunnelInsteadOfOneFlatSlab()
+    {
+        final long caveSeed = 42424242L;
+        final List<NTEHeadwaterNetwork.SubterraneanRun> runs =
+            List.of(new NTEHeadwaterNetwork.SubterraneanRun(200d, 400d));
+        final double radius = 4.5d;
+        final double terrainY = 101d;
+        final double waterY = 62d;
+        final double bedY = waterY - NTERiverHydrology.baseCenterDepth(radius);
+        final double atRunEnd = 399d;
+
+        final double centre = NTEHeadwaterNetwork.mouthCutAt(
+            caveSeed, runs, atRunEnd, radius, terrainY, waterY, 0d, -626, -2199);
+        final double channelEdge = NTEHeadwaterNetwork.mouthCutAt(
+            caveSeed, runs, atRunEnd, radius, terrainY, waterY, 1d, -626, -2199);
+        final double shoulder = NTEHeadwaterNetwork.mouthCutAt(
+            caveSeed, runs, atRunEnd, radius, terrainY, waterY, 2.25d, -626, -2199);
+
+        assertTrue(centre > channelEdge && channelEdge > shoulder,
+            "the mouth must be a funnel: deepest at the channel centre and rising outward");
+        assertTrue(shoulder < centre * 0.5d,
+            "the mouth must fall away laterally instead of cutting one flat slab at full depth");
+        assertTrue(centre <= terrainY - bedY + 4d,
+            "the mouth may never dig deeper than the drop to its own bed plus rim noise");
+        assertEquals(centre, NTEHeadwaterNetwork.mouthCutAt(
+                caveSeed, runs, atRunEnd, radius, terrainY, waterY, 0d, -626, -2199),
+            0d, "the same creek and column must always produce the same mouth");
+
+        assertEquals(0d, NTEHeadwaterNetwork.mouthCutAt(
+                caveSeed, runs, 100d, radius, terrainY, waterY, 0d, -626, -2199),
+            0d, "far outside the entrance band the mouth must not cut anything");
+
+        // A deeper mouth has to be graded over a longer run instead of dropping
+        // into the receiver as one near vertical slot.
+        final double shallowExtent = mouthRampExtent(caveSeed, runs, radius, terrainY, waterY);
+        final double deepExtent = mouthRampExtent(caveSeed, runs, radius, terrainY + 40d, waterY);
+        assertTrue(shallowExtent >= 2d * radius - 1.0e-9d,
+            "even a shallow mouth keeps the radius scaled ramp");
+        assertTrue(deepExtent > shallowExtent,
+            "a deeper mouth must grade open over a longer distance");
+    }
+
+    /** Distance from the run end over which the mouth still lowers terrain. */
+    private static double mouthRampExtent(
+        long caveSeed,
+        List<NTEHeadwaterNetwork.SubterraneanRun> runs,
+        double radius,
+        double terrainY,
+        double waterY
+    )
+    {
+        double extent = 0d;
+        for (double inward = 0d; inward <= 128d; inward += 0.5d)
+        {
+            final double cut = NTEHeadwaterNetwork.mouthCutAt(
+                caveSeed, runs, 400d - inward, radius, terrainY, waterY, 0d, -626, -2199);
+            if (cut > 0d)
+            {
+                extent = inward;
+            }
+        }
+        return extent;
     }
 
     @Test
@@ -1237,31 +1459,33 @@ class NTEHeadwaterNetworkTest
         assertEquals(427.6186951179694d, NTEHeadwaterNetwork.mouthGeometryNormalizedDistanceSq(
             427.6186951179694d,
             0.8434586539486739d,
-            200d
+            200d,
+            BASELINE_MOUTH_WINDOW
         ), 1.0e-9d,
             "a distant receiver column must not import an upstream high-water profile into the main river");
-        assertEquals(0.2d, NTEHeadwaterNetwork.mouthGeometryNormalizedDistanceSq(0.2d, 4d, 24d), 1.0e-9d,
+        assertEquals(0.2d, NTEHeadwaterNetwork.mouthGeometryNormalizedDistanceSq(0.2d, 4d, 24d, BASELINE_MOUTH_WINDOW), 1.0e-9d,
             "the ordinary creek cross-section remains authoritative before bank handoff starts");
-        assertEquals(0.2d, NTEHeadwaterNetwork.mouthGeometryNormalizedDistanceSq(0.2d, 4d, 10d), 1.0e-9d,
+        assertEquals(0.2d, NTEHeadwaterNetwork.mouthGeometryNormalizedDistanceSq(0.2d, 4d, 10d, BASELINE_MOUTH_WINDOW), 1.0e-9d,
             "a wet creek-center column may not be reclassified outside the receiver before the final fan");
-        final double halfway = NTEHeadwaterNetwork.mouthGeometryNormalizedDistanceSq(0.2d, 4d, 4d);
+        final double halfway = NTEHeadwaterNetwork.mouthGeometryNormalizedDistanceSq(0.2d, 4d, 4d, BASELINE_MOUTH_WINDOW);
         assertEquals(0.2d, halfway, 1.0e-9d,
             "terrain SDF remains a union while water and flow perform their longitudinal handoff");
-        assertEquals(0.2d, NTEHeadwaterNetwork.mouthGeometryNormalizedDistanceSq(0.2d, 4d, 0d), 1.0e-9d,
+        assertEquals(0.2d, NTEHeadwaterNetwork.mouthGeometryNormalizedDistanceSq(0.2d, 4d, 0d, BASELINE_MOUTH_WINDOW), 1.0e-9d,
             "terrain carving is the union of both channels even after water ownership reaches the receiver");
-        assertEquals(0.2d, NTEHeadwaterNetwork.mouthGeometryNormalizedDistanceSq(4d, 0.2d, 0d), 1.0e-9d,
+        assertEquals(0.2d, NTEHeadwaterNetwork.mouthGeometryNormalizedDistanceSq(4d, 0.2d, 0d, BASELINE_MOUTH_WINDOW), 1.0e-9d,
             "the receiver-aligned side of a high-angle mouth must be opened instead");
-        assertTrue(NTEHeadwaterNetwork.mouthGeometryNormalizedDistanceSq(0.924d, 1.011d, 4d) < 1d,
+        assertTrue(NTEHeadwaterNetwork.mouthGeometryNormalizedDistanceSq(0.924d, 1.011d, 4d, BASELINE_MOUTH_WINDOW) < 1d,
             "the first reported pillar must remain connected to the creek side of the rotating mouth");
-        assertTrue(NTEHeadwaterNetwork.mouthGeometryNormalizedDistanceSq(0.835d, 1.327d, 6d) < 1d,
+        assertTrue(NTEHeadwaterNetwork.mouthGeometryNormalizedDistanceSq(0.835d, 1.327d, 6d, BASELINE_MOUTH_WINDOW) < 1d,
             "the second reported pillar must not become a closed dry island between both channels");
         assertTrue(NTEHeadwaterNetwork.mouthGeometryNormalizedDistanceSq(
             1.2752723888173887d,
             3.034d,
-            12d
+            12d,
+            BASELINE_MOUTH_WINDOW
         ) <= 1.2752723888173887d,
             "a creek dry shoulder must remain in the union and may only be carved farther by the confluence fillet");
-        final double transitioningBank = NTEHeadwaterNetwork.mouthGeometryNormalizedDistanceSq(1d, 1d, 16d);
+        final double transitioningBank = NTEHeadwaterNetwork.mouthGeometryNormalizedDistanceSq(1d, 1d, 16d, BASELINE_MOUTH_WINDOW);
         assertTrue(transitioningBank < 1d
                 && transitioningBank > NTEHeadwaterNetwork.smoothConfluenceNormalizedDistanceSq(1d, 1d),
             "the fillet must fade in longitudinally instead of appearing along the receiver's entire course");
@@ -1308,6 +1532,8 @@ class NTEHeadwaterNetworkTest
             false,
             NTERiverHydrology.ChannelKind.STREAM,
             NTERiverHydrology.ChannelMode.SURFACE,
+            0d,
+            0L,
             Flow.EEE
         );
 
@@ -1678,6 +1904,8 @@ class NTEHeadwaterNetworkTest
             true,
             NTERiverHydrology.ChannelKind.STREAM,
             NTERiverHydrology.ChannelMode.SURFACE,
+            0d,
+            0L,
             Flow.NONE
         );
     }
@@ -1704,6 +1932,8 @@ class NTEHeadwaterNetworkTest
             false,
             NTERiverHydrology.ChannelKind.STREAM,
             NTERiverHydrology.ChannelMode.SURFACE,
+            0d,
+            0L,
             Flow.EEE
         );
     }
@@ -1738,6 +1968,8 @@ class NTEHeadwaterNetworkTest
             profile.headwater(),
             profile.kind(),
             profile.mode(),
+            profile.tunnelCeilingY(),
+            profile.caveSeed(),
             profile.flow()
         );
     }
@@ -1767,6 +1999,8 @@ class NTEHeadwaterNetworkTest
             profile.headwater(),
             profile.kind(),
             profile.mode(),
+            profile.tunnelCeilingY(),
+            profile.caveSeed(),
             profile.flow()
         );
     }
@@ -1796,6 +2030,8 @@ class NTEHeadwaterNetworkTest
             profile.headwater(),
             profile.kind(),
             profile.mode(),
+            profile.tunnelCeilingY(),
+            profile.caveSeed(),
             profile.flow()
         );
     }

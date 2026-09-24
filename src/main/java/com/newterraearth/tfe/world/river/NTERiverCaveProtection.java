@@ -9,6 +9,8 @@ import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.chunk.ChunkAccess;
 import net.minecraft.world.level.levelgen.Heightmap;
 
+import com.newterraearth.tfe.config.NTECommonConfig;
+
 /**
  * Preserves the shallow terrain shell around supplemental creeks while cave
  * noise and carvers run. The protected band is deliberately bounded above and
@@ -25,7 +27,7 @@ public final class NTERiverCaveProtection
     private static final ThreadLocal<Geometry> ACTIVE_DENSITY = new ThreadLocal<>();
     private static final ThreadLocal<Protection> ACTIVE_CARVER = new ThreadLocal<>();
 
-    private record CoreColumn(int x, int z, double centerBedY, double radius) {}
+    private record CoreColumn(int x, int z, double centerBedY, double radius, int topY) {}
 
     private record Protection(ChunkPos chunkPos, int[] minimumProtectedY, int[] maximumProtectedY)
     {
@@ -121,7 +123,7 @@ public final class NTERiverCaveProtection
                         final double reach = nearest.radius() + BANK_BUFFER;
                         final double influence = 1d - Mth.clamp(Math.sqrt(nearestDistanceSq) / reach, 0d, 1d);
                         minimumProtectedY[index] = NTERiverCaveProtection.minimumProtectedY(nearest.centerBedY(), influence);
-                        maximumBedY[index] = Mth.floor(nearest.centerBedY()) + ABOVE_BED_MARGIN;
+                        maximumBedY[index] = nearest.topY();
                     }
                 }
             }
@@ -236,7 +238,13 @@ public final class NTERiverCaveProtection
     {
         if (profile != null && profile.inWaterCore())
         {
-            coreColumns.add(new CoreColumn(blockX, blockZ, profile.centerBedY(), profile.channelRadius()));
+            // A surface creek only protects its own shallow bed shell. A covered
+            // section must protect the complete roof above its cavity instead, so
+            // carvers cannot punch the tunnel open.
+            final int topY = profile.subterranean()
+                ? profile.tunnelCeilingBlockY() + NTECommonConfig.getHeadwaterTunnelRoof()
+                : Mth.floor(profile.centerBedY()) + ABOVE_BED_MARGIN;
+            coreColumns.add(new CoreColumn(blockX, blockZ, profile.centerBedY(), profile.channelRadius(), topY));
         }
     }
 
@@ -309,6 +317,10 @@ public final class NTERiverCaveProtection
 
     static Geometry geometryForTest(ChunkPos chunkPos, int coreX, int coreZ, double centerBedY, double radius)
     {
-        return new Geometry(chunkPos, List.of(new CoreColumn(coreX, coreZ, centerBedY, radius)), new NTERiverHydrology.ColumnProfile[16 * 16]);
+        return new Geometry(
+            chunkPos,
+            List.of(new CoreColumn(coreX, coreZ, centerBedY, radius, Mth.floor(centerBedY) + ABOVE_BED_MARGIN)),
+            new NTERiverHydrology.ColumnProfile[16 * 16]
+        );
     }
 }

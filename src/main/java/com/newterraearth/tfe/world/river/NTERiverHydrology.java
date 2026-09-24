@@ -7,10 +7,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.IntPredicate;
 
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.util.Mth;
+import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.Nullable;
 
+import net.dries007.tfc.common.blocks.rock.RockSpikeBlock;
 import net.dries007.tfc.common.fluids.RiverWaterFluid;
 import net.dries007.tfc.common.fluids.TFCFluids;
 import net.dries007.tfc.world.region.RegionPartition;
@@ -18,6 +22,8 @@ import net.dries007.tfc.world.region.RiverEdge;
 import net.dries007.tfc.world.region.Units;
 import net.dries007.tfc.world.river.Flow;
 import net.dries007.tfc.world.river.RiverInfo;
+
+import com.newterraearth.tfe.config.NTECommonConfig;
 
 /**
  * Runtime bridge between TFC's river graph and the supplemental headwater
@@ -30,6 +36,10 @@ public final class NTERiverHydrology
     static final double SUPPLEMENTAL_WATER_CORE_RADIUS_SQ = 0.72d;
     /** Native banked terrain finishes blending back to ambient by two river widths. */
     private static final double TFC_TERRAIN_CORRIDOR_RADIUS_SCALE = 2d;
+    /** Salt for the deterministic thinning of covered creek cave spikes. */
+    private static final long COVERED_SPIKE_SALT = 0x6F1B3C9A47D8E205L;
+    /** A covered creek's ceiling is this many blocks lower at the channel edge than at its apex. */
+    private static final double TUNNEL_ARCH_RISE = 2d;
     private static final int MAX_HEIGHT_CACHE_SIZE = 131072;
     private static final ThreadLocal<GenerationContext> ACTIVE_GENERATION = new ThreadLocal<>();
     /** Height probes must not start a terrain-aware creek route search. */
@@ -56,7 +66,9 @@ public final class NTERiverHydrology
 
     public enum ChannelMode
     {
-        SURFACE
+        SURFACE,
+        /** A creek section which drops below the terrain and continues as a covered rock tunnel. */
+        SUBTERRANEAN
     }
 
     public record CardinalStep(int x, int z) {}
@@ -81,6 +93,10 @@ public final class NTERiverHydrology
         boolean headwater,
         ChannelKind kind,
         ChannelMode mode,
+        /** Rock ceiling of a subterranean tunnel; ignored for surface columns. */
+        double tunnelCeilingY,
+        /** Creek seed which drives the covered cavity noise; zero for surface columns. */
+        long caveSeed,
         Flow flow
     )
     {
@@ -101,7 +117,7 @@ public final class NTERiverHydrology
 
         public boolean surfaceVisible()
         {
-            return true;
+            return mode != ChannelMode.SUBTERRANEAN;
         }
 
         public boolean descendingReceiverMouth()
@@ -117,7 +133,12 @@ public final class NTERiverHydrology
 
         public boolean subterranean()
         {
-            return false;
+            return mode == ChannelMode.SUBTERRANEAN;
+        }
+
+        public int tunnelCeilingBlockY()
+        {
+            return Mth.floor(tunnelCeilingY);
         }
 
         public int waterBlockY()
@@ -302,6 +323,8 @@ public final class NTERiverHydrology
             profile.headwater(),
             profile.kind(),
             profile.mode(),
+            profile.tunnelCeilingY(),
+            profile.caveSeed(),
             profile.flow()
         );
     }
@@ -410,6 +433,48 @@ public final class NTERiverHydrology
     }
 
     /**
+     * Arch apex of a covered creek at this column: the planned ceiling lowered by a
+     * slow carving noise, so the roof is neither a machine cut tube nor able to reach
+     * into the protected rock above the tunnel.
+     */
+    static double tunnelArchApexY(ColumnProfile profile, int blockX, int blockZ)
+    {
+        final double waterY = profile.waterSurfaceY();
+        final double plannedCeilingY = profile.tunnelCeilingY();
+        final double amplitude = NTECommonConfig.getHeadwaterTunnelCarvingNoise();
+        if (amplitude <= 0d || plannedCeilingY <= waterY + 1d)
+        {
+            return plannedCeilingY;
+        }
+        final double wobble = amplitude * NTERiverCaveNoise.noise(
+            profile.caveSeed(),
+            NTERiverCaveNoise.SALT_ARCH,
+            blockX,
+            blockZ,
+            0.09d
+        );
+        return Mth.clamp(plannedCeilingY + wobble, waterY + 1d, plannedCeilingY);
+    }
+
+    /**
+     * Rock cavity of a covered creek: straight walls from the water up to the arch
+     * springing line, then an arch whose ceiling falls by {@link #TUNNEL_ARCH_RISE}
+     * from the channel centre to the channel edge. This is the scaled down form of
+     * the vanilla cave river's vertical lens: the roof is shaped from the water
+     * surface outward instead of the tunnel staying a rectangle with a flat top.
+     */
+    public static boolean carvesTunnelCavity(ColumnProfile profile, int y, int blockX, int blockZ)
+    {
+        if (!profile.subterranean() || !profile.inChannel() || y <= profile.waterBlockY())
+        {
+            return false;
+        }
+        final double lateralDistanceSq = Mth.clamp(profile.normalizedDistanceSq(), 0d, 1d);
+        final double ceilingY = tunnelArchApexY(profile, blockX, blockZ) - TUNNEL_ARCH_RISE * lateralDistanceSq;
+        return y <= Mth.floor(ceilingY);
+    }
+
+    /**
      * The fixed river layer is source-like TFC river water. A descending
      * connector may use vanilla flowing water above it, but its contact layer
      * must rejoin the receiver's directional-water semantics.
@@ -462,6 +527,12 @@ public final class NTERiverHydrology
     /** Protect the realized wet corridor from late cave-spike decoration. */
     public static boolean blocksCaveDecoration(ColumnProfile profile, int featureY)
     {
+        if (profile.subterranean())
+        {
+            // A covered creek section is a real cave: its own cavity must be
+            // decorated like any other cave instead of being cleared out.
+            return false;
+        }
         final int clearanceCeilingY = Mth.ceil(
             profile.waterSurfaceY() + profile.mouthWaterDrop()
         );
@@ -473,10 +544,82 @@ public final class NTERiverHydrology
     /** A cave column grows upward from its origin until it reaches the roof. */
     public static boolean blocksCaveColumn(ColumnProfile profile, int featureY)
     {
+        if (profile.subterranean())
+        {
+            // A covered creek section is a real cave: its own cavity must be
+            // decorated like any other cave instead of being cleared out.
+            return false;
+        }
         final int clearanceCeilingY = Mth.ceil(
             profile.waterSurfaceY() + profile.mouthWaterDrop()
         );
         return profile.inWaterCore() && featureY <= clearanceCeilingY + 1;
+    }
+
+    /**
+     * Cave spikes inside a covered creek tunnel are thinned so the creek keeps the
+     * scenery to itself: two of three stacks remain along the covered run, only one
+     * of three near a graded cave mouth.
+     * The answer is taken once per formation from the block it grows out of, so a
+     * formation is always kept or dropped as a whole.
+     */
+    public static boolean blocksCaveSpike(ColumnProfile profile, int blockX, int blockY, int blockZ)
+    {
+        if (profile == null || !profile.subterranean() || !profile.inChannel())
+        {
+            return false;
+        }
+        if (blockY < profile.bedBlockY() - 2 || blockY > profile.tunnelCeilingBlockY() + 1)
+        {
+            return false;
+        }
+        final int bucket = NTERiverCaveNoise.select(
+            profile.caveSeed(),
+            COVERED_SPIKE_SALT,
+            blockX,
+            blockY,
+            blockZ,
+            3
+        );
+        // Near a cave mouth the creek is the visible feature, so only one in three
+        // spikes remains; along the covered run two of three are kept.
+        return profile.terrainIncision() > 0d ? bucket != 0 : bucket == 0;
+    }
+
+    /** Blocks one spike formation writes along its own direction, per TFC's three size classes. */
+    static int caveSpikeLength(float sizeWeight)
+    {
+        return sizeWeight < 0.2f ? 2 : sizeWeight < 0.7f ? 3 : 4;
+    }
+
+    /**
+     * A cave spike formation is placed whole or not at all. TFC grows one from its
+     * root block outward and writes a hardened cap above the root, so a formation
+     * whose own blocks already hold another spike would grow through it, and its cap
+     * would bury one. Rejecting such a formation before it is written is what keeps
+     * covered creek spikes free of stacked duplicates.
+     */
+    public static boolean blocksStackedCaveSpike(
+        BlockGetter level,
+        @Nullable ColumnProfile profile,
+        BlockPos root,
+        Direction direction,
+        float sizeWeight
+    )
+    {
+        if (profile == null || !profile.subterranean() || !profile.inChannel())
+        {
+            return false;
+        }
+        final int length = caveSpikeLength(sizeWeight);
+        for (int step = 0; step < length; step++)
+        {
+            if (level.getBlockState(root.relative(direction, step)).getBlock() instanceof RockSpikeBlock)
+            {
+                return true;
+            }
+        }
+        return level.getBlockState(root.above()).getBlock() instanceof RockSpikeBlock;
     }
 
     /**
@@ -904,6 +1047,36 @@ public final class NTERiverHydrology
 
     private ColumnProfile createProfile(NTEHeadwaterNetwork.Sample sample)
     {
+        if (sample.subterranean())
+        {
+            // A subterranean section keeps its own water grade and rock ceiling;
+            // the ordinary cross-section depth would have cut a surface channel.
+            final double tunnelDepth = Math.max(1d, NTECommonConfig.getHeadwaterTunnelWaterDepth());
+            return new ColumnProfile(
+                sample.waterSurfaceY(),
+                sample.waterSurfaceY() - tunnelDepth,
+                sample.waterSurfaceY() - tunnelDepth,
+                sample.normalizedDistanceSq(),
+                sample.channelRadius(),
+                0d,
+                Math.max(0d, sample.entranceCut()),
+                0d,
+                1d,
+                sample.waterCoreRadiusSq(),
+                false,
+                true,
+                false,
+                0d,
+                0d,
+                false,
+                false,
+                ChannelKind.STREAM,
+                ChannelMode.SUBTERRANEAN,
+                sample.tunnelCeilingY(),
+                sample.caveSeed(),
+                sample.flow()
+            );
+        }
         final double baseCenterDepth = baseCenterDepth(sample.channelRadius());
         final double centerDepth = baseCenterDepth + sample.extraIncision();
         final double centerBedY = sample.waterSurfaceY() - centerDepth;
@@ -940,11 +1113,13 @@ public final class NTERiverHydrology
             sample.headwater(),
             kind,
             ChannelMode.SURFACE,
+            0d,
+            0L,
             sample.flow()
         );
     }
 
-    private static double baseCenterDepth(double channelRadius)
+    static double baseCenterDepth(double channelRadius)
     {
         return Mth.clamp(1.1d + channelRadius * 0.22d, 1.25d, 2.75d);
     }

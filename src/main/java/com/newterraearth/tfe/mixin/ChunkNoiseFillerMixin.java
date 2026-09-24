@@ -360,6 +360,22 @@ public abstract class ChunkNoiseFillerMixin
         {
             final double riverTerrainHeight = access.tfe$getRiverTerrainHeight(localX, localZ);
             final int effectiveBedY = NTERiverHydrology.effectiveBedBlockY(riverProfile, riverTerrainHeight);
+            if (riverProfile.subterranean() && riverProfile.inChannel())
+            {
+                // The covered creek section owns a rounded, noise shaped rock cavity
+                // instead of a rectangular box: full channel width from the bed up to
+                // the carving centre, then a lens taper into the arch. The height
+                // stage stays ambient, so this is the only place the tunnel exists.
+                final int waterY = riverProfile.waterBlockY();
+                if (NTERiverHydrology.carvesTunnelCavity(riverProfile, y, blockX, blockZ))
+                {
+                    return Blocks.AIR.defaultBlockState();
+                }
+                if (riverProfile.inWaterCore() && y <= waterY && y > effectiveBedY)
+                {
+                    return Blocks.WATER.defaultBlockState();
+                }
+            }
             if (NTERiverHydrology.clearsWetMouthHeadroom(riverProfile, y))
             {
                 // Cave-river noise may otherwise leave a suspended shelf
@@ -439,9 +455,18 @@ public abstract class ChunkNoiseFillerMixin
             && tfe$hasSurfaceRiverWeight(access.tfe$getExactRiverBlendWeights());
 
         localBiomesNoRivers[localIndex] = biomeAt;
+        // A covered creek normally keeps its original biome: the surface far above
+        // the cavity is untouched terrain. Where the creek grades its own cave mouth
+        // open, the channel floor is the creek bed itself and must be owned by the
+        // creek surface builder, otherwise the reachable water line grows grass.
+        final boolean exposedCoveredBed = riverProfile != null
+            && riverProfile.subterranean()
+            && riverProfile.inChannel()
+            && riverProfile.terrainIncision() > 0d;
         if (biomeAt.hasRivers() && (
             (height <= SEA_LEVEL_Y + 1 && info != null && info.normDistSq() < 1.1d)
                 || (riverProfile != null && riverProfile.surfaceVisible() && riverProfile.inWaterCore())
+                || exposedCoveredBed
         ))
         {
             biomeAt = TFCBiomes.RIVER;

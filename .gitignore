@@ -25,6 +25,10 @@
 !/src/main/
 !/src/main/**
 
+# 单元测试源码：与已跟踪的测试保持一致，新增测试用例应能随源码一起交付
+!/src/test/
+!/src/test/**
+
 # 根目录 JAR 任务显式打包的许可与声明文件
 !/LICENSE
 !/NOTICE

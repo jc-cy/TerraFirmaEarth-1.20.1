@@ -83,6 +83,7 @@ import net.dries007.tfc.world.river.RiverBlendType;
 import net.dries007.tfc.world.river.RiverNoiseSampler;
 import net.dries007.tfc.world.surface.SurfaceManager;
 
+import com.newterraearth.tfe.debug.NTERuntimeTrace;
 import com.newterraearth.tfe.world.NTEChunkShoreContext;
 import com.newterraearth.tfe.world.NTEChunkHeightFillerAccess;
 import com.newterraearth.tfe.world.NTESeed;
@@ -1027,7 +1028,17 @@ public abstract class TFCChunkGeneratorMixin
             // the same cached chunk serialize; unrelated chunks run in parallel.
             synchronized (filler)
             {
-                return filler.sampleHeight(blockX, blockZ);
+                final double sampled = filler.sampleHeight(blockX, blockZ);
+                if (NTERuntimeTrace.isTargetColumn(blockX, blockZ))
+                {
+                    System.out.printf(
+                        "[TFE][RuntimeTrace][planner_height] x=%d z=%d h=%.4f%n",
+                        blockX,
+                        blockZ,
+                        sampled
+                    );
+                }
+                return sampled;
             }
         }
     }
