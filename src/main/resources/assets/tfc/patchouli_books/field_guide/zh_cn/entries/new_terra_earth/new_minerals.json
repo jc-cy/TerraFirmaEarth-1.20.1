@@ -2,7 +2,7 @@
   "name": "宝石",
   "category": "tfc:new_terra_earth",
   "icon": "tfc:ore/ruby",
-  "sortnum": 21,
+  "sortnum": 22,
   "pages": [
     {
       "type": "patchouli:spotlight",

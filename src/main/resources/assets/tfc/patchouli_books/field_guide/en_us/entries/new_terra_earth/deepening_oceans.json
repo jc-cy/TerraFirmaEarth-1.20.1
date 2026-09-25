@@ -1,0 +1,31 @@
+{
+  "name": "Oceans That Deepen With Distance",
+  "category": "tfc:new_terra_earth",
+  "icon": "minecraft:water_bucket",
+  "sortnum": 15,
+  "pages": [
+    {
+      "type": "patchouli:spotlight",
+      "item": "minecraft:water_bucket",
+      "title": "Oceans That Deepen With Distance",
+      "link_recipes": false,
+      "text": ""
+    },
+    {
+      "type": "patchouli:text",
+      "title": "The Farther Offshore, the Deeper",
+      "text": "Heading out from the coast, the farther from land you go, the deeper the ocean becomes.$(br)$(li)Within about 64 blocks: almost no extra cut; the shore stays shallow.$(li)About 64~384 blocks: the fastest drop, up to 22 blocks below the original seafloor.$(li)About 384~640 blocks: a little deeper, about 24 blocks in total.$(li)About 640~1150 blocks: the deepest stage, about 27 blocks in total."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "How Deep It Gets",
+      "text": "$(li)Ordinary ocean (continental shelf): seafloor around y=15~29, at most y=15.$(li)Ocean reefs stay shallow, with their outer edge sloping gradually toward deep water.$(li)Deep ocean plains: seafloor around y=-10~6, about 57~73 blocks below sea level.$(li)Ocean ridges, atolls, and volcanic arcs share the same deepening, so they never rise abruptly above the surrounding seafloor."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Trenches",
+      "text": "Trenches have a deeper seafloor: past about 1180 blocks from land, the core drops once more, up to 20 blocks, and never pushes the seafloor below y=-30, with the axis bottoming out near y=-40."
+    }
+  ],
+  "read_by_default": true
+}

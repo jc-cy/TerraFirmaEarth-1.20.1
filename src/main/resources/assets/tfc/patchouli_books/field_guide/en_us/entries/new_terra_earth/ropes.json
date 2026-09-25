@@ -2,7 +2,7 @@
   "name": "Ropes",
   "category": "tfc:new_terra_earth",
   "icon": "tfc:rope",
-  "sortnum": 25,
+  "sortnum": 26,
   "pages": [
     {
       "type": "patchouli:spotlight",

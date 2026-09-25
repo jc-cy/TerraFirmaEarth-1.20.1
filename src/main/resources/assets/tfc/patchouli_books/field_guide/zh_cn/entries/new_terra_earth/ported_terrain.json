@@ -2,7 +2,7 @@
   "name": "新地形群系",
   "category": "tfc:new_terra_earth",
   "icon": "tfc:grass/loam",
-  "sortnum": 17,
+  "sortnum": 18,
   "pages": [
     {
       "type": "patchouli:spotlight",
@@ -49,7 +49,7 @@
     {
       "type": "patchouli:text",
       "title": "海岸",
-      "text": "海岸还会出现岩岸（$(thing)tfc:rocky_shores$()）、潮滩（$(thing)tfc:tidal_flats$()）、海湾（$(thing)tfc:embayments$()）、沙岸（$(thing)tfc:coastal_dunes$()）和海蚀柱（$(thing)tfc:sea_stacks$()）。海沟最深处约在 -60~-46 高度；洋脊与环礁等新增海洋群系见上一页。"
+      "text": "海岸还会出现岩岸（$(thing)tfc:rocky_shores$()）、潮滩（$(thing)tfc:tidal_flats$()）、海湾（$(thing)tfc:embayments$()）、沙岸（$(thing)tfc:coastal_dunes$()）和海蚀柱（$(thing)tfc:sea_stacks$()）。海床会越远离大陆越深，各段深度见 $(l:new_terra_earth/deepening_oceans)越远越深的海洋$()；洋脊与环礁等新增海洋群系见上一页。"
     },
     {
       "type": "patchouli:text",

@@ -2,7 +2,7 @@
   "name": "Humus and Kaolin Clay",
   "category": "tfc:new_terra_earth",
   "icon": "tfc:kaolin_clay",
-  "sortnum": 22,
+  "sortnum": 23,
   "pages": [
     {
       "type": "patchouli:spotlight",

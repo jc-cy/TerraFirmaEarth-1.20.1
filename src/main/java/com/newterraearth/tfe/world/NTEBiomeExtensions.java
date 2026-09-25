@@ -52,7 +52,7 @@ public final class NTEBiomeExtensions
     public static BiomeExtension ocean()
     {
         return build("ocean", BiomeBuilder.builder()
-            .heightmap(seed -> BiomeNoise.ocean(seed, -26, -12))
+            .noise(seed -> NTEOceanDepthSampler.ocean(BiomeNoise.ocean(seed, -26, -12)))
             .surface(ShorelineSurfaceBuilder.OCEAN)
             .aquiferHeightOffset(-24)
             .salty()
@@ -63,7 +63,7 @@ public final class NTEBiomeExtensions
     public static BiomeExtension oceanReef()
     {
         return build("ocean_reef", BiomeBuilder.builder()
-            .heightmap(seed -> BiomeNoise.ocean(seed, -16, -8))
+            .noise(seed -> NTEOceanDepthSampler.ocean(BiomeNoise.ocean(seed, -16, -8)))
             .surface(ShorelineSurfaceBuilder.OCEAN)
             .aquiferHeightOffset(-24)
             .salty()
@@ -74,7 +74,7 @@ public final class NTEBiomeExtensions
     public static BiomeExtension deepOcean()
     {
         return build("deep_ocean", BiomeBuilder.builder()
-            .heightmap(seed -> BiomeNoise.ocean(seed, -46, -30))
+            .noise(seed -> NTEOceanDepthSampler.ocean(BiomeNoise.ocean(seed, -46, -30)))
             .surface(ShorelineSurfaceBuilder.OCEAN)
             .aquiferHeightOffset(-24)
             .salty()
@@ -85,7 +85,7 @@ public final class NTEBiomeExtensions
     public static BiomeExtension deepOceanTrench()
     {
         return build("deep_ocean_trench", BiomeBuilder.builder()
-            .heightmap(seed -> NTEBiomeNoise.oceanTrench(seed, -60, -46))
+            .noise(seed -> NTEOceanDepthSampler.trench(NTEBiomeNoise.oceanTrench(seed, -60, -46)))
             .surface(ShorelineSurfaceBuilder.OCEAN)
             .aquiferHeightOffset(-24)
             .salty()
@@ -96,7 +96,7 @@ public final class NTEBiomeExtensions
     public static BiomeExtension oceanicVolcanicArc()
     {
         return setCenteredFeatureFrequencyMetadata(build("oceanic_volcanic_arc", BiomeBuilder.builder()
-            .heightmap(seed -> BiomeNoise.ocean(seed, -26, -12))
+            .noise(seed -> NTEOceanDepthSampler.ocean(BiomeNoise.ocean(seed, -26, -12)))
             .surface(stratovolcanoes(ShorelineSurfaceBuilder.OCEAN))
             .aquiferHeightOffset(-24)
             .salty()
@@ -107,7 +107,7 @@ public final class NTEBiomeExtensions
     public static BiomeExtension oceanAtolls()
     {
         return setCenteredFeatureMetadata(build("ocean_atolls", BiomeBuilder.builder()
-            .heightmap(seed -> BiomeNoise.ocean(seed, -26, -12))
+            .noise(seed -> NTEOceanDepthSampler.ocean(BiomeNoise.ocean(seed, -26, -12)))
             .surface(atolls(ShorelineSurfaceBuilder.OCEAN))
             .aquiferHeightOffset(-24)
             .salty()
@@ -118,7 +118,7 @@ public final class NTEBiomeExtensions
     public static BiomeExtension deepOceanAtolls()
     {
         return setCenteredFeatureMetadata(build("deep_ocean_atolls", BiomeBuilder.builder()
-            .heightmap(seed -> BiomeNoise.ocean(seed, -46, -30))
+            .noise(seed -> NTEOceanDepthSampler.ocean(BiomeNoise.ocean(seed, -46, -30)))
             .surface(atolls(ShorelineSurfaceBuilder.OCEAN))
             .aquiferHeightOffset(-24)
             .salty()
@@ -129,7 +129,7 @@ public final class NTEBiomeExtensions
     public static BiomeExtension oceanRidge()
     {
         return build("ocean_ridge", BiomeBuilder.builder()
-            .heightmap(NTEBiomeNoise::oceanRidge)
+            .noise(seed -> NTEOceanDepthSampler.ocean(NTEBiomeNoise.oceanRidge(seed)))
             .surface(ShorelineSurfaceBuilder.OCEAN_RIDGE)
             .aquiferHeightOffset(-24)
             .salty()

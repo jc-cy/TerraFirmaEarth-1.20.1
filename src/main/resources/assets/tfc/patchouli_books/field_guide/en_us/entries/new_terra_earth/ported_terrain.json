@@ -2,7 +2,7 @@
   "name": "New Terrain Biomes",
   "category": "tfc:new_terra_earth",
   "icon": "tfc:grass/loam",
-  "sortnum": 17,
+  "sortnum": 18,
   "pages": [
     {
       "type": "patchouli:spotlight",
@@ -69,7 +69,7 @@
     {
       "type": "patchouli:text",
       "title": "Seafloor Depth",
-      "text": "The seafloor generally deepens away from land; trench cores reach roughly -60~-46. Ocean Ridge and atoll entries are listed on the previous page."
+      "text": "The seafloor deepens the farther it is from land; see $(l:new_terra_earth/deepening_oceans)Oceans That Deepen With Distance$() for the stages and depths. Ocean Ridge and atoll entries are listed on the previous page."
     },
     {
       "type": "patchouli:text",

@@ -2,7 +2,7 @@
   "name": "新增地势系统",
   "category": "tfc:new_terra_earth",
   "icon": "tfc:grass/loam",
-  "sortnum": 18,
+  "sortnum": 19,
   "pages": [
     {
       "type": "patchouli:spotlight",

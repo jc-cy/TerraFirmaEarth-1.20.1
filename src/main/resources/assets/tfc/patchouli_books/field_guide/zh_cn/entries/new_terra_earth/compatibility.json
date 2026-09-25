@@ -2,7 +2,7 @@
   "name": "兼容功能",
   "category": "tfc:new_terra_earth",
   "icon": "tfe:canola",
-  "sortnum": 27,
+  "sortnum": 28,
   "pages": [
     {
       "type": "patchouli:spotlight",

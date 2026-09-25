@@ -2,7 +2,7 @@
   "name": "AFC Compatibility",
   "category": "tfc:new_terra_earth",
   "icon": "minecraft:oak_sapling",
-  "sortnum": 26,
+  "sortnum": 27,
   "pages": [
     {
       "type": "patchouli:spotlight",

@@ -1,0 +1,31 @@
+{
+  "name": "越远越深的海洋",
+  "category": "tfc:new_terra_earth",
+  "icon": "minecraft:water_bucket",
+  "sortnum": 15,
+  "pages": [
+    {
+      "type": "patchouli:spotlight",
+      "item": "minecraft:water_bucket",
+      "title": "越远越深的海洋",
+      "link_recipes": false,
+      "text": ""
+    },
+    {
+      "type": "patchouli:text",
+      "title": "离岸越远，海底越深",
+      "text": "从海岸向外走，离岸越远海洋越深$(br)$(li)约 64 格以内：基本不加深，沿岸仍是浅滩。$(li)约 64~384 格：下降最快的一段，最多比原本低 22 格。$(li)约 384~640 格：继续下探，累计约 24 格。$(li)约 640~1150 格：到达最深一档，累计约 27 格。"
+    },
+    {
+      "type": "patchouli:text",
+      "title": "到底有多深",
+      "text": "$(li)普通海（大陆架）：床面约在 y=15~29，最深约 y=15。$(li)海洋暗礁仍是浅水，外缘会向深海方向逐渐倾斜。$(li)深海平原：床面约在 y=-10~6，也就是海平面下约 57~73 格。$(li)洋脊、环礁和海洋火山弧使用同一套加深，不会比周围海床突然变浅。"
+    },
+    {
+      "type": "patchouli:text",
+      "title": "海沟",
+      "text": "海沟有更深的海床：离岸约 1180 格以后，核心区会再下降一次，最多 20 格，且不会把床面压到 y=-30 以下，轴底最深约 y=-40。"
+    }
+  ],
+  "read_by_default": true
+}

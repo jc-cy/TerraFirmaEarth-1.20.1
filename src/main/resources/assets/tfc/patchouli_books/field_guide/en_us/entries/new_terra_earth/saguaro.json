@@ -2,7 +2,7 @@
   "name": "Giant Saguaro Changes",
   "category": "tfc:new_terra_earth",
   "icon": "tfc:cactus_wood",
-  "sortnum": 23,
+  "sortnum": 24,
   "pages": [
     {
       "type": "patchouli:spotlight",
