@@ -37,6 +37,7 @@
     "DataManagerAccessor",
     "DeadCropBlockMixin",
     "EnvironmentHelpersMixin",
+    "EntityWaterHeightMixin",
     "FloodFillSmallOceansMixin",
     "ErosionFeatureMixin",
     "FarmlandBlockEntityMixin",

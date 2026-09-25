@@ -40,6 +40,7 @@ TerraFirmaEarth / 群峦地球
 • 作物果树灌木气候：全作物气候和条件重新分配，部分作物进行补强修改或直接重做。
 • 地势与山峰：山区地势抬升系统与平滑山峰生成，相关参数在配置中开放。
 • 地下河过渡：原生普通河流与地下河之间新增切割过渡层，减少洞口与河谷交界的硬切线。
+• 更深的海洋现在海洋会随着远离陆地越来越深，详情查阅帕秋莉.
 • 地形与地物等杂项：海床由淤泥改为更浅的砂砾、沿海沙滩与火山地势修正、木堆可自由放置；仙人掌木质循环与整株砍伐掉落、炉灶 、炉灶锅移植、红木等地物兼容。
 • 作物用途：大量弱势作物进行增强如苜蓿可作为更多常见动物的饲料，油菜新增油菜籽榨油路线，香蕉补强切砍伐不再摧毁树木等等。
 • 全球温度重做，更贴近现实的温度变化，且各种事件或者作物生长均已当前温度为准，内容较多请查看帕秋莉。
@@ -47,7 +48,8 @@ TerraFirmaEarth / 群峦地球
 • 海洋地形：普通海、海礁、深海和海沟使用连续的深度过渡；TFE 仍保留深水海床薄砂砾与火山海岸表面适配。
 • 区域地形：补齐 ocean ridge、rift valley、river valley、环礁和基础 stratovolcano centered-feature；TFE 的地势溪流与河床保护继续叠加。
 • 高低版本兼容层：让高版本的生物、气候、植物等数据在 1.20 端正常工作，兼容了1.20提前注册的物品。
-• AFC 兼容：兼容林海传说.
+• AFC 兼容：兼容林海传说。
+• 沉浸式飞机兼容，修复了沉浸式飞机无法有效和群峦水体交互的问题。
 • FirmalifeEnhanced 温室地窖重置兼容,温室范围内，作物、果树、浆果灌木等会按年均温度和湿度判定，不受外部天气影响。
 • TFCModernLife群峦现代化生活兼容：温室范围是以当前温度为基准进行控温。且建议使用此模组作为本模组温室、地窖和电力厨房相关拓展，勿重复启用.
 • 数据包接入说明：随附 GitHub 上的《数据包兼容写法教程》，方便个人使用者或整合包作者添加生物刷新、追加 fauna、协调 AFC 兼容。
@@ -85,6 +87,7 @@ Added or reworked by this mod (not an exhaustive list; the field guide is author
 • Crop, fruit-tree and bush climate: climate requirements and conditions were redistributed for all crops; some crops were strengthened, adjusted or fully reworked.
 • Terrain and peaks: the mountain terrain uplift system and smoothed peak generation, with the related parameters exposed in the config.
 • Underground river transition: a new incised transition layer between normal rivers and underground rivers, reducing hard cuts at cave mouths and river valleys.
+• Deeper oceans: the sea now gets deeper the farther it is from land; see the field guide for the details.
 • Terrain and features (misc): ocean seabeds changed from mud to a thinner gravel surface, coastal beach and volcano terrain fixes, freely placeable log piles; cactus wood loop with whole-saguaro harvest drops, the stove and stove pot port, redwood and related feature compatibility.
 • Crop uses: many weak crops were strengthened — alfalfa now feeds more common animals, canola has a dedicated oilseed route for oil pressing, bananas no longer destroy the tree when chopped or harvested, and more.
 • Global temperature reworked: temperature change is closer to reality, and events and crop growth now follow the current temperature; see the field guide for the details.
@@ -93,6 +96,7 @@ Added or reworked by this mod (not an exhaustive list; the field guide is author
 • Regional terrain: added ocean ridge, rift valley, river valley, atoll and basic stratovolcano centered features; TFE's terrain-aware streams and bed protection continue to stack on top.
 • High/low-version compatibility layer: makes newer-version mobs, climate and plant data work on 1.20, including items already registered in 1.20.
 • AFC compatibility: works with Another Forest Compat (林海传说).
+• Immersive Aircraft compatibility: fixed Immersive Aircraft failing to interact with TFC water bodies properly.
 • FirmalifeEnhanced greenhouse / cellar reset compatibility: inside a controlled greenhouse, crops, fruit trees and berry bushes are judged by annual-average temperature and hydration, and are not affected by outside weather.
 • TFCModernLife compatibility: the greenhouse range controls temperature based on the current temperature. It is recommended as the greenhouse, cellar and electric kitchen expansion for this mod; do not enable duplicates.
 • Datapack integration: the Datapack Compatibility Guide on GitHub helps personal users and modpack authors add mob spawning, extend fauna, and coordinate AFC compatibility.

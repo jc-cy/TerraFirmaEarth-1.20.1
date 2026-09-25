@@ -28,6 +28,11 @@
     },
     {
       "type": "patchouli:text",
+      "title": "Immersive Aircraft Compatibility",
+      "text": "This mod does not add Immersive Aircraft recipes, so add those yourself; it only fixes Immersive Aircraft failing to recognize TFC water bodies. Immersive Aircraft now interacts with TFC water normally: buoyant aircraft no longer sink, and they drift along with flowing river water."
+    },
+    {
+      "type": "patchouli:text",
       "title": "Maps",
       "text": "JourneyMap and similar map mods can identify and color the added terrain biomes."
     },
