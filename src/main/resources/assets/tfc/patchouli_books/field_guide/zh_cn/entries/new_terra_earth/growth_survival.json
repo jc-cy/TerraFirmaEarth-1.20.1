@@ -1,12 +1,12 @@
 {
   "name": "果树与灌木生存逻辑",
   "category": "tfc:new_terra_earth",
-  "icon": "tfc:food/blueberry",
+  "icon": "tfc:textures/item/food/blueberry.png",
   "sortnum": 7,
   "pages": [
     {
       "type": "patchouli:spotlight",
-      "item": "tfc:food/blueberry",
+      "item": "tfc:plant/blueberry_bush",
       "title": "停长而非死亡",
       "link_recipes": false,
       "text": ""
@@ -15,6 +15,11 @@
       "type": "patchouli:text",
       "title": "停长而非死亡",
       "text": "果树树苗和浆果灌木遇到短期温度或水分不适时，会停止生长或进入休眠，而不是立即死亡。气候回到对应物种范围后，它们会继续生长和结果。野外生成地点由长期平均气候决定。"
+    },
+    {
+      "type": "patchouli:text",
+      "title": "采摘冷却",
+      "text": "现在果树和灌木在采摘后需要休眠10天才能再次开花结果。此功能对齐最新版TFC的平衡改动。"
     }
   ],
   "read_by_default": true

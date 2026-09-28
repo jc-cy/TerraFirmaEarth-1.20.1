@@ -1,12 +1,12 @@
 {
   "name": "作物健康",
   "category": "tfc:new_terra_earth",
-  "icon": "tfc:food/wheat",
+  "icon": "tfc:textures/item/food/wheat.png",
   "sortnum": 2,
   "pages": [
     {
       "type": "patchouli:spotlight",
-      "item": "tfc:food/wheat",
+      "item": "tfc:seeds/wheat",
       "title": "作物健康规则",
       "link_recipes": false,
       "text": ""

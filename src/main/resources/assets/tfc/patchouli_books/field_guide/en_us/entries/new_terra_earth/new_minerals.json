@@ -2,7 +2,7 @@
   "name": "Gemstones",
   "category": "tfc:new_terra_earth",
   "icon": "tfc:ore/ruby",
-  "sortnum": 22,
+  "sortnum": 23,
   "pages": [
     {
       "type": "patchouli:spotlight",

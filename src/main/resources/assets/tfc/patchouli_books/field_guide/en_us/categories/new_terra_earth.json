@@ -1,6 +1,6 @@
 {
   "name": "TerraFirmaEarth",
   "description": "This mod brings most of the latest TerraFirmaCraft content to this environment, including terrain, climate, animals, plants, crops, and items, with unified adjustments across these systems. TFE also adds exclusive biomes, terrain, and other new features.",
-  "icon": "tfe:canola",
+  "icon": "tfe:textures/item/canola.png",
   "sortnum": 3
 }

@@ -1,12 +1,12 @@
 {
   "name": "Crop Health",
   "category": "tfc:new_terra_earth",
-  "icon": "tfc:food/wheat",
+  "icon": "tfc:textures/item/food/wheat.png",
   "sortnum": 2,
   "pages": [
     {
       "type": "patchouli:spotlight",
-      "item": "tfc:food/wheat",
+      "item": "tfc:seeds/wheat",
       "title": "Crop Health Rules",
       "link_recipes": false,
       "text": ""

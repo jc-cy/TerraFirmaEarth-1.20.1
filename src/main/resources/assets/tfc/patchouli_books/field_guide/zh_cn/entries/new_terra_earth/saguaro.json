@@ -2,7 +2,7 @@
   "name": "巨型仙人掌修改",
   "category": "tfc:new_terra_earth",
   "icon": "tfc:cactus_wood",
-  "sortnum": 24,
+  "sortnum": 25,
   "pages": [
     {
       "type": "patchouli:spotlight",

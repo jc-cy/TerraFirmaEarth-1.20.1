@@ -2,7 +2,7 @@
   "name": "绳索",
   "category": "tfc:new_terra_earth",
   "icon": "tfc:rope",
-  "sortnum": 26,
+  "sortnum": 27,
   "pages": [
     {
       "type": "patchouli:spotlight",

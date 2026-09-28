@@ -1,54 +1,54 @@
 {
   "name": "New Crops and Changes",
   "category": "tfc:new_terra_earth",
-  "icon": "tfe:canola",
+  "icon": "tfe:textures/item/canola.png",
   "sortnum": 4,
   "pages": [
     {
       "type": "patchouli:spotlight",
-      "item": [{"item": "tfe:seeds/alfalfa"}, {"item": "tfe:alfalfa"}],
+      "item": [{"item": "tfe:seeds/alfalfa"}, {"item": "tfe:seeds/alfalfa"}],
       "title": "Alfalfa",
       "link_recipes": false,
       "text": "Alfalfa grows at 1~28°C and 40~100% hydration, preferring nitrogen. Cultivated mature alfalfa yields 12~20. It can be eaten directly for 0.2 grain and 0.3 vegetable nutrition and keeps for 80 days by default. It also feeds common livestock, poultry, and grazing animals, or can be used for straw and compost."
     },
     {
       "type": "patchouli:spotlight",
-      "item": [{"item": "tfe:seeds/canola"}, {"item": "tfe:canola"}],
+      "item": [{"item": "tfe:seeds/canola"}, {"item": "tfe:canola_oilseed"}],
       "title": "Canola",
       "link_recipes": false,
       "text": "Canola grows at -4~23°C and 20~75% hydration, preferring phosphorous. Mature canola can be eaten directly. Cutting it with a knife produces canola oilseed and straw; the oilseed can be processed into canola oil."
     },
     {
       "type": "patchouli:spotlight",
-      "item": [{"item": "tfe:seeds/cassava"}, {"item": "tfe:food/cassava"}],
+      "item": [{"item": "tfe:seeds/cassava"}, {"item": "tfe:seeds/cassava"}],
       "title": "Cassava",
       "link_recipes": false,
       "text": "Cassava grows at 8~35°C and 45~100% hydration, preferring potassium. Harvest mature cassava, then heat it to make cooked cassava."
     },
     {
       "type": "patchouli:spotlight",
-      "item": [{"item": "tfe:seeds/lentil"}, {"item": "tfe:food/lentil"}],
+      "item": [{"item": "tfe:seeds/lentil"}, {"item": "tfe:seeds/lentil"}],
       "title": "Lentil",
       "link_recipes": false,
       "text": "Lentils grow at 1~27°C and 15~50% hydration, preferring nitrogen. Mature lentils can be harvested and cooked."
     },
     {
       "type": "patchouli:spotlight",
-      "item": [{"item": "tfe:seeds/peanut"}, {"item": "tfe:food/peanut"}],
+      "item": [{"item": "tfe:seeds/peanut"}, {"item": "tfe:seeds/peanut"}],
       "title": "Peanut",
       "link_recipes": false,
       "text": "Peanuts grow at 7~33°C and 20~80% hydration, preferring nitrogen. Each peanut provides 1.5 protein nutrition and can also be processed into peanut butter."
     },
     {
       "type": "patchouli:spotlight",
-      "item": [{"item": "tfe:seeds/radish"}, {"item": "tfe:food/radish"}],
+      "item": [{"item": "tfe:seeds/radish"}, {"item": "tfe:seeds/radish"}],
       "title": "Radish",
       "link_recipes": false,
       "text": "Radishes grow at -1~25°C and 30~90% hydration, preferring potassium. Cultivated mature radishes now yield 12~20, twice the previous amount, and can feed many animals."
     },
     {
       "type": "patchouli:spotlight",
-      "item": [{"item": "tfc:plant/banana_sapling"}, {"item": "tfc:food/banana"}],
+      "item": [{"item": "tfc:plant/banana_sapling"}, {"item": "tfc:plant/banana_sapling"}],
       "title": "Banana",
       "link_recipes": false,
       "text": "Each mature banana harvest yields 8~16 bananas. Each banana provides 1.5 fruit nutrition and 0.5 dairy nutrition. Directly breaking the mature top also drops 1~3 banana saplings."

@@ -325,6 +325,7 @@
     "tfe.jade.plant.flowering":  "开花期",
     "tfe.jade.plant.fruiting":  "结果期",
     "tfe.jade.plant.decorative_leaves":  "人工放置叶片（不会结果）",
+    "tfe.jade.harvest_dormancy":  "采摘休眠期：剩余 %s",
     "tfe.jade.crop.growth_blocked":  "生长受阻",
     "tfe.jade.crop.growth_limited":  "正在生长（当前条件无法成熟）",
     "tfe.jade.crop_growth":  "生长进度：%s%%",

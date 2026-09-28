@@ -2,7 +2,7 @@
   "name": "Seasonal Rainfall and Crops",
   "category": "tfc:new_terra_earth",
   "icon": "minecraft:water_bucket",
-  "sortnum": 13,
+  "sortnum": 14,
   "pages": [
     {
       "type": "patchouli:spotlight",

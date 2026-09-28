@@ -14,6 +14,7 @@ import net.dries007.tfc.common.blockentities.BerryBushBlockEntity;
 import net.dries007.tfc.common.blocks.plant.fruit.FruitTreeLeavesBlock;
 import net.dries007.tfc.common.blocks.plant.fruit.Lifecycle;
 import net.dries007.tfc.common.blocks.plant.fruit.SeasonalPlantBlock;
+import net.dries007.tfc.util.calendar.Month;
 
 import com.newterraearth.tfe.world.NTESeasonalHelpers;
 
@@ -35,7 +36,8 @@ public abstract class FruitTreeLeavesBlockMixin
         {
             final SeasonalPlantBlockAccessor accessor = (SeasonalPlantBlockAccessor) this;
             Lifecycle currentLifecycle = state.getValue(FruitTreeLeavesBlock.LIFECYCLE);
-            Lifecycle expectedLifecycle = accessor.tfe$invokeGetLifecycleForMonth(NTESeasonalHelpers.getHemispheralCalendarMonthOfYear(level, pos));
+            final Month month = NTESeasonalHelpers.getHemispheralCalendarMonthOfYear(level, pos);
+            Lifecycle expectedLifecycle = NTESeasonalHelpers.getExpectedLifecycle(accessor, level, pos, month);
             if (!SeasonalPlantBlock.checkAndSetDormant(level, pos, state, currentLifecycle, expectedLifecycle))
             {
                 final var range = accessor.tfe$getClimateRange().get();
@@ -44,7 +46,7 @@ public abstract class FruitTreeLeavesBlockMixin
 
                 if (range.checkBoth(hydration, NTESeasonalHelpers.getPlantTemperature(level, stemPos), false))
                 {
-                    currentLifecycle = currentLifecycle.advanceTowards(expectedLifecycle);
+                    currentLifecycle = NTESeasonalHelpers.advanceLifecycle(level, pos, currentLifecycle, expectedLifecycle);
                 }
                 else
                 {

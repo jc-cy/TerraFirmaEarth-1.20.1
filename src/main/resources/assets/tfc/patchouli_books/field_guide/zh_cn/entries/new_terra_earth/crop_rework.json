@@ -1,12 +1,12 @@
 {
   "name": "作物修改",
   "category": "tfc:new_terra_earth",
-  "icon": "tfc:food/wheat",
+  "icon": "tfc:textures/item/food/wheat.png",
   "sortnum": 1,
   "pages": [
     {
       "type": "patchouli:spotlight",
-      "item": "tfc:food/wheat",
+      "item": "tfc:seeds/wheat",
       "title": "作物气候与种植",
       "link_recipes": false,
       "text": ""

@@ -36,6 +36,7 @@ public final class NTECommonConfig
     private static final ForgeConfigSpec.BooleanValue ENTITY_SPAWN_BACTRIAN_CAMEL;
     private static final ForgeConfigSpec.BooleanValue ENTITY_SPAWN_DROMEDARY_CAMEL;
     private static final ForgeConfigSpec.BooleanValue ENTITY_SPAWN_ARMADILLO;
+    private static final ForgeConfigSpec.IntValue FRUIT_PICK_DORMANCY_DAYS;
     private static final ForgeConfigSpec.IntValue SNOW_MAX_ACCUMULATION_ON_UPDATE;
     private static final ForgeConfigSpec.IntValue TICKS_PER_SNOW_ACCUMULATION;
     private static final ForgeConfigSpec.IntValue SNOW_MELT_MULTIPLIER;
@@ -95,6 +96,13 @@ public final class NTECommonConfig
         builder.push("bamboo");
         BAMBOO = builder.define("bamboo", true);
         GOLDEN_BAMBOO = builder.define("golden_bamboo", true);
+        builder.pop();
+
+        builder.comment("采摘休眠期：玩家采摘成熟果实后，植物一段时间内不能再次开花结果。TFC 1.21 本体自带该机制（fruitPickBloomDelayTicks），TFC 1.20 没有，由 TFE 按同一语义补齐。");
+        builder.push("harvest_dormancy");
+        FRUIT_PICK_DORMANCY_DAYS = builder
+            .comment("采摘后多少游戏日内不能重新开花；0 表示关闭（恢复 1.20 原版采完即可再生的手感）。")
+            .defineInRange("days", 10, 0, 1_000);
         builder.pop();
 
         builder.comment("只控制自然刷新选择，包括群系刷新和虫害系统选择的害虫；关闭后实体仍会注册，仍可通过刷怪蛋、命令或自定义脚本使用。");
@@ -226,6 +234,14 @@ public final class NTECommonConfig
 
     private NTECommonConfig()
     {
+    }
+
+    /**
+     * 采摘休眠期长度（游戏日）。0 表示关闭该机制。
+     */
+    public static int getFruitPickDormancyDays()
+    {
+        return FRUIT_PICK_DORMANCY_DAYS.get();
     }
 
     public static boolean isWildCropEnabled(NTECrop crop)

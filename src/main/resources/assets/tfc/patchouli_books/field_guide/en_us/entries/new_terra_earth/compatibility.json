@@ -1,12 +1,12 @@
 {
   "name": "Compatibility Features",
   "category": "tfc:new_terra_earth",
-  "icon": "tfe:canola",
-  "sortnum": 28,
+  "icon": "tfe:textures/item/canola.png",
+  "sortnum": 29,
   "pages": [
     {
       "type": "patchouli:spotlight",
-      "item": "tfe:canola",
+      "item": "tfe:canola_oilseed",
       "title": "Optional Mod Support",
       "link_recipes": false,
       "text": ""

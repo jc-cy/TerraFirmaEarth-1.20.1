@@ -17,6 +17,7 @@ import net.dries007.tfc.common.blocks.plant.fruit.Lifecycle;
 import net.dries007.tfc.common.blocks.plant.fruit.SeasonalPlantBlock;
 import net.dries007.tfc.common.blocks.plant.fruit.StationaryBerryBushBlock;
 import net.dries007.tfc.util.calendar.Calendars;
+import net.dries007.tfc.util.calendar.Month;
 
 import com.newterraearth.tfe.world.NTESeasonalHelpers;
 
@@ -33,7 +34,8 @@ public abstract class StationaryBerryBushBlockMixin
     public BlockState getStateForPlacement(BlockPlaceContext context)
     {
         final SeasonalPlantBlockAccessor accessor = (SeasonalPlantBlockAccessor) this;
-        final Lifecycle lifecycle = accessor.tfe$invokeGetLifecycleForMonth(NTESeasonalHelpers.getHemispheralCalendarMonthOfYear(context.getLevel(), context.getClickedPos()));
+        final Lifecycle lifecycle = NTESeasonalHelpers.getExpectedLifecycle(accessor, context.getLevel(), context.getClickedPos(),
+            NTESeasonalHelpers.getHemispheralCalendarMonthOfYear(context.getLevel(), context.getClickedPos()));
         return ((StationaryBerryBushBlock) (Object) this).defaultBlockState().setValue(StationaryBerryBushBlock.LIFECYCLE, lifecycle.active() ? Lifecycle.HEALTHY : Lifecycle.DORMANT);
     }
 
@@ -48,7 +50,8 @@ public abstract class StationaryBerryBushBlockMixin
         {
             final SeasonalPlantBlockAccessor accessor = (SeasonalPlantBlockAccessor) this;
             Lifecycle currentLifecycle = state.getValue(StationaryBerryBushBlock.LIFECYCLE);
-            Lifecycle expectedLifecycle = accessor.tfe$invokeGetLifecycleForMonth(NTESeasonalHelpers.getHemispheralCalendarMonthOfYear(level, pos));
+            final Month month = NTESeasonalHelpers.getHemispheralCalendarMonthOfYear(level, pos);
+            Lifecycle expectedLifecycle = NTESeasonalHelpers.getExpectedLifecycle(accessor, level, pos, month);
             if (!SeasonalPlantBlock.checkAndSetDormant(level, pos, state, currentLifecycle, expectedLifecycle))
             {
                 long deltaTicks = Math.min(bush.getTicksSinceBushUpdate(), Calendars.SERVER.getCalendarTicksInYear());
@@ -63,10 +66,11 @@ public abstract class StationaryBerryBushBlockMixin
                     nextCalendarTick = Math.min(nextCalendarTick + Calendars.SERVER.getCalendarTicksInMonth(), currentCalendarTick);
 
                     final float temperatureAtNextTick = NTESeasonalHelpers.getPlantTemperature(level, pos, nextCalendarTick, Calendars.SERVER.getCalendarDaysInMonth());
-                    final Lifecycle lifecycleAtNextTick = accessor.tfe$invokeGetLifecycleForMonth(NTESeasonalHelpers.getHemispheralCalendarMonthOfYear(level, pos, nextCalendarTick));
+                    final Lifecycle lifecycleAtNextTick = NTESeasonalHelpers.getExpectedLifecycle(accessor, level, pos,
+                        NTESeasonalHelpers.getHemispheralCalendarMonthOfYear(level, pos, nextCalendarTick));
                     if (range.checkBoth(hydration, temperatureAtNextTick, false))
                     {
-                        currentLifecycle = currentLifecycle.advanceTowards(lifecycleAtNextTick);
+                        currentLifecycle = NTESeasonalHelpers.advanceLifecycle(level, pos, currentLifecycle, lifecycleAtNextTick);
                     }
                     else
                     {

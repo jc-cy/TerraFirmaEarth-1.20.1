@@ -2,7 +2,7 @@
   "name": "年温差",
   "category": "tfc:new_terra_earth",
   "icon": "minecraft:clock",
-  "sortnum": 11,
+  "sortnum": 12,
   "pages": [
     {
       "type": "patchouli:spotlight",

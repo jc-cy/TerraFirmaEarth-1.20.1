@@ -2,7 +2,7 @@
   "name": "越远越深的海洋",
   "category": "tfc:new_terra_earth",
   "icon": "minecraft:water_bucket",
-  "sortnum": 15,
+  "sortnum": 16,
   "pages": [
     {
       "type": "patchouli:spotlight",

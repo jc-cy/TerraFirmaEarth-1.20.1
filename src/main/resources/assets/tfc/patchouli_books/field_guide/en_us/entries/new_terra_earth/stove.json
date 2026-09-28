@@ -2,7 +2,7 @@
   "name": "Stove",
   "category": "tfc:new_terra_earth",
   "icon": "tfc:stove",
-  "sortnum": 25,
+  "sortnum": 26,
   "pages": [
     {
       "type": "patchouli:crafting",

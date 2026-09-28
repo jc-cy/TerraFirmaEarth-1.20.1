@@ -1,12 +1,12 @@
 {
   "name": "Fruit Tree and Bush Survival",
   "category": "tfc:new_terra_earth",
-  "icon": "tfc:food/blueberry",
+  "icon": "tfc:textures/item/food/blueberry.png",
   "sortnum": 7,
   "pages": [
     {
       "type": "patchouli:spotlight",
-      "item": "tfc:food/blueberry",
+      "item": "tfc:plant/blueberry_bush",
       "title": "Dormancy Instead of Death",
       "link_recipes": false,
       "text": ""
@@ -15,6 +15,11 @@
       "type": "patchouli:text",
       "title": "Dormancy Instead of Death",
       "text": "Fruit tree saplings and berry bushes pause growth or enter dormancy during short-term temperature or hydration stress instead of dying immediately. They resume growth and fruiting when the climate returns to the species' range. Wild generation uses long-term average climate."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Harvest Cooldown",
+      "text": "Fruit trees and berry bushes now need to stay dormant for 10 days after being harvested before they can flower and fruit again. This matches the balance changes of the latest TFC."
     }
   ],
   "read_by_default": true

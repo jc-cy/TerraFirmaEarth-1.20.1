@@ -1,12 +1,12 @@
 {
   "name": "果树修改",
   "category": "tfc:new_terra_earth",
-  "icon": "tfc:food/cherry",
+  "icon": "tfc:textures/item/food/cherry.png",
   "sortnum": 5,
   "pages": [
     {
       "type": "patchouli:spotlight",
-      "item": "tfc:food/cherry",
+      "item": "tfc:plant/cherry_sapling",
       "title": "果树气候",
       "link_recipes": false,
       "text": ""

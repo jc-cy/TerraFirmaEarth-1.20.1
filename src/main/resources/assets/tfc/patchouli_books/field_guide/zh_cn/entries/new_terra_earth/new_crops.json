@@ -1,54 +1,54 @@
 {
   "name": "新增作物和功能修改",
   "category": "tfc:new_terra_earth",
-  "icon": "tfe:canola",
+  "icon": "tfe:textures/item/canola.png",
   "sortnum": 4,
   "pages": [
     {
       "type": "patchouli:spotlight",
-      "item": [{"item": "tfe:seeds/alfalfa"}, {"item": "tfe:alfalfa"}],
+      "item": [{"item": "tfe:seeds/alfalfa"}, {"item": "tfe:seeds/alfalfa"}],
       "title": "苜蓿",
       "link_recipes": false,
       "text": "苜蓿适合 1~28°C、40~100% 水分的环境，主要消耗氮。栽培苜蓿成熟产量提高为 12~20；可以直接食用，提供 0.2 谷物与 0.3 蔬菜营养，默认保质期为 80 天。它也能喂给常见家畜、家禽和草食动物，或用作干草及堆肥来源。"
     },
     {
       "type": "patchouli:spotlight",
-      "item": [{"item": "tfe:seeds/canola"}, {"item": "tfe:canola"}],
+      "item": [{"item": "tfe:seeds/canola"}, {"item": "tfe:canola_oilseed"}],
       "title": "油菜",
       "link_recipes": false,
       "text": "油菜适合 -4~23°C、20~75% 水分的环境，主要消耗磷。成熟油菜可直接食用；用刀收获会得到油菜籽和秸秆，油菜籽可继续加工为菜籽油。"
     },
     {
       "type": "patchouli:spotlight",
-      "item": [{"item": "tfe:seeds/cassava"}, {"item": "tfe:food/cassava"}],
+      "item": [{"item": "tfe:seeds/cassava"}, {"item": "tfe:seeds/cassava"}],
       "title": "木薯",
       "link_recipes": false,
       "text": "木薯适合 8~35°C、45~100% 水分的环境，主要消耗钾。成熟后收获木薯，木薯可以继续加热加工为熟木薯。"
     },
     {
       "type": "patchouli:spotlight",
-      "item": [{"item": "tfe:seeds/lentil"}, {"item": "tfe:food/lentil"}],
+      "item": [{"item": "tfe:seeds/lentil"}, {"item": "tfe:seeds/lentil"}],
       "title": "扁豆",
       "link_recipes": false,
       "text": "扁豆适合 1~27°C、15~50% 水分的环境，主要消耗氮。成熟后收获扁豆，也可以烹饪为熟扁豆。"
     },
     {
       "type": "patchouli:spotlight",
-      "item": [{"item": "tfe:seeds/peanut"}, {"item": "tfe:food/peanut"}],
+      "item": [{"item": "tfe:seeds/peanut"}, {"item": "tfe:seeds/peanut"}],
       "title": "花生",
       "link_recipes": false,
       "text": "花生适合 7~33°C、20~80% 水分的环境，主要消耗氮。每个花生提供 1.5 点蛋白质营养，也可以继续加工为花生酱。"
     },
     {
       "type": "patchouli:spotlight",
-      "item": [{"item": "tfe:seeds/radish"}, {"item": "tfe:food/radish"}],
+      "item": [{"item": "tfe:seeds/radish"}, {"item": "tfe:seeds/radish"}],
       "title": "小萝卜",
       "link_recipes": false,
       "text": "小萝卜适合 -1~25°C、30~90% 水分的环境，主要消耗钾。栽培小萝卜成熟产量提高为 12~20，是原先的 2 倍；小萝卜也可以作为许多动物的饲料。"
     },
     {
       "type": "patchouli:spotlight",
-      "item": [{"item": "tfc:plant/banana_sapling"}, {"item": "tfc:food/banana"}],
+      "item": [{"item": "tfc:plant/banana_sapling"}, {"item": "tfc:plant/banana_sapling"}],
       "title": "香蕉",
       "link_recipes": false,
       "text": "香蕉每次成熟收获 8~16 个；每个香蕉提供 1.5 点水果营养和 0.5 点乳制品营养。直接破坏成熟植株顶部时，还会掉落 1~3 个香蕉树苗。"

@@ -1,6 +1,6 @@
 {
   "name": "群峦地球",
   "description": "本模组将大部分最新版群峦内容带到当前环境，涵盖地形、气候、生物、植物、作物、物品等，并对这些内容进行了统一调整。此外，TFE 还加入了专属群系、地形和其他新功能。",
-  "icon": "tfe:canola",
+  "icon": "tfe:textures/item/canola.png",
   "sortnum": 3
 }

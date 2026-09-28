@@ -21,6 +21,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.ChunkGenerator;
 
 import net.dries007.tfc.common.TFCTags;
+import net.dries007.tfc.common.blocks.plant.fruit.Lifecycle;
 import net.dries007.tfc.common.blocks.soil.FarmlandBlock;
 import net.dries007.tfc.config.TFCConfig;
 import net.dries007.tfc.util.Helpers;
@@ -37,6 +38,8 @@ import net.dries007.tfc.world.chunkdata.ChunkData;
 import com.newterraearth.tfe.client.NTEClientRainVarianceCache;
 import com.newterraearth.tfe.compat.NTEFirmalifeGreenhouseCompat;
 import com.newterraearth.tfe.config.NTECommonConfig;
+import com.newterraearth.tfe.mixin.SeasonalPlantBlockAccessor;
+import com.newterraearth.tfe.world.plant.NTEHarvestDormancyAccess;
 
 public final class NTESeasonalHelpers
 {
@@ -230,6 +233,74 @@ public final class NTESeasonalHelpers
         {
             text.add(getAverageHydrationTooltip(level, pos));
         }
+    }
+
+    // ===== 采摘休眠期（TFC 1.20 缺失、1.21 本体自带 fruitPickBloomDelayTicks 的机制） =====
+
+    /**
+     * 采摘休眠期长度（游戏 tick）。配置按"游戏日"给出，0 表示关闭。
+     */
+    public static long getHarvestDormancyDelay()
+    {
+        return Math.max(0, NTECommonConfig.getFruitPickDormancyDays()) * (long) ICalendar.TICKS_IN_DAY;
+    }
+
+    public static long getHarvestDormancyRemaining(Level level, BlockPos pos)
+    {
+        if (!(level.getBlockEntity(pos) instanceof NTEHarvestDormancyAccess access))
+        {
+            return 0L;
+        }
+        final long delay = getHarvestDormancyDelay();
+        final long harvested = access.tfe$getHarvestedTick();
+        if (delay <= 0L || harvested <= -1L)
+        {
+            return 0L;
+        }
+        return Math.max(0L, delay - (Calendars.get(level).getTicks() - harvested));
+    }
+
+    public static boolean isHarvestDormant(Level level, BlockPos pos)
+    {
+        return getHarvestDormancyRemaining(level, pos) > 0L;
+    }
+
+    public static void markHarvested(Level level, BlockPos pos)
+    {
+        if (level.getBlockEntity(pos) instanceof NTEHarvestDormancyAccess access)
+        {
+            access.tfe$setHarvestedTick(Calendars.get(level).getTicks());
+        }
+    }
+
+    /**
+     * 生命周期推进一格，但采摘休眠期内不允许进入开花；与 TFC 1.21 的写回守卫同义。
+     */
+    public static Lifecycle advanceLifecycle(Level level, BlockPos pos, Lifecycle current, Lifecycle target)
+    {
+        final Lifecycle next = current.advanceTowards(target);
+        return next == Lifecycle.FLOWERING && isHarvestDormant(level, pos) ? Lifecycle.HEALTHY : next;
+    }
+
+    /**
+     * 期望生命周期：受控温室内无视季节恒为结果期（由 TFCModernLife 提供温室判定与受控温度），否则用半球月份表。
+     */
+    public static Lifecycle getExpectedLifecycle(SeasonalPlantBlockAccessor accessor, Level level, BlockPos pos, Month month)
+    {
+        if (NTEFirmalifeGreenhouseCompat.isControlledGreenhouse(level, pos))
+        {
+            return Lifecycle.FRUITING;
+        }
+        return accessor.tfe$invokeGetLifecycleForMonth(month);
+    }
+
+    /**
+     * 果树树苗是否处于可生长期：半球月份表命中，或处于受控温室（温室内跨季节）。
+     */
+    public static boolean isSaplingGrowing(Level level, BlockPos pos, Lifecycle[] stages)
+    {
+        return stages[getHemispheralCalendarMonthOfYear(level, pos).ordinal()].active()
+            || NTEFirmalifeGreenhouseCompat.isControlledGreenhouse(level, pos);
     }
 
     public static BlockPos getFruitTreeStemPos(LevelReader level, BlockPos pos)

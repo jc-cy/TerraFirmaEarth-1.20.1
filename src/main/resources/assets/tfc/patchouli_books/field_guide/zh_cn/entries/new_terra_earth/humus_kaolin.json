@@ -2,7 +2,7 @@
   "name": "腐殖层与高岭土",
   "category": "tfc:new_terra_earth",
   "icon": "tfc:kaolin_clay",
-  "sortnum": 23,
+  "sortnum": 24,
   "pages": [
     {
       "type": "patchouli:spotlight",

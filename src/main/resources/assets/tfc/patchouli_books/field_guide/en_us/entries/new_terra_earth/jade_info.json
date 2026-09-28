@@ -1,0 +1,34 @@
+{
+  "name": "More Detailed Information",
+  "category": "tfc:new_terra_earth",
+  "icon": "tfc:textures/block/fruit_tree/red_apple_sapling.png",
+  "sortnum": 8,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "title": "Fruit Trees, Bushes and Banana",
+      "text": "Aimed at fruit tree leaves, berry bushes or banana plants, Jade shows a status line:$(br2)Leaf stage: growing leaves$(br)Flowering: in bloom$(br)Fruiting: the fruit is ripe$(br)Waiting for the growing season: it is not this species' season$(br)Environment unsuitable: temperature or hydration is outside its range$(br)Waiting for lifecycle update: the conditions are fine, waiting for the next growth check"
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Climate and Harvest Dormancy",
+      "text": "The climate part shows:$(br2)Current temperature: inside a controlled greenhouse this is the greenhouse temperature$(br)Current hydration: inside a controlled greenhouse this is the stable value$(br)Average temperature and annual rainfall: the climate background of the spot, not shown inside a controlled greenhouse$(br)A plant that was just harvested shows \"Harvest dormancy: … left\" instead and cannot flower or fruit again during that time. Fruit tree leaves placed by a player read \"Placed leaves (will not fruit)\"."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Fruit Tree Branches",
+      "text": "A growing fruit tree branch shows:$(br2)Time left: …: how long until the next growth$(br)Ready to Grow: the time is up, waiting for the random growth$(br2)Each growth step takes about 5 days."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Crops: Health and Growth",
+      "text": "Crops show:$(br2)Health: …%: gains 5% per check while temperature and hydration are suitable, loses 5% when they are not, and 0% means the crop dies$(br)Growth: …%: the current maturity$(br)Estimated time to maturity: …: shown only when the conditions are suitable, and it is an estimate"
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Crops: Blocked and Mature",
+      "text": "Environment unsuitable: temperature or hydration is outside the growth range$(br)Growing, but current conditions prevent maturity: it can keep growing but will not ripen$(br)Growth blocked: it has reached the limit of the current soil fertility$(br)Growth complete / Overripeness: …%: already mature; a crop dies once overripeness is full"
+    }
+  ],
+  "read_by_default": true
+}

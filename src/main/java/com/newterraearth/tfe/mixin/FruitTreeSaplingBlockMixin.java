@@ -48,7 +48,7 @@ public abstract class FruitTreeSaplingBlockMixin
 
         NTESeasonalHelpers.addPlantClimateTooltips(text, level, stemPos, rootPos, range, hydration);
 
-        if (!stages[NTESeasonalHelpers.getHemispheralCalendarMonthOfYear(level, pos).ordinal()].active())
+        if (!NTESeasonalHelpers.isSaplingGrowing(level, pos, stages))
         {
             text.add(tfe$plantStatus("tfe.jade.plant.waiting_season"));
         }
@@ -78,7 +78,7 @@ public abstract class FruitTreeSaplingBlockMixin
     @Overwrite(remap = true)
     public void randomTick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random)
     {
-        if (stages[NTESeasonalHelpers.getHemispheralCalendarMonthOfYear(level, pos).ordinal()].active())
+        if (NTESeasonalHelpers.isSaplingGrowing(level, pos, stages))
         {
             if (level.getBlockEntity(pos) instanceof TickCounterBlockEntity counter)
             {

@@ -2,7 +2,7 @@
   "name": "源头溪流",
   "category": "tfc:new_terra_earth",
   "icon": "minecraft:water_bucket",
-  "sortnum": 16,
+  "sortnum": 17,
   "pages": [
     {
       "type": "patchouli:spotlight",

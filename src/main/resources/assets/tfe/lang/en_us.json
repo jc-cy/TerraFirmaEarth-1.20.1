@@ -321,6 +321,7 @@
     "tfe.jade.plant.flowering":  "Flowering",
     "tfe.jade.plant.fruiting":  "Fruiting",
     "tfe.jade.plant.decorative_leaves":  "Placed leaves (will not fruit)",
+    "tfe.jade.harvest_dormancy":  "Harvest dormancy: %s left",
     "tfe.jade.crop.growth_blocked":  "Growth blocked",
     "tfe.jade.crop.growth_limited":  "Growing, but current conditions prevent maturity",
     "tfe.jade.crop_growth":  "Growth: %s%%",

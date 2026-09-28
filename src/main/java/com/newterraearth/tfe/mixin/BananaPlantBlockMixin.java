@@ -23,6 +23,7 @@ import net.dries007.tfc.common.blocks.plant.fruit.Lifecycle;
 import net.dries007.tfc.common.blocks.plant.fruit.SeasonalPlantBlock;
 import net.dries007.tfc.util.Helpers;
 import net.dries007.tfc.util.calendar.Calendars;
+import net.dries007.tfc.util.calendar.Month;
 import net.dries007.tfc.util.climate.ClimateRange;
 
 import com.newterraearth.tfe.world.NTESeasonalHelpers;
@@ -62,7 +63,8 @@ public abstract class BananaPlantBlockMixin
             final BlockPos rootPos = NTESeasonalHelpers.getBananaRootPos(level, pos);
 
             Lifecycle currentLifecycle = state.getValue(BananaPlantBlock.LIFECYCLE);
-            Lifecycle expectedLifecycle = accessor.tfe$invokeGetLifecycleForMonth(NTESeasonalHelpers.getHemispheralCalendarMonthOfYear(level, pos));
+            final Month month = NTESeasonalHelpers.getHemispheralCalendarMonthOfYear(level, pos);
+            Lifecycle expectedLifecycle = NTESeasonalHelpers.getExpectedLifecycle(accessor, level, pos, month);
             if (!SeasonalPlantBlock.checkAndSetDormant(level, pos, state, currentLifecycle, expectedLifecycle))
             {
                 long deltaTicks = Math.min(bush.getTicksSinceBushUpdate(), Calendars.SERVER.getCalendarTicksInYear());
@@ -88,10 +90,11 @@ public abstract class BananaPlantBlockMixin
                     }
 
                     final float temperatureAtNextTick = NTESeasonalHelpers.getPlantTemperature(level, rootPos, nextCalendarTick, Calendars.SERVER.getCalendarDaysInMonth());
-                    final Lifecycle lifecycleAtNextTick = accessor.tfe$invokeGetLifecycleForMonth(NTESeasonalHelpers.getHemispheralCalendarMonthOfYear(level, pos, nextCalendarTick));
+                    final Lifecycle lifecycleAtNextTick = NTESeasonalHelpers.getExpectedLifecycle(accessor, level, pos,
+                        NTESeasonalHelpers.getHemispheralCalendarMonthOfYear(level, pos, nextCalendarTick));
                     if (range.checkBoth(hydration, temperatureAtNextTick, false))
                     {
-                        currentLifecycle = currentLifecycle.advanceTowards(lifecycleAtNextTick);
+                        currentLifecycle = NTESeasonalHelpers.advanceLifecycle(level, pos, currentLifecycle, lifecycleAtNextTick);
                     }
                     else
                     {

@@ -185,6 +185,14 @@ public final class NTEJadeIntegration implements snownee.jade.api.IWailaPlugin
                 return;
             }
 
+            // 采摘休眠期内只显示休眠倒计时，不再显示"展叶期"等生命周期状态（与 TFC 1.21 的语义一致）。
+            if (NTESeasonalHelpers.isHarvestDormant(accessor.getLevel(), accessor.getPosition()))
+            {
+                tooltip.add(Component.translatable("tfe.jade.harvest_dormancy",
+                    Calendars.get(accessor.getLevel()).getTimeDelta(NTESeasonalHelpers.getHarvestDormancyRemaining(accessor.getLevel(), accessor.getPosition()))));
+                return;
+            }
+
             final Lifecycle lifecycle = state.getValue(SeasonalPlantBlock.LIFECYCLE);
             final String statusKey;
             if (lifecycle == Lifecycle.DORMANT)

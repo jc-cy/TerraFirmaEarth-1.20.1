@@ -2,11 +2,11 @@
   "name": "新气候",
   "category": "tfc:new_terra_earth",
   "icon": "tfc:textures/gui/book/icons/thermometer.png",
-  "sortnum": 10,
+  "sortnum": 11,
   "pages": [
     {
       "type": "patchouli:spotlight",
-      "item": "tfe:canola",
+      "item": "tfe:canola_oilseed",
       "title": "31 种气候分类",
       "link_recipes": false,
       "text": ""

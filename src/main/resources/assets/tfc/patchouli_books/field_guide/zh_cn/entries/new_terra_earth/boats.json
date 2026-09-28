@@ -2,7 +2,7 @@
   "name": "船只与水流",
   "category": "tfc:new_terra_earth",
   "icon": "minecraft:oak_boat",
-  "sortnum": 17,
+  "sortnum": 18,
   "pages": [
     {
       "type": "patchouli:spotlight",

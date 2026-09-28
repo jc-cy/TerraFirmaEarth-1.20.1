@@ -2,7 +2,7 @@
   "name": "Added Terrain Systems",
   "category": "tfc:new_terra_earth",
   "icon": "tfc:grass/loam",
-  "sortnum": 19,
+  "sortnum": 20,
   "pages": [
     {
       "type": "patchouli:spotlight",

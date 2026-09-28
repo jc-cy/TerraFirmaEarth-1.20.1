@@ -1,12 +1,12 @@
 {
   "name": "Bush Changes",
   "category": "tfc:new_terra_earth",
-  "icon": "tfc:food/blueberry",
+  "icon": "tfc:textures/item/food/blueberry.png",
   "sortnum": 6,
   "pages": [
     {
       "type": "patchouli:spotlight",
-      "item": "tfc:food/blueberry",
+      "item": "tfc:plant/blueberry_bush",
       "title": "Berry Bush Climate",
       "link_recipes": false,
       "text": ""
