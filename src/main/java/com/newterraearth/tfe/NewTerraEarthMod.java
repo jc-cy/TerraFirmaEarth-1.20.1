@@ -23,6 +23,7 @@ import com.newterraearth.tfe.common.entity.NTEItems;
 import com.newterraearth.tfe.common.entity.NTEVanillaFaunas;
 import com.newterraearth.tfe.event.NTEBuiltinPackEvents;
 import com.newterraearth.tfe.event.NTECactusEvents;
+import com.newterraearth.tfe.event.NTEFarmlandEvents;
 import com.newterraearth.tfe.event.NTEDeviceEvents;
 import com.newterraearth.tfe.debug.NTERuntimeTrace;
 import com.newterraearth.tfe.network.NTEPacketHandler;
@@ -44,6 +45,7 @@ public final class NewTerraEarthMod
         NTEBuiltinPackEvents.init(modBus);
         NTERuntimeTrace.init();
         NTECactusEvents.init();
+        NTEFarmlandEvents.init();
         NTEDeviceEvents.init();
         NTEDeviceEvents.initModBus(modBus);
         modBus.addListener(NTEEntities::onEntityAttributeCreation);

@@ -31,7 +31,7 @@ TerraFirmaEarth / 群峦地球
 本模组新增与重做的内容（此处不保证全有介绍，以帕秋莉为准）
 
 • 溪流：河流叶端形成地形感知的源头溪流，含弯流、急流、瀑布、落地摊流、动态水生成和地下溪流。
-• 更多的jade信息，如作物健康（见帕秋莉）,生长状态阶段等等。
+• 更多的jade信息，如作物健康（见帕秋莉）、生长状态阶段、预计成熟时间与肥料是否充足等等。
 • 更干净的地形全局优化过，减少了一些坑洞沟渠裂谷的挖掘，且侵入岩将不再水平面以上侵入,等等大量的微调。
 • 修复了死亡不掉落凿锤死亡崩溃游戏的异常。
 • 绳索与绳锚：绳索、绳锚进行了修改，具体机制见帕秋莉。
@@ -49,6 +49,7 @@ TerraFirmaEarth / 群峦地球
 • 区域地形：补齐 ocean ridge、rift valley、river valley、环礁和基础 stratovolcano centered-feature；TFE 的地势溪流与河床保护继续叠加。
 • 高低版本兼容层：让高版本的生物、气候、植物等数据在 1.20 端正常工作，兼容了1.20提前注册的物品。
 • AFC 兼容：兼容林海传说。
+• 沃土耕地兼容：农夫乐事的沃土耕地与幸存者的沃土扩展的五档耕地按档位获得土壤肥力（最高档比黑土再多 10%），且可以直接对空白耕地施肥。
 • 沉浸式飞机兼容，修复了沉浸式飞机无法有效和群峦水体交互的问题。
 • FirmalifeEnhanced 温室地窖重置兼容,温室范围内，作物、果树、浆果灌木等会按年均温度和湿度判定，不受外部天气影响。
 • TFCModernLife群峦现代化生活兼容：温室范围是以当前温度为基准进行控温。且建议使用此模组作为本模组温室、地窖和电力厨房相关拓展，勿重复启用.
@@ -78,7 +79,7 @@ Ported from newer TFC versions (not an exhaustive list; the field guide is autho
 Added or reworked by this mod (not an exhaustive list; the field guide is authoritative)
 
 • Streams: river ends form terrain-aware headwater streams, including bends, rapids, waterfalls, spreading flow, dynamic water generation and underground streams.
-• More Jade information, such as crop health (see the field guide), growth stage, and more.
+• More Jade information, such as crop health (see the field guide), growth stage, estimated time to maturity and whether fertilizer is sufficient.
 • Cleaner terrain: global terrain generation has been optimized — fewer pits, ditches and rift excavations, intrusive rock no longer intrudes above sea level, plus many other tweaks.
 • Fixed a crash that could occur when dying with no item drops while holding a hammer and chisel.
 • Ropes and rope anchors have been reworked; see the field guide for the details.
@@ -96,6 +97,7 @@ Added or reworked by this mod (not an exhaustive list; the field guide is author
 • Regional terrain: added ocean ridge, rift valley, river valley, atoll and basic stratovolcano centered features; TFE's terrain-aware streams and bed protection continue to stack on top.
 • High/low-version compatibility layer: makes newer-version mobs, climate and plant data work on 1.20, including items already registered in 1.20.
 • AFC compatibility: works with Another Forest Compat (林海传说).
+• Rich soil farmland compatibility: Farmer's Delight rich soil farmland and the five Survivor's Rich Soils variants receive soil fertility by tier (the top tier is 10% above Mollisol), and can be fertilized directly while empty.
 • Immersive Aircraft compatibility: fixed Immersive Aircraft failing to interact with TFC water bodies properly.
 • FirmalifeEnhanced greenhouse / cellar reset compatibility: inside a controlled greenhouse, crops, fruit trees and berry bushes are judged by annual-average temperature and hydration, and are not affected by outside weather.
 • TFCModernLife compatibility: the greenhouse range controls temperature based on the current temperature. It is recommended as the greenhouse, cellar and electric kitchen expansion for this mod; do not enable duplicates.

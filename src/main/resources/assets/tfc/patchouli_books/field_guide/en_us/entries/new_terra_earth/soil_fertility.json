@@ -5,63 +5,304 @@
   "sortnum": 3,
   "pages": [
     {
-      "type": "patchouli:spotlight",
-      "item": "tfe:dirt/fluvisol",
-      "title": "Fluvisol",
-      "link_recipes": false,
-      "text": ""
+      "type": "patchouli:text",
+      "title": "Soil Fertility",
+      "text": "There are eight varieties of soil throughout the world. Their fertility differs, from very fertile to poor. Soil fertility is a very important property when it comes to farming.$(br)Soil fertility affects how strong fertilizer is: the more fertile the soil, the stronger its effect. Without fertilizer, crops grow at the same rate on every soil."
     },
     {
       "type": "patchouli:text",
-      "title": "Fluvisol",
-      "text": "Fluvisol is found along rivers in regions with wet and dry seasons. Its farmland is high quality: stored nutrients contribute 10% more to crop growth and yield, and applied fertilizer is 10% more effective."
+      "text": "With fertilizer, positive fertility increases the amount of nutrients applied, speeds up yield growth (never above its cap), and makes crops mature faster — maturing sooner also means maturing costs less fertilizer. Negative fertility does the opposite in every way.$(br)After fertilizing, those growth figures double or increase, with fertility stacking on top of them. Take Mollisol as an example: applying 10 units of nitrogen gives 12 units (20% fertility); after normal fertilizing, growth speed becomes 2x, and 2.2x on Mollisol (20% fertility); yield growth works the same way, but never exceeds the crop's own maximum harvest multiplier."
     },
     {
-      "type": "patchouli:spotlight",
-      "item": "tfe:dirt/mollisol",
-      "title": "Mollisol",
-      "link_recipes": false,
-      "text": ""
+      "type": "patchouli:multiblock",
+      "anchor": "entisol",
+      "multiblock": {
+        "pattern": [
+          [
+            "X"
+          ],
+          [
+            "0"
+          ]
+        ],
+        "mapping": {
+          "X": "tfc:dirt/loam"
+        }
+      },
+      "name": "Entisol",
+      "text": "Entisol is the most common soil type, found throughout the world. It is a normal quality soil, with no soil fertility.",
+      "enable_visualize": false
+    },
+    {
+      "type": "patchouli:multiblock",
+      "anchor": "andisol",
+      "multiblock": {
+        "pattern": [
+          [
+            "X"
+          ],
+          [
+            "0"
+          ]
+        ],
+        "mapping": {
+          "X": "tfc:dirt/silty_loam"
+        }
+      },
+      "name": "Andisol",
+      "text": "Andisol is found in volcanic regions. It is a high quality soil, with 10% soil fertility.",
+      "enable_visualize": false
+    },
+    {
+      "type": "patchouli:multiblock",
+      "anchor": "fluvisol",
+      "multiblock": {
+        "pattern": [
+          [
+            "X"
+          ],
+          [
+            "0"
+          ]
+        ],
+        "mapping": {
+          "X": "tfe:dirt/fluvisol"
+        }
+      },
+      "name": "Fluvisol",
+      "text": "Fluvisol is found along rivers in regions with wet and dry seasons. It is a high quality soil, with 10% soil fertility.",
+      "enable_visualize": false
+    },
+    {
+      "type": "patchouli:multiblock",
+      "anchor": "alfisol",
+      "multiblock": {
+        "pattern": [
+          [
+            "X"
+          ],
+          [
+            "0"
+          ]
+        ],
+        "mapping": {
+          "X": "tfc:dirt/silt"
+        }
+      },
+      "name": "Alfisol",
+      "text": "Alfisol is found in temperate broadleaf forests. It is a high quality soil, with 10% soil fertility.",
+      "enable_visualize": false
+    },
+    {
+      "type": "patchouli:multiblock",
+      "anchor": "mollisol",
+      "multiblock": {
+        "pattern": [
+          [
+            "X"
+          ],
+          [
+            "0"
+          ]
+        ],
+        "mapping": {
+          "X": "tfe:dirt/mollisol"
+        }
+      },
+      "name": "Mollisol",
+      "text": "Mollisol is found in cold grasslands with a rainfall of at least 250mm. It is a very high quality soil, with 20% soil fertility, and is the most fertile soil type.",
+      "enable_visualize": false
+    },
+    {
+      "type": "patchouli:multiblock",
+      "anchor": "podzol",
+      "multiblock": {
+        "pattern": [
+          [
+            "X"
+          ],
+          [
+            "0"
+          ]
+        ],
+        "mapping": {
+          "X": "tfe:dirt/podzol"
+        }
+      },
+      "name": "Podzol",
+      "text": "Podzol is found in conifer forests. It is a poor quality soil, with -10% soil fertility.",
+      "enable_visualize": false
+    },
+    {
+      "type": "patchouli:multiblock",
+      "anchor": "aridisol",
+      "multiblock": {
+        "pattern": [
+          [
+            "X"
+          ],
+          [
+            "0"
+          ]
+        ],
+        "mapping": {
+          "X": "tfc:dirt/sandy_loam"
+        }
+      },
+      "name": "Aridisol",
+      "text": "Aridisol is found in dry regions. It is a poor quality soil, with -10% soil fertility.",
+      "enable_visualize": false
+    },
+    {
+      "type": "patchouli:multiblock",
+      "anchor": "oxisol",
+      "multiblock": {
+        "pattern": [
+          [
+            "X"
+          ],
+          [
+            "0"
+          ]
+        ],
+        "mapping": {
+          "X": "tfe:dirt/oxisol"
+        }
+      },
+      "name": "Oxisol",
+      "text": "Oxisol is found in wet tropical regions. It is a very poor quality soil, with -20% soil fertility, and is the least fertile soil type.",
+      "enable_visualize": false
     },
     {
       "type": "patchouli:text",
-      "title": "Mollisol",
-      "text": "Mollisol is found in cold grasslands with at least 250mm of rainfall. Its farmland is very high quality: stored nutrients contribute 20% more to crop growth and yield, and applied fertilizer is 20% more effective. This is the most fertile soil type."
-    },
-    {
-      "type": "patchouli:spotlight",
-      "item": "tfe:dirt/podzol",
-      "title": "Podzol",
-      "link_recipes": false,
-      "text": ""
+      "title": "Farmer's Delight",
+      "text": "With Farmer's Delight installed, its $(thing)Rich Soil Farmland$() has 30% soil fertility in this mod — 10% more than Mollisol."
     },
     {
       "type": "patchouli:text",
-      "title": "Podzol",
-      "text": "Podzol is found in conifer forests. Its farmland is poor quality: stored nutrients contribute 10% less to crop growth and yield, and applied fertilizer is 10% less effective."
-    },
-    {
-      "type": "patchouli:spotlight",
-      "item": "tfe:dirt/oxisol",
-      "title": "Oxisol",
-      "link_recipes": false,
-      "text": ""
-    },
-    {
-      "type": "patchouli:text",
-      "title": "Oxisol",
-      "text": "Oxisol is found in wet tropical regions. Its farmland is very poor quality: stored nutrients contribute 20% less to crop growth and yield, and applied fertilizer is 20% less effective. This is the least fertile soil type."
+      "title": "Survivor's Rich Soils",
+      "text": "With Survivor's Rich Soils installed, its five rich soil farmland variants work one tier above the soil they are crafted from:$(li)$(thing)Lush Rich Soil Farmland$(): +30%$(li)$(thing)Enriched Rich Soil Farmland$(): +20%$(li)$(thing)Normal Rich Soil Farmland$(): +10%$(li)$(thing)Barren Rich Soil Farmland$(): same as typical soil$(li)$(thing)Reclaimed Rich Soil Farmland$(): -10%"
     }
   ],
   "read_by_default": true,
-  "extra_recipe_mappings": {
-    "tfe:dirt/fluvisol": 0,
-    "tfe:farmland/fluvisol": 0,
-    "tfe:dirt/mollisol": 2,
-    "tfe:farmland/mollisol": 2,
-    "tfe:dirt/podzol": 4,
-    "tfe:farmland/podzol": 4,
-    "tfe:dirt/oxisol": 6,
-    "tfe:farmland/oxisol": 6
+      "extra_recipe_mappings": {
+    "tfe:duff/loam": 2,
+    "tfe:clay_duff/loam": 2,
+    "tfe:coarse_dirt/loam": 2,
+    "tfc:dirt/loam": 2,
+    "tfc:farmland/loam": 2,
+    "tfc:grass/loam": 2,
+    "tfc:grass_path/loam": 2,
+    "tfc:clay/loam": 2,
+    "tfc:clay_grass/loam": 2,
+    "tfc:rooted_dirt/loam": 2,
+    "tfc:mud/loam": 2,
+    "tfc:mud_bricks/loam": 2,
+    "tfc:muddy_roots/loam": 2,
+    "tfc:drying_bricks/loam": 2,
+    "tfe:duff/silty_loam": 3,
+    "tfe:clay_duff/silty_loam": 3,
+    "tfe:coarse_dirt/silty_loam": 3,
+    "tfc:dirt/silty_loam": 3,
+    "tfc:farmland/silty_loam": 3,
+    "tfc:grass/silty_loam": 3,
+    "tfc:grass_path/silty_loam": 3,
+    "tfc:clay/silty_loam": 3,
+    "tfc:clay_grass/silty_loam": 3,
+    "tfc:rooted_dirt/silty_loam": 3,
+    "tfc:mud/silty_loam": 3,
+    "tfc:mud_bricks/silty_loam": 3,
+    "tfc:muddy_roots/silty_loam": 3,
+    "tfc:drying_bricks/silty_loam": 3,
+    "tfe:dirt/fluvisol": 4,
+    "tfe:farmland/fluvisol": 4,
+    "tfe:grass/fluvisol": 4,
+    "tfe:grass_path/fluvisol": 4,
+    "tfe:clay/fluvisol": 4,
+    "tfe:clay_grass/fluvisol": 4,
+    "tfe:rooted_dirt/fluvisol": 4,
+    "tfe:mud/fluvisol": 4,
+    "tfe:mud_bricks/fluvisol": 4,
+    "tfe:muddy_roots/fluvisol": 4,
+    "tfe:drying_bricks/fluvisol": 4,
+    "tfe:duff/fluvisol": 4,
+    "tfe:clay_duff/fluvisol": 4,
+    "tfe:coarse_dirt/fluvisol": 4,
+    "tfe:duff/silt": 5,
+    "tfe:clay_duff/silt": 5,
+    "tfe:coarse_dirt/silt": 5,
+    "tfc:dirt/silt": 5,
+    "tfc:farmland/silt": 5,
+    "tfc:grass/silt": 5,
+    "tfc:grass_path/silt": 5,
+    "tfc:clay/silt": 5,
+    "tfc:clay_grass/silt": 5,
+    "tfc:rooted_dirt/silt": 5,
+    "tfc:mud/silt": 5,
+    "tfc:mud_bricks/silt": 5,
+    "tfc:muddy_roots/silt": 5,
+    "tfc:drying_bricks/silt": 5,
+    "tfe:dirt/mollisol": 6,
+    "tfe:farmland/mollisol": 6,
+    "tfe:grass/mollisol": 6,
+    "tfe:grass_path/mollisol": 6,
+    "tfe:clay/mollisol": 6,
+    "tfe:clay_grass/mollisol": 6,
+    "tfe:rooted_dirt/mollisol": 6,
+    "tfe:mud/mollisol": 6,
+    "tfe:mud_bricks/mollisol": 6,
+    "tfe:muddy_roots/mollisol": 6,
+    "tfe:drying_bricks/mollisol": 6,
+    "tfe:duff/mollisol": 6,
+    "tfe:clay_duff/mollisol": 6,
+    "tfe:coarse_dirt/mollisol": 6,
+    "tfe:dirt/podzol": 7,
+    "tfe:farmland/podzol": 7,
+    "tfe:grass/podzol": 7,
+    "tfe:grass_path/podzol": 7,
+    "tfe:clay/podzol": 7,
+    "tfe:clay_grass/podzol": 7,
+    "tfe:rooted_dirt/podzol": 7,
+    "tfe:mud/podzol": 7,
+    "tfe:mud_bricks/podzol": 7,
+    "tfe:muddy_roots/podzol": 7,
+    "tfe:drying_bricks/podzol": 7,
+    "tfe:duff/podzol": 7,
+    "tfe:clay_duff/podzol": 7,
+    "tfe:coarse_dirt/podzol": 7,
+    "tfe:duff/sandy_loam": 8,
+    "tfe:clay_duff/sandy_loam": 8,
+    "tfe:coarse_dirt/sandy_loam": 8,
+    "tfc:dirt/sandy_loam": 8,
+    "tfc:farmland/sandy_loam": 8,
+    "tfc:grass/sandy_loam": 8,
+    "tfc:grass_path/sandy_loam": 8,
+    "tfc:clay/sandy_loam": 8,
+    "tfc:clay_grass/sandy_loam": 8,
+    "tfc:rooted_dirt/sandy_loam": 8,
+    "tfc:mud/sandy_loam": 8,
+    "tfc:mud_bricks/sandy_loam": 8,
+    "tfc:muddy_roots/sandy_loam": 8,
+    "tfc:drying_bricks/sandy_loam": 8,
+    "tfe:dirt/oxisol": 9,
+    "tfe:farmland/oxisol": 9,
+    "tfe:grass/oxisol": 9,
+    "tfe:grass_path/oxisol": 9,
+    "tfe:clay/oxisol": 9,
+    "tfe:clay_grass/oxisol": 9,
+    "tfe:rooted_dirt/oxisol": 9,
+    "tfe:mud/oxisol": 9,
+    "tfe:mud_bricks/oxisol": 9,
+    "tfe:muddy_roots/oxisol": 9,
+    "tfe:drying_bricks/oxisol": 9,
+    "tfe:duff/oxisol": 9,
+    "tfe:clay_duff/oxisol": 9,
+    "tfe:coarse_dirt/oxisol": 9,
+    "farmersdelight:rich_soil_farmland": 10,
+    "survivorsrichsoils:rich_soil_farmland/lush": 11,
+    "survivorsrichsoils:rich_soil_farmland/enriched": 11,
+    "survivorsrichsoils:rich_soil_farmland/normal": 11,
+    "survivorsrichsoils:rich_soil_farmland/barren": 11,
+    "survivorsrichsoils:rich_soil_farmland/reclaimed": 11
   }
 }

@@ -22,7 +22,7 @@
     {
       "type": "patchouli:text",
       "title": "Crops: Health and Growth",
-      "text": "Crops show:$(br2)Health: …%: gains 5% per check while temperature and hydration are suitable, loses 5% when they are not, and 0% means the crop dies$(br)Growth: …%: the current maturity$(br)Estimated time to maturity: …: shown only when the conditions are suitable, and it is an estimate"
+      "text": "Crops show:$(br2)Health: …%: gains 5% per check while temperature and hydration are suitable, loses 5% when they are not, and 0% means the crop dies$(br)Growth: …%: the current maturity$(br)Estimated time to maturity: …: shown only when the conditions are suitable, an estimate that already accounts for soil fertility$(br)Fertilizer: sufficient / needs 10% more nitrogen fertilizer: how much fertilizer the remaining growth still needs; the percentage is the nitrogen / phosphorus / potassium you still have to apply, counted for soil fertility (richer soil asks for less) and any extra fertilizer bonus from other mods"
     },
     {
       "type": "patchouli:text",

@@ -5,63 +5,304 @@
   "sortnum": 3,
   "pages": [
     {
-      "type": "patchouli:spotlight",
-      "item": "tfe:dirt/fluvisol",
-      "title": "冲积土",
-      "link_recipes": false,
-      "text": ""
+      "type": "patchouli:text",
+      "title": "土壤肥力",
+      "text": "世界各地分布着八种土壤类型。它们的肥力各不相同，从非常肥沃到贫瘠，有不同等级的肥力。土壤肥力是极为重要的属性，对于耕种来说。$(br)土壤肥力影响的是肥料的强度，肥力越高肥料的效果越强。没有施肥时，各种土壤上的作物生长相同。"
     },
     {
       "type": "patchouli:text",
-      "title": "冲积土",
-      "text": "冲积土分布在有旱季和雨季地区的河流沿岸。它的耕地属于高品质土壤，土壤养分对作物生长和产量的效果提高 10%，施肥效果也提高 10%。"
+      "text": "有肥料时，正的肥力会增加肥料的生效量、加快产量的增加速度(不会超过上限)、更快的作物成熟速度同时也意味着成熟消耗更少的肥料。负的肥力则完全相反。$(br)土壤施肥后生长的各项数值翻倍或增加，肥力在此基础上叠加。以黑土为例：施肥10单位的氮，土壤最终可以获得12（20%肥力）单位的氮肥、正常施肥后生长速度变为2倍，黑土上为2.2倍（加20%的肥力）、产量增加速度亦是如此但不会超过作物本身最大收获倍率"
     },
     {
-      "type": "patchouli:spotlight",
-      "item": "tfe:dirt/mollisol",
-      "title": "黑土",
-      "link_recipes": false,
-      "text": ""
+      "type": "patchouli:multiblock",
+      "anchor": "entisol",
+      "multiblock": {
+        "pattern": [
+          [
+            "X"
+          ],
+          [
+            "0"
+          ]
+        ],
+        "mapping": {
+          "X": "tfc:dirt/loam"
+        }
+      },
+      "name": "新成土",
+      "text": "新成土是最常见的土壤类型，遍布世界各地。它是一种普通品质的土壤，没有土壤肥力。",
+      "enable_visualize": false
+    },
+    {
+      "type": "patchouli:multiblock",
+      "anchor": "andisol",
+      "multiblock": {
+        "pattern": [
+          [
+            "X"
+          ],
+          [
+            "0"
+          ]
+        ],
+        "mapping": {
+          "X": "tfc:dirt/silty_loam"
+        }
+      },
+      "name": "火山土",
+      "text": "火山土发现于火山地区。它是一种高品质土壤，有 10% 的土壤肥力。",
+      "enable_visualize": false
+    },
+    {
+      "type": "patchouli:multiblock",
+      "anchor": "fluvisol",
+      "multiblock": {
+        "pattern": [
+          [
+            "X"
+          ],
+          [
+            "0"
+          ]
+        ],
+        "mapping": {
+          "X": "tfe:dirt/fluvisol"
+        }
+      },
+      "name": "冲积土",
+      "text": "冲积土发现于有旱季和雨季地区的河流沿岸。它是一种高品质土壤，有 10% 的土壤肥力。",
+      "enable_visualize": false
+    },
+    {
+      "type": "patchouli:multiblock",
+      "anchor": "alfisol",
+      "multiblock": {
+        "pattern": [
+          [
+            "X"
+          ],
+          [
+            "0"
+          ]
+        ],
+        "mapping": {
+          "X": "tfc:dirt/silt"
+        }
+      },
+      "name": "淋溶土",
+      "text": "淋溶土发现于温带阔叶林中。它是一种高品质土壤，有 10% 的土壤肥力。",
+      "enable_visualize": false
+    },
+    {
+      "type": "patchouli:multiblock",
+      "anchor": "mollisol",
+      "multiblock": {
+        "pattern": [
+          [
+            "X"
+          ],
+          [
+            "0"
+          ]
+        ],
+        "mapping": {
+          "X": "tfe:dirt/mollisol"
+        }
+      },
+      "name": "黑土",
+      "text": "黑土发现于降雨量至少 250mm 的寒冷草原。它是一种非常高品质的土壤，有 20% 的土壤肥力，是最肥沃的土壤类型。",
+      "enable_visualize": false
+    },
+    {
+      "type": "patchouli:multiblock",
+      "anchor": "podzol",
+      "multiblock": {
+        "pattern": [
+          [
+            "X"
+          ],
+          [
+            "0"
+          ]
+        ],
+        "mapping": {
+          "X": "tfe:dirt/podzol"
+        }
+      },
+      "name": "灰化土",
+      "text": "灰化土发现于针叶林中。它是一种低品质土壤，土壤肥力为 -10%。",
+      "enable_visualize": false
+    },
+    {
+      "type": "patchouli:multiblock",
+      "anchor": "aridisol",
+      "multiblock": {
+        "pattern": [
+          [
+            "X"
+          ],
+          [
+            "0"
+          ]
+        ],
+        "mapping": {
+          "X": "tfc:dirt/sandy_loam"
+        }
+      },
+      "name": "旱成土",
+      "text": "旱成土发现于干旱地区。它是一种低品质土壤，土壤肥力为 -10%。",
+      "enable_visualize": false
+    },
+    {
+      "type": "patchouli:multiblock",
+      "anchor": "oxisol",
+      "multiblock": {
+        "pattern": [
+          [
+            "X"
+          ],
+          [
+            "0"
+          ]
+        ],
+        "mapping": {
+          "X": "tfe:dirt/oxisol"
+        }
+      },
+      "name": "氧化土",
+      "text": "氧化土发现于潮湿的热带地区。它是一种非常低品质的土壤，土壤肥力为 -20%，是最贫瘠的土壤类型。",
+      "enable_visualize": false
     },
     {
       "type": "patchouli:text",
-      "title": "黑土",
-      "text": "黑土分布在降雨量至少为 250mm 的寒冷草原。它的耕地属于非常高品质土壤，土壤养分对作物生长和产量的效果提高 20%，施肥效果也提高 20%，是肥力最高的土壤类型。"
-    },
-    {
-      "type": "patchouli:spotlight",
-      "item": "tfe:dirt/podzol",
-      "title": "灰化土",
-      "link_recipes": false,
-      "text": ""
+      "title": "农夫乐事",
+      "text": "安装了农夫乐事（Farmer's Delight）时，它的$(thing)沃土耕地$()（Rich Soil Farmland）在本模组中有着 30% 的土壤肥力，相当于比黑土再多 10%。"
     },
     {
       "type": "patchouli:text",
-      "title": "灰化土",
-      "text": "灰化土分布在针叶林中。它的耕地属于低品质土壤，土壤养分对作物生长和产量的效果降低 10%，施肥效果也降低 10%。"
-    },
-    {
-      "type": "patchouli:spotlight",
-      "item": "tfe:dirt/oxisol",
-      "title": "氧化土",
-      "link_recipes": false,
-      "text": ""
-    },
-    {
-      "type": "patchouli:text",
-      "title": "氧化土",
-      "text": "氧化土分布在潮湿的热带地区。它的耕地属于非常低品质土壤，土壤养分对作物生长和产量的效果降低 20%，施肥效果也降低 20%，是肥力最低的土壤类型。"
+      "title": "幸存者的沃土扩展",
+      "text": "安装了幸存者的沃土扩展（Survivor's Rich Soils）时，它的五档沃土耕地各按制作材料再高 10% 的档位生效：$(li)$(thing)富饶沃土耕地$()（Lush Rich Soil Farmland）：提升 30%$(li)$(thing)肥沃沃土耕地$()（Enriched Rich Soil Farmland）：提升 20%$(li)$(thing)普通沃土耕地$()（Normal Rich Soil Farmland）：提升 10%$(li)$(thing)贫瘠沃土耕地$()（Barren Rich Soil Farmland）：与普通土壤相同$(li)$(thing)复垦沃土耕地$()（Reclaimed Rich Soil Farmland）：降低 10%"
     }
   ],
   "read_by_default": true,
-  "extra_recipe_mappings": {
-    "tfe:dirt/fluvisol": 0,
-    "tfe:farmland/fluvisol": 0,
-    "tfe:dirt/mollisol": 2,
-    "tfe:farmland/mollisol": 2,
-    "tfe:dirt/podzol": 4,
-    "tfe:farmland/podzol": 4,
-    "tfe:dirt/oxisol": 6,
-    "tfe:farmland/oxisol": 6
+      "extra_recipe_mappings": {
+    "tfe:duff/loam": 2,
+    "tfe:clay_duff/loam": 2,
+    "tfe:coarse_dirt/loam": 2,
+    "tfc:dirt/loam": 2,
+    "tfc:farmland/loam": 2,
+    "tfc:grass/loam": 2,
+    "tfc:grass_path/loam": 2,
+    "tfc:clay/loam": 2,
+    "tfc:clay_grass/loam": 2,
+    "tfc:rooted_dirt/loam": 2,
+    "tfc:mud/loam": 2,
+    "tfc:mud_bricks/loam": 2,
+    "tfc:muddy_roots/loam": 2,
+    "tfc:drying_bricks/loam": 2,
+    "tfe:duff/silty_loam": 3,
+    "tfe:clay_duff/silty_loam": 3,
+    "tfe:coarse_dirt/silty_loam": 3,
+    "tfc:dirt/silty_loam": 3,
+    "tfc:farmland/silty_loam": 3,
+    "tfc:grass/silty_loam": 3,
+    "tfc:grass_path/silty_loam": 3,
+    "tfc:clay/silty_loam": 3,
+    "tfc:clay_grass/silty_loam": 3,
+    "tfc:rooted_dirt/silty_loam": 3,
+    "tfc:mud/silty_loam": 3,
+    "tfc:mud_bricks/silty_loam": 3,
+    "tfc:muddy_roots/silty_loam": 3,
+    "tfc:drying_bricks/silty_loam": 3,
+    "tfe:dirt/fluvisol": 4,
+    "tfe:farmland/fluvisol": 4,
+    "tfe:grass/fluvisol": 4,
+    "tfe:grass_path/fluvisol": 4,
+    "tfe:clay/fluvisol": 4,
+    "tfe:clay_grass/fluvisol": 4,
+    "tfe:rooted_dirt/fluvisol": 4,
+    "tfe:mud/fluvisol": 4,
+    "tfe:mud_bricks/fluvisol": 4,
+    "tfe:muddy_roots/fluvisol": 4,
+    "tfe:drying_bricks/fluvisol": 4,
+    "tfe:duff/fluvisol": 4,
+    "tfe:clay_duff/fluvisol": 4,
+    "tfe:coarse_dirt/fluvisol": 4,
+    "tfe:duff/silt": 5,
+    "tfe:clay_duff/silt": 5,
+    "tfe:coarse_dirt/silt": 5,
+    "tfc:dirt/silt": 5,
+    "tfc:farmland/silt": 5,
+    "tfc:grass/silt": 5,
+    "tfc:grass_path/silt": 5,
+    "tfc:clay/silt": 5,
+    "tfc:clay_grass/silt": 5,
+    "tfc:rooted_dirt/silt": 5,
+    "tfc:mud/silt": 5,
+    "tfc:mud_bricks/silt": 5,
+    "tfc:muddy_roots/silt": 5,
+    "tfc:drying_bricks/silt": 5,
+    "tfe:dirt/mollisol": 6,
+    "tfe:farmland/mollisol": 6,
+    "tfe:grass/mollisol": 6,
+    "tfe:grass_path/mollisol": 6,
+    "tfe:clay/mollisol": 6,
+    "tfe:clay_grass/mollisol": 6,
+    "tfe:rooted_dirt/mollisol": 6,
+    "tfe:mud/mollisol": 6,
+    "tfe:mud_bricks/mollisol": 6,
+    "tfe:muddy_roots/mollisol": 6,
+    "tfe:drying_bricks/mollisol": 6,
+    "tfe:duff/mollisol": 6,
+    "tfe:clay_duff/mollisol": 6,
+    "tfe:coarse_dirt/mollisol": 6,
+    "tfe:dirt/podzol": 7,
+    "tfe:farmland/podzol": 7,
+    "tfe:grass/podzol": 7,
+    "tfe:grass_path/podzol": 7,
+    "tfe:clay/podzol": 7,
+    "tfe:clay_grass/podzol": 7,
+    "tfe:rooted_dirt/podzol": 7,
+    "tfe:mud/podzol": 7,
+    "tfe:mud_bricks/podzol": 7,
+    "tfe:muddy_roots/podzol": 7,
+    "tfe:drying_bricks/podzol": 7,
+    "tfe:duff/podzol": 7,
+    "tfe:clay_duff/podzol": 7,
+    "tfe:coarse_dirt/podzol": 7,
+    "tfe:duff/sandy_loam": 8,
+    "tfe:clay_duff/sandy_loam": 8,
+    "tfe:coarse_dirt/sandy_loam": 8,
+    "tfc:dirt/sandy_loam": 8,
+    "tfc:farmland/sandy_loam": 8,
+    "tfc:grass/sandy_loam": 8,
+    "tfc:grass_path/sandy_loam": 8,
+    "tfc:clay/sandy_loam": 8,
+    "tfc:clay_grass/sandy_loam": 8,
+    "tfc:rooted_dirt/sandy_loam": 8,
+    "tfc:mud/sandy_loam": 8,
+    "tfc:mud_bricks/sandy_loam": 8,
+    "tfc:muddy_roots/sandy_loam": 8,
+    "tfc:drying_bricks/sandy_loam": 8,
+    "tfe:dirt/oxisol": 9,
+    "tfe:farmland/oxisol": 9,
+    "tfe:grass/oxisol": 9,
+    "tfe:grass_path/oxisol": 9,
+    "tfe:clay/oxisol": 9,
+    "tfe:clay_grass/oxisol": 9,
+    "tfe:rooted_dirt/oxisol": 9,
+    "tfe:mud/oxisol": 9,
+    "tfe:mud_bricks/oxisol": 9,
+    "tfe:muddy_roots/oxisol": 9,
+    "tfe:drying_bricks/oxisol": 9,
+    "tfe:duff/oxisol": 9,
+    "tfe:clay_duff/oxisol": 9,
+    "tfe:coarse_dirt/oxisol": 9,
+    "farmersdelight:rich_soil_farmland": 10,
+    "survivorsrichsoils:rich_soil_farmland/lush": 11,
+    "survivorsrichsoils:rich_soil_farmland/enriched": 11,
+    "survivorsrichsoils:rich_soil_farmland/normal": 11,
+    "survivorsrichsoils:rich_soil_farmland/barren": 11,
+    "survivorsrichsoils:rich_soil_farmland/reclaimed": 11
   }
 }

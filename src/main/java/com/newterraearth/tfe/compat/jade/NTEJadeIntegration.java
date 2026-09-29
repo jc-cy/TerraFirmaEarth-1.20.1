@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.ChatFormatting;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -13,6 +15,8 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Fluids;
 
 import net.dries007.tfc.common.blockentities.CropBlockEntity;
+import net.dries007.tfc.common.blockentities.FarmlandBlockEntity;
+import net.dries007.tfc.common.blockentities.IFarmland;
 import net.dries007.tfc.common.blockentities.TickCounterBlockEntity;
 import net.dries007.tfc.common.blocks.crop.CropBlock;
 import net.dries007.tfc.common.blocks.crop.CropHelpers;
@@ -33,6 +37,7 @@ import com.newterraearth.tfe.common.block.rope.NTEMetalRopeAnchorBlock;
 import com.newterraearth.tfe.mixin.GrowingFruitTreeBranchBlockAccessor;
 import com.newterraearth.tfe.mixin.SeasonalPlantBlockAccessor;
 import com.newterraearth.tfe.world.NTESeasonalHelpers;
+import com.newterraearth.tfe.world.NTESoilFertility;
 import com.newterraearth.tfe.world.crop.NTECropTemperatureAccess;
 import com.newterraearth.tfe.world.crop.NTECropTemperatureModel;
 
@@ -315,16 +320,95 @@ public final class NTEJadeIntegration implements snownee.jade.api.IWailaPlugin
             }
 
             tooltip.add(plantStatus("tfe.jade.plant.growing"));
-            final long estimatedTicks = (long) Math.ceil(
-                (CropHelpers.GROWTH_LIMIT - growth)
-                    / CropHelpers.GROWTH_FACTOR
-                    * TFCConfig.SERVER.cropGrowthModifier.get()
-            );
+            final long estimatedTicks = estimatedGrowthTicks(accessor, sourcePos, cropBlock, growth);
             tooltip.add(Component.translatable(
                 "tfe.jade.crop_estimated_time",
                 Calendars.get(accessor.getLevel()).getTimeDelta(estimatedTicks)
             ));
+            appendFertilizerStatus(tooltip, accessor, sourcePos, cropBlock, growth);
         }
+    }
+
+    /**
+     * 肥料一行：剩余生长期需要的肥料够不够。需求按真实速率折算（剩余生长量 × 2 / (1 + 土壤肥力)），
+     * 缺口再除以"这份耕地上一份肥料实际补多少"，得到玩家需要施加的氮 / 磷 / 钾肥量。
+     */
+    private static void appendFertilizerStatus(ITooltip tooltip, BlockAccessor accessor, BlockPos farmlandPos, CropBlock cropBlock, float growth)
+    {
+        if (!(accessor.getLevel().getBlockEntity(farmlandPos) instanceof IFarmland farmland))
+        {
+            return;
+        }
+        final FarmlandBlockEntity.NutrientType type = cropBlock.getPrimaryNutrient();
+        final BlockState farmlandState = accessor.getLevel().getBlockState(farmlandPos);
+        final float soilFertility = NTESoilFertility.getModifier(farmlandState);
+        final float growthModifier = TFCConfig.SERVER.cropGrowthModifier.get().floatValue();
+        final float missing = (CropHelpers.GROWTH_LIMIT - growth) * 2f / (1f / growthModifier + soilFertility) - farmland.getNutrient(type);
+        if (missing <= 0f)
+        {
+            tooltip.add(Component.translatable("tfe.jade.crop.fertilizer_enough").withStyle(ChatFormatting.GREEN));
+            return;
+        }
+        final float perItem = soilFertility * externalFertilizerMultiplier(farmlandState);
+        tooltip.add(Component.translatable(
+            "tfe.jade.crop.fertilizer_short",
+            Mth.ceil(missing / perItem * 100f),
+            Component.translatable(nutrientNameKey(type))
+        ).withStyle(ChatFormatting.YELLOW));
+    }
+
+    /**
+     * 第三方模组在同一处 {@code addNutrients} 上额外叠加的施肥倍率。这类倍率是注入在调用点上的常量，
+     * 没有标签、配置或数据出口可供读取，所以只能按方块 id 认出来后写死一份；它与
+     * {@link NTESoilFertility} 的土壤肥力档是两套不同数值，前者是别人的施肥加成，后者是本模组的肥力。
+     */
+    private static float externalFertilizerMultiplier(BlockState state)
+    {
+        return switch (BuiltInRegistries.BLOCK.getKey(state.getBlock()).getPath())
+        {
+            case "rich_soil_farmland/lush" -> 1.2f;
+            case "rich_soil_farmland/enriched" -> 1.1f;
+            case "rich_soil_farmland/normal" -> 1.0f;
+            case "rich_soil_farmland/barren" -> 0.9f;
+            case "rich_soil_farmland/reclaimed" -> 0.8f;
+            default -> 1.0f;
+        };
+    }
+
+    private static String nutrientNameKey(FarmlandBlockEntity.NutrientType type)
+    {
+        return switch (type)
+        {
+            case NITROGEN -> "tfe.nutrient.nitrogen";
+            case PHOSPHOROUS -> "tfe.nutrient.phosphorus";
+            case POTASSIUM -> "tfe.nutrient.potassium";
+        };
+    }
+
+    /**
+     * 预计成熟刻数：按 {@code CropHelpers.growthTickStep} 的真实速率估算——基础项（受 cropGrowthModifier 影响）
+     * 加养分项（受耕地土壤肥力与当前养分影响）；耕地养分只够支撑一部分生长期时，按两段分别累加。
+     */
+    private static long estimatedGrowthTicks(BlockAccessor accessor, BlockPos farmlandPos, CropBlock cropBlock, float growth)
+    {
+        final float growthModifier = TFCConfig.SERVER.cropGrowthModifier.get().floatValue();
+        final float baseRate = CropHelpers.GROWTH_FACTOR / growthModifier;
+        float soilFertility = 1f;
+        float nutrient = 0f;
+        if (accessor.getLevel().getBlockEntity(farmlandPos) instanceof IFarmland farmland)
+        {
+            soilFertility = NTESoilFertility.getModifier(accessor.getLevel().getBlockState(farmlandPos));
+            nutrient = farmland.getNutrient(cropBlock.getPrimaryNutrient());
+        }
+        final float remaining = CropHelpers.GROWTH_LIMIT - growth;
+        final float saturatedRate = CropHelpers.GROWTH_FACTOR * (1f / growthModifier + soilFertility);
+        final long saturatedTicks = (long) Math.ceil(remaining / saturatedRate);
+        final long nutrientTicks = (long) (nutrient / CropHelpers.NUTRIENT_CONSUMPTION);
+        if (saturatedTicks <= nutrientTicks)
+        {
+            return saturatedTicks;
+        }
+        return nutrientTicks + (long) Math.ceil((remaining - nutrientTicks * saturatedRate) / baseRate);
     }
 
     private static int percent(float value, float limit)

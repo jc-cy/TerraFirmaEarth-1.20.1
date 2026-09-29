@@ -135,9 +135,24 @@ public final class NTEFirmalifeGreenhouseCompat
         try
         {
             final Class<?> helperClass = Class.forName(LEGACY_GREENHOUSE_HELPER_CLASS);
-            final Method method = helperClass.getMethod("isControlledGreenhouse", Level.class, BlockPos.class);
-            method.setAccessible(true);
-            isControlledGreenhouseMethod = method;
+            final Method greenhouseMethod = helperClass.getMethod("isControlledGreenhouse", Level.class, BlockPos.class);
+            greenhouseMethod.setAccessible(true);
+            isControlledGreenhouseMethod = greenhouseMethod;
+
+            // 一代 `温室地窖重置`（firmalife_greenhouse_patch）同样提供
+            // getControlledTemperature(Level, BlockPos, float)。早期这里只解析了识别方法，
+            // 导致一代环境下树叶 / 灌木 / 香蕉拿到的是自然环境温度（温室控温看起来失效）。
+            try
+            {
+                final Method controlledMethod = helperClass.getMethod("getControlledTemperature", Level.class, BlockPos.class, float.class);
+                controlledMethod.setAccessible(true);
+                getControlledTemperatureMethod = controlledMethod;
+            }
+            catch (ReflectiveOperationException | RuntimeException | LinkageError ignored)
+            {
+                // 更老的一代版本没有该方法时保持原行为（仅温室识别）。
+            }
+
             return true;
         }
         catch (ReflectiveOperationException | RuntimeException | LinkageError ignored)

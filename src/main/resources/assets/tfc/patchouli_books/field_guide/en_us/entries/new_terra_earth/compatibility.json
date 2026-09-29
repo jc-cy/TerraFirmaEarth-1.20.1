@@ -40,6 +40,16 @@
       "type": "patchouli:text",
       "title": "Datapack Extensions",
       "text": "Servers and modpacks can also extend fauna spawning, tree species, and other compatibility settings through datapacks; the bundled datapack compatibility guide is intended for players and pack authors who need those extensions."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Farmer's Delight",
+      "text": "With Farmer's Delight installed, its $(thing)Rich Soil Farmland$() takes part in this mod's crop growth with 30% soil fertility. See $(l:new_terra_earth/soil_fertility)Soil Fertility$() for every tier."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Survivor's Rich Soils",
+      "text": "With Survivor's Rich Soils installed, its five rich soil farmland variants take part in this mod's crop growth with soil fertility from 30% down to -10%, and they can now be fertilized while empty as well. See $(l:new_terra_earth/soil_fertility)Soil Fertility$() for every tier.$(br)Note: in some versions, that mod adds its own fertilizer multiplier. Unless that is changed there, the five variants gain an extra +20% down to -20% on the fertilizer multiplier (from Lush to Reclaimed), while growth speed and yield follow the normal fertility calculation."
     }
   ],
   "read_by_default": true

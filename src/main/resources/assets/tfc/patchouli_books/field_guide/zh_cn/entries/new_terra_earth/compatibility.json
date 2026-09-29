@@ -35,6 +35,16 @@
       "type": "patchouli:text",
       "title": "地图与数据包",
       "text": "JourneyMap 等地图可以识别并显示新增地形群系的颜色。服务器或整合包也可以通过数据包追加生物刷新、树种和其他兼容配置；随包附带的数据包兼容教程适合需要扩展内容的玩家和整合包作者。"
+    },
+    {
+      "type": "patchouli:text",
+      "title": "农夫乐事",
+      "text": "安装农夫乐事（Farmer's Delight）后，它的$(thing)沃土耕地$()（Rich Soil Farmland）会以 30% 的土壤肥力参与本模组的作物生长。各档位数值见$(l:new_terra_earth/soil_fertility)土壤肥力$()。"
+    },
+    {
+      "type": "patchouli:text",
+      "title": "幸存者的沃土扩展",
+      "text": "安装幸存者的沃土扩展（Survivor's Rich Soils）后，它的五档沃土耕地会以 30% 至 -10% 的土壤肥力参与本模组的作物生长，且可以正常对空白耕地施肥了。各档位数值见$(l:new_terra_earth/soil_fertility)土壤肥力$()$(br)注意：一些版本中由于其本身添加了额外的施肥倍率，如没有专门修改，五档沃土会在施肥倍率上额外多出从 +20%（富饶）到 -20%（复垦）的档位差异，其他生长速度产能等则为正常的肥力计算。"
     }
   ],
   "read_by_default": true
