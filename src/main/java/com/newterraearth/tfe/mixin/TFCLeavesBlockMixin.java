@@ -33,6 +33,8 @@ public abstract class TFCLeavesBlockMixin
 
     @Shadow public abstract void createDestructionEffects(BlockState state, ServerLevel level, BlockPos pos, RandomSource random, boolean replaceOnlyAir);
 
+    @Shadow(remap = true) public abstract void tick(BlockState state, ServerLevel level, BlockPos pos, RandomSource rand);
+
     /**
      * @author Codex
      * @reason Fall leaf particles need the same hemisphere-aware season split as the 1.21 branch.
@@ -65,6 +67,11 @@ public abstract class TFCLeavesBlockMixin
     @Overwrite(remap = true)
     public void randomTick(BlockState state, ServerLevel level, BlockPos pos, RandomSource rand)
     {
+        // Upstream TFC starts this method with super.randomTick(state, level, pos, rand) // super calls tick(), which
+        // refreshes the decay distance (and drives the slow decay config). The previous port dropped that call. Forge
+        // 1.20.1 BlockBehaviour#randomTick is verified to be exactly this.tick(...), so calling tick() here restores the
+        // upstream behaviour without needing a super call.
+        tick(state, level, pos, rand);
         if (state.getValue(getDistanceProperty()) > maxDecayDistance && !state.getValue(TFCLeavesBlock.PERSISTENT))
         {
             level.removeBlock(pos, false);

@@ -42,7 +42,7 @@ TerraFirmaEarth / 群峦地球
 • 地下河过渡：原生普通河流与地下河之间新增切割过渡层，减少洞口与河谷交界的硬切线。
 • 更深的海洋现在海洋会随着远离陆地越来越深，详情查阅帕秋莉.
 • 地形与地物等杂项：海床由淤泥改为更浅的砂砾、沿海沙滩与火山地势修正、木堆可自由放置；仙人掌木质循环与整株砍伐掉落、炉灶 、炉灶锅移植、红木等地物兼容。
-• 作物用途：大量弱势作物进行增强如苜蓿可作为更多常见动物的饲料，油菜新增油菜籽榨油路线，香蕉补强切砍伐不再摧毁树木等等。
+• 作物用途：大量弱势作物进行增强如苜蓿可作为更多常见动物的饲料，油菜新增油菜籽榨油路线，香蕉每次成熟可收获 8~16 个、破坏成熟植株顶部还会掉落 1~3 个树苗等等。
 • 全球温度重做，更贴近现实的温度变化，且各种事件或者作物生长均已当前温度为准，内容较多请查看帕秋莉。
 • 果树作物灌木等湿度，直接取决于当前降雨量，且可以读取环境水源。
 • 海洋地形：普通海、海礁、深海和海沟使用连续的深度过渡；TFE 仍保留深水海床薄砂砾与火山海岸表面适配。
@@ -90,7 +90,7 @@ Added or reworked by this mod (not an exhaustive list; the field guide is author
 • Underground river transition: a new incised transition layer between normal rivers and underground rivers, reducing hard cuts at cave mouths and river valleys.
 • Deeper oceans: the sea now gets deeper the farther it is from land; see the field guide for the details.
 • Terrain and features (misc): ocean seabeds changed from mud to a thinner gravel surface, coastal beach and volcano terrain fixes, freely placeable log piles; cactus wood loop with whole-saguaro harvest drops, the stove and stove pot port, redwood and related feature compatibility.
-• Crop uses: many weak crops were strengthened — alfalfa now feeds more common animals, canola has a dedicated oilseed route for oil pressing, bananas no longer destroy the tree when chopped or harvested, and more.
+• Crop uses: many weak crops were strengthened — alfalfa now feeds more common animals, canola has a dedicated oilseed route for oil pressing, bananas now yield 8~16 per harvest and breaking the top of a mature plant also drops 1~3 saplings, and more.
 • Global temperature reworked: temperature change is closer to reality, and events and crop growth now follow the current temperature; see the field guide for the details.
 • Crops, fruit trees and bushes draw their hydration directly from current rainfall, and can read nearby water sources.
 • Ocean terrain: oceans, reefs, deep oceans and trenches use continuous depth transitions; TFE keeps the thin deep-sea gravel seabed and volcano coast surface adaptation.

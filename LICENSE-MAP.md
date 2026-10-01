@@ -32,6 +32,7 @@ Copyright (c) 2026 交错次元 and contributors.
 |---|---|---|
 | `src/main/resources/data/tfc/**` | 非代码数据按 `CC BY-SA 4.0`；软件式生成 / 配置代码按 `EUPL v1.2` | TFC 命名空间数据、worldgen、fauna、tags、recipes、Patchouli 数据或同路径覆盖，来源于或派生自 TFC 1.20.x / 1.21.x 数据。 |
 | `src/main/resources/assets/tfc/**` | `CC BY-SA 4.0` | TFC 命名空间资源、模型、blockstate、贴图、语言文件、手册资源，来源于或改写自 TFC 资源。 |
+| `src/main/resources/assets/tfe/textures/colormap/**` | `CC BY-SA 4.0` | 从 TFC 1.21 复制的色图资源（1.21 版 `foliage.png`），供移植后的季节叶色算法读取；TFC 1.21 已替换该图并给旧图改名为 `foliage_evergreen.png`。 |
 | `src/main/resources/tfe_server_data_overrides/data/tfc/**` | `CC BY-SA 4.0` | 内置服务端数据包中的 TFC worldgen 同路径覆盖，来源于 TFC 数据与 AFC 兼容需求。 |
 | `src/main/resources/tfe_server_data_overrides/data/tfe/worldgen/configured_feature/tree/afc/**` 与同包内 `data/tfe/tags/worldgen/configured_feature/forest_121_trees.json` | `CC BY-SA 4.0` | 内置服务端数据包中的 AFC 树 entry 适配数据，结构性派生自 TFC / AFC worldgen entry 并用于 AFC 兼容。 |
 | `src/main/resources/data/minecraft/**` | 若派生自 TFC tag 组合则按 `CC BY-SA 4.0`；纯原创 tag 追加按 `All Rights Reserved` | Minecraft 命名空间兼容 tag，匹配或扩展 TFC 数据包结构。 |
@@ -120,6 +121,7 @@ under the corresponding upstream-compatible license.
 |---|---|---|
 | `src/main/resources/data/tfc/**` | `CC BY-SA 4.0` for non-code data; `EUPL v1.2` where a file is software-like generated/configuration code | TFC namespace data, worldgen, fauna, tags, recipes, Patchouli data, or same-path overrides derived from TFC 1.20.x / 1.21.x data. |
 | `src/main/resources/assets/tfc/**` | `CC BY-SA 4.0` | TFC namespace assets, models, blockstates, textures, language entries, and field guide resources copied or adapted from TFC resources. |
+| `src/main/resources/assets/tfe/textures/colormap/**` | `CC BY-SA 4.0` | Colormap assets copied from TFC 1.21 (the 1.21 `foliage.png`), read by the ported seasonal foliage algorithm; TFC 1.21 replaced that image and renamed the old one to `foliage_evergreen.png`. |
 | `src/main/resources/tfe_server_data_overrides/data/tfc/**` | `CC BY-SA 4.0` | Built-in server-data overrides of TFC worldgen paths, derived from TFC data and AFC compatibility needs. |
 | `src/main/resources/tfe_server_data_overrides/data/tfe/worldgen/configured_feature/tree/afc/**` and the same pack's `data/tfe/tags/worldgen/configured_feature/forest_121_trees.json` | `CC BY-SA 4.0` | Built-in server-data AFC tree-entry adapter data, structurally derived from TFC / AFC worldgen entries for AFC compatibility. |
 | `src/main/resources/data/minecraft/**` | `CC BY-SA 4.0` where derived from TFC tag composition; otherwise `All Rights Reserved` for purely original tag additions | Minecraft namespace compatibility tags matching or extending TFC data-pack structure. |

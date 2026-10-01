@@ -24,9 +24,11 @@ import net.minecraft.world.level.block.Block;
 import net.minecraftforge.client.event.EntityRenderersEvent;
 import net.minecraftforge.client.event.ModelEvent;
 import net.minecraftforge.client.event.RegisterColorHandlersEvent;
+import net.minecraftforge.client.event.RegisterClientReloadListenersEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 
+import net.dries007.tfc.client.ColorMapReloadListener;
 import net.dries007.tfc.client.RenderHelpers;
 import net.dries007.tfc.client.TFCColors;
 import net.dries007.tfc.client.render.entity.SimpleMobRenderer;
@@ -76,6 +78,12 @@ public final class NTEClientEventHandler
         bus.addListener(NTEClientEventHandler::registerColorHandlerItems);
         bus.addListener(NTEClientEventHandler::registerEntityRenderers);
         bus.addListener(NTEClientEventHandler::registerLayerDefinitions);
+        bus.addListener(NTEClientEventHandler::registerClientReloadListeners);
+    }
+
+    private static void registerClientReloadListeners(RegisterClientReloadListenersEvent event)
+    {
+        event.registerReloadListener(new ColorMapReloadListener(NTEFoliageColors::setFoliage121, NTEFoliageColors.FOLIAGE_121_LOCATION));
     }
 
     private static void clientSetup(FMLClientSetupEvent event)
