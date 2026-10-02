@@ -22,10 +22,12 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import net.minecraft.resources.ResourceLocation;
 
 import net.dries007.tfc.common.entities.Fauna;
+import net.dries007.tfc.util.JsonHelpers;
 import net.dries007.tfc.util.calendar.Month;
 import net.dries007.tfc.world.placement.ClimatePlacement;
 
 import com.newterraearth.tfe.common.entity.NTEFaunaAccess;
+import com.newterraearth.tfe.common.entity.NTEFaunaSpawnHelpers;
 
 @Mixin(value = Fauna.class, remap = false)
 public abstract class FaunaMixin implements NTEFaunaAccess
@@ -37,6 +39,9 @@ public abstract class FaunaMixin implements NTEFaunaAccess
 
     @Unique
     private static final Map<Fauna, List<Month>> TFE_MONTHS = Collections.synchronizedMap(new WeakHashMap<>());
+
+    @Unique
+    private int tfe$minWaterVolume = NTEFaunaSpawnHelpers.DEFAULT_MIN_WATER_VOLUME;
 
     @Inject(method = "<init>(Lnet/minecraft/resources/ResourceLocation;)V", at = @At("TAIL"))
     private void tfe$initDefaultMonths(ResourceLocation id, CallbackInfo ci)
@@ -61,11 +66,19 @@ public abstract class FaunaMixin implements NTEFaunaAccess
             }
         }
         TFE_MONTHS.put((Fauna) (Object) this, List.copyOf(months));
+
+        tfe$minWaterVolume = JsonHelpers.getAsInt(json, "min_water_volume", NTEFaunaSpawnHelpers.DEFAULT_MIN_WATER_VOLUME);
     }
 
     @Override
     public List<Month> tfe$getMonths()
     {
         return TFE_MONTHS.getOrDefault((Fauna) (Object) this, List.of());
+    }
+
+    @Override
+    public int tfe$getMinWaterVolume()
+    {
+        return tfe$minWaterVolume;
     }
 }

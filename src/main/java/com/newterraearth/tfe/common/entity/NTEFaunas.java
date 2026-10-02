@@ -71,7 +71,7 @@ public final class NTEFaunas
 
     private static <E extends Mob> void registerSpawnPlacement(SpawnPlacementRegisterEvent event, FaunaType<E> type)
     {
-        event.register(type.entity().get(), type.spawnPlacementType(), type.heightmapType(), (mob, level, heightmap, pos, rand) -> {
+        event.register(type.entity().get(), type.spawnPlacementType(), type.heightmapType(), (entityType, level, spawnType, pos, rand) -> {
             final Fauna fauna = type.fauna().get();
             final ChunkGenerator generator = level.getLevel().getChunkSource().getGenerator();
             if (rand.nextInt(fauna.getChance()) != 0)
@@ -79,7 +79,7 @@ public final class NTEFaunas
                 return false;
             }
 
-            if (mob instanceof AquaticMob aquaticMob && !aquaticMob.canSpawnIn(level.getFluidState(pos).getType()))
+            if (entityType instanceof AquaticMob aquaticMob && !aquaticMob.canSpawnIn(level.getFluidState(pos).getType()))
             {
                 return false;
             }
@@ -100,7 +100,8 @@ public final class NTEFaunas
             {
                 return false;
             }
-            return fauna.getMaxBrightness() == -1 || level.getRawBrightness(pos, 0) <= fauna.getMaxBrightness();
+            return (fauna.getMaxBrightness() == -1 || level.getRawBrightness(pos, 0) <= fauna.getMaxBrightness())
+                && NTEFaunaSpawnHelpers.isWaterVolumeValid(entityType, fauna, level, pos, spawnType);
         }, SpawnPlacementRegisterEvent.Operation.REPLACE);
     }
 

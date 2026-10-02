@@ -4,6 +4,7 @@
   "max_temperature": 25.0,
   "min_groundwater": 200.0,
   "min_temperature": 12.0,
+  "min_water_volume": 100,
   "months": [
     "may",
     "june",

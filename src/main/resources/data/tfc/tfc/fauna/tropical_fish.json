@@ -1,4 +1,5 @@
 {
   "distance_below_sea_level": 3,
-  "min_temperature": 18.0
+  "min_temperature": 18.0,
+  "min_water_volume": 100
 }

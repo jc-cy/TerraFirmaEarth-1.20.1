@@ -58,9 +58,9 @@ public final class NTEVanillaFaunas
         return NTEEntities.NEW_FRESHWATER_FISH.values().stream().anyMatch(entity -> id.equals(entity.getId()));
     }
 
-    private static <E extends Mob> void registerSpawnPlacement(SpawnPlacementRegisterEvent event, EntityType<E> entityType)
+    private static <E extends Mob> void registerSpawnPlacement(SpawnPlacementRegisterEvent event, EntityType<E> type)
     {
-        event.register(entityType, resolvePlacementType(entityType), Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, (mob, level, heightmap, pos, rand) -> {
+        event.register(type, resolvePlacementType(type), Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, (entityType, level, spawnType, pos, rand) -> {
             final Fauna fauna = NTEFaunaSpawnHelpers.getFauna(entityType);
             if (fauna == null)
             {
@@ -72,7 +72,7 @@ public final class NTEVanillaFaunas
                 return false;
             }
 
-            if (mob instanceof AquaticMob aquaticMob && !aquaticMob.canSpawnIn(level.getFluidState(pos).getType()))
+            if (entityType instanceof AquaticMob aquaticMob && !aquaticMob.canSpawnIn(level.getFluidState(pos).getType()))
             {
                 return false;
             }
@@ -93,7 +93,8 @@ public final class NTEVanillaFaunas
             {
                 return false;
             }
-            return fauna.getMaxBrightness() == -1 || level.getRawBrightness(pos, 0) <= fauna.getMaxBrightness();
+            return (fauna.getMaxBrightness() == -1 || level.getRawBrightness(pos, 0) <= fauna.getMaxBrightness())
+                && NTEFaunaSpawnHelpers.isWaterVolumeValid(entityType, fauna, level, pos, spawnType);
         }, SpawnPlacementRegisterEvent.Operation.REPLACE);
     }
 

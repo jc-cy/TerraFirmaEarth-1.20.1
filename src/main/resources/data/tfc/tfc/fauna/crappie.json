@@ -1,6 +1,7 @@
 {
   "max_temperature": 26.0,
   "min_temperature": -10.0,
+  "min_water_volume": 100,
   "months": [
     "may",
     "june",
