@@ -21,6 +21,8 @@ import com.newterraearth.tfe.common.NTEBlocks;
 import com.newterraearth.tfe.common.NTEDevices;
 import com.newterraearth.tfe.common.block.rope.NTEMetalRopeAnchorBlock;
 import com.newterraearth.tfe.common.entity.NTEItems;
+import com.newterraearth.tfe.world.soil.NTESoil;
+import com.newterraearth.tfe.world.soil.NTESoilBlockType;
 
 /**
  * Forge-bus event glue for the stove / stove pot devices.
@@ -72,6 +74,23 @@ public final class NTEDeviceEvents
             NTEBlocks.METAL_ROPE_ANCHORS.values().forEach(anchor -> event.accept(anchor.get().asItem()));
             event.accept(NTEItems.ARMADILLO_SCUTE.get());
             NTEItems.NEW_FRESHWATER_FISH_BUCKETS.values().forEach(reg -> event.accept(reg.get()));
+        }
+        else if (event.getTab() == TFCCreativeTabs.EARTH.tab().get())
+        {
+            // TFC 的地球标签只收录它自己的四种土壤；本模组新增的四种土壤（含泥砖、湿润泥砖与干燥泥砖）
+            // 也要放进去，否则创造模式里完全找不到这一整套泥砖流程。
+            for (NTESoil soil : NTESoil.values())
+            {
+                if (!soil.isAddonFamily())
+                {
+                    continue;
+                }
+                for (NTESoilBlockType type : NTESoilBlockType.values())
+                {
+                    event.accept(NTEBlocks.getBlock(soil, type).get().asItem());
+                }
+                event.accept(NTEBlocks.getDriedMudBrickItem(soil).get());
+            }
         }
     }
 

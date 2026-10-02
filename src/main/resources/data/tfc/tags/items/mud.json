@@ -1,0 +1,9 @@
+{
+  "replace": false,
+  "values": [
+    "tfe:mud/fluvisol",
+    "tfe:mud/mollisol",
+    "tfe:mud/podzol",
+    "tfe:mud/oxisol"
+  ]
+}

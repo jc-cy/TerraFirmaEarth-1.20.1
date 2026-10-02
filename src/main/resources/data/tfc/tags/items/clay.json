@@ -1,0 +1,21 @@
+{
+  "replace": false,
+  "values": [
+    "tfe:clay/fluvisol",
+    "tfe:clay_grass/fluvisol",
+    "tfe:clay_duff/fluvisol",
+    "tfe:clay/mollisol",
+    "tfe:clay_grass/mollisol",
+    "tfe:clay_duff/mollisol",
+    "tfe:clay/podzol",
+    "tfe:clay_grass/podzol",
+    "tfe:clay_duff/podzol",
+    "tfe:clay/oxisol",
+    "tfe:clay_grass/oxisol",
+    "tfe:clay_duff/oxisol",
+    "tfe:clay_duff/silt",
+    "tfe:clay_duff/loam",
+    "tfe:clay_duff/sandy_loam",
+    "tfe:clay_duff/silty_loam"
+  ]
+}

@@ -1,0 +1,9 @@
+{
+  "replace": false,
+  "values": [
+    "tfe:mud_bricks/fluvisol",
+    "tfe:mud_bricks/mollisol",
+    "tfe:mud_bricks/podzol",
+    "tfe:mud_bricks/oxisol"
+  ]
+}

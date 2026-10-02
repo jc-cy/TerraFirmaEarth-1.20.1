@@ -1,0 +1,9 @@
+{
+  "replace": false,
+  "values": [
+    "tfe:grass_path/fluvisol",
+    "tfe:grass_path/mollisol",
+    "tfe:grass_path/podzol",
+    "tfe:grass_path/oxisol"
+  ]
+}

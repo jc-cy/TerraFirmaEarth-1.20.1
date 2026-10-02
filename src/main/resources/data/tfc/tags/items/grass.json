@@ -1,0 +1,13 @@
+{
+  "replace": false,
+  "values": [
+    "tfe:grass/fluvisol",
+    "tfe:clay_grass/fluvisol",
+    "tfe:grass/mollisol",
+    "tfe:clay_grass/mollisol",
+    "tfe:grass/podzol",
+    "tfe:clay_grass/podzol",
+    "tfe:grass/oxisol",
+    "tfe:clay_grass/oxisol"
+  ]
+}

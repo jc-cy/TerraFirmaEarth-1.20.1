@@ -13,13 +13,17 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Fluids;
+import net.minecraft.world.phys.BlockHitResult;
 
 import net.dries007.tfc.common.blockentities.CropBlockEntity;
 import net.dries007.tfc.common.blockentities.FarmlandBlockEntity;
 import net.dries007.tfc.common.blockentities.IFarmland;
 import net.dries007.tfc.common.blockentities.TickCounterBlockEntity;
+import net.dries007.tfc.common.blocks.TFCBlockStateProperties;
 import net.dries007.tfc.common.blocks.crop.CropBlock;
 import net.dries007.tfc.common.blocks.crop.CropHelpers;
+import net.dries007.tfc.common.blocks.crop.DoubleCropBlock;
+import net.dries007.tfc.common.blocks.plant.ITallPlant;
 import net.dries007.tfc.common.blocks.plant.fruit.BananaPlantBlock;
 import net.dries007.tfc.common.blocks.plant.fruit.FruitTreeBranchBlock;
 import net.dries007.tfc.common.blocks.plant.fruit.FruitTreeLeavesBlock;
@@ -33,6 +37,7 @@ import net.dries007.tfc.util.calendar.Calendars;
 import net.dries007.tfc.util.calendar.ICalendar;
 
 import com.newterraearth.tfe.NewTerraEarthMod;
+import com.newterraearth.tfe.common.block.NTEDryingBricksBlock;
 import com.newterraearth.tfe.common.block.rope.NTEMetalRopeAnchorBlock;
 import com.newterraearth.tfe.mixin.GrowingFruitTreeBranchBlockAccessor;
 import com.newterraearth.tfe.mixin.SeasonalPlantBlockAccessor;
@@ -41,6 +46,7 @@ import com.newterraearth.tfe.world.NTESoilFertility;
 import com.newterraearth.tfe.world.crop.NTECropTemperatureAccess;
 import com.newterraearth.tfe.world.crop.NTECropTemperatureModel;
 
+import snownee.jade.api.Accessor;
 import snownee.jade.api.BlockAccessor;
 import snownee.jade.api.IBlockComponentProvider;
 import snownee.jade.api.IWailaClientRegistration;
@@ -59,6 +65,7 @@ public final class NTEJadeIntegration implements snownee.jade.api.IWailaPlugin
     private static final ResourceLocation FRUIT_TREE_GROWTH_UID = new ResourceLocation(NewTerraEarthMod.MOD_ID, "fruit_tree_growth");
     private static final ResourceLocation FRUIT_TREE_BRANCH_UID = new ResourceLocation(NewTerraEarthMod.MOD_ID, "fruit_tree_branch");
     private static final ResourceLocation SEASONAL_PLANT_UID = new ResourceLocation(NewTerraEarthMod.MOD_ID, "seasonal_plant");
+    private static final ResourceLocation DRYING_BRICKS_UID = new ResourceLocation(NewTerraEarthMod.MOD_ID, "drying_bricks");
     private static final ResourceLocation ROPE_ANCHOR_UID = new ResourceLocation(NewTerraEarthMod.MOD_ID, "metal_rope_anchor");
 
     @Override
@@ -75,7 +82,63 @@ public final class NTEJadeIntegration implements snownee.jade.api.IWailaPlugin
         registration.registerBlockComponent(new FruitTreeGrowthProvider(), GrowingFruitTreeBranchBlock.class);
         registration.registerBlockComponent(new FruitTreeBranchProvider(), FruitTreeBranchBlock.class);
         registration.registerBlockComponent(new SeasonalPlantProvider(), SeasonalPlantBlock.class);
+        registration.registerBlockComponent(new DryingBricksProvider(), NTEDryingBricksBlock.class);
         registration.registerBlockComponent(new MetalRopeAnchorProvider(), NTEMetalRopeAnchorBlock.class);
+        registration.addRayTraceCallback((hitResult, accessor, originalAccessor) -> redirectToLowerHalf(registration, accessor));
+    }
+
+    /**
+     * 双格植物与双格作物的上半部分本身不带需要展示的数据：作物的一切（生长、过熟、养分、温度压力）
+     * 都存在下半部分的方块实体里，气候与肥料提示也以下半部分的位置为基准取耕地。因此直接看上半部分时，
+     * Jade 只能拿到一个没有数据的上半块（或是上半块自己那份空数据），表现为"上半部分没有信息 / 信息不对"。
+     * 这里把上半部分的命中重定向到下半部分，让 TFC 与本模组注册的全部 provider（产量、生长进度、健康、
+     * 预计成熟、肥料、气候）都照常取值。只重建 Jade 的 accessor，不读取或修改世界状态。
+     */
+    private static Accessor<?> redirectToLowerHalf(IWailaClientRegistration registration, Accessor<?> accessor)
+    {
+        if (!(accessor instanceof BlockAccessor blockAccessor))
+        {
+            return accessor;
+        }
+        final BlockState upperState = blockAccessor.getBlockState();
+        if (!isUpperHalf(upperState))
+        {
+            return accessor;
+        }
+        final BlockPos lowerPos = blockAccessor.getPosition().below();
+        final BlockState lowerState = blockAccessor.getLevel().getBlockState(lowerPos);
+        if (lowerState.getBlock() != upperState.getBlock() || !isLowerHalf(lowerState))
+        {
+            return accessor;
+        }
+        final BlockHitResult hit = blockAccessor.getHitResult();
+        final BlockHitResult lowerHit = new BlockHitResult(hit.getLocation(), hit.getDirection(), lowerPos, hit.isInside());
+        return registration.blockAccessor()
+            .from(blockAccessor)
+            .hit(lowerHit)
+            .blockState(lowerState)
+            .blockEntity(() -> blockAccessor.getLevel().getBlockEntity(lowerPos))
+            .build();
+    }
+
+    private static boolean isUpperHalf(BlockState state)
+    {
+        return isTallPlantPart(state, ITallPlant.Part.UPPER) || isDoubleCropPart(state, DoubleCropBlock.Part.TOP);
+    }
+
+    private static boolean isLowerHalf(BlockState state)
+    {
+        return isTallPlantPart(state, ITallPlant.Part.LOWER) || isDoubleCropPart(state, DoubleCropBlock.Part.BOTTOM);
+    }
+
+    private static boolean isTallPlantPart(BlockState state, ITallPlant.Part part)
+    {
+        return state.hasProperty(TFCBlockStateProperties.TALL_PLANT_PART) && state.getValue(TFCBlockStateProperties.TALL_PLANT_PART) == part;
+    }
+
+    private static boolean isDoubleCropPart(BlockState state, DoubleCropBlock.Part part)
+    {
+        return state.hasProperty(TFCBlockStateProperties.DOUBLE_CROP_PART) && state.getValue(TFCBlockStateProperties.DOUBLE_CROP_PART) == part;
     }
 
     private static final class FruitTreeGrowthProvider implements IBlockComponentProvider
@@ -459,6 +522,42 @@ public final class NTEJadeIntegration implements snownee.jade.api.IWailaPlugin
             {
                 data.putByte(PRESSURE_TAG, (byte) Mth.clamp(stress.tfe$getTemperatureStress(), 0, NTECropTemperatureModel.STRESS_LIMIT));
             }
+        }
+    }
+
+    /**
+     * 新增土壤的风干泥砖进度。TFC 的同类提示注册在 {@code DryingBricksBlock} 上，本模组的新土壤泥砖是另一个方块类
+     * （方块实体类型也不一样，无法复用 TFC 的注册），所以补一份同样口径的三行提示：已风干 / 下雨无法风干 / 还需多久。
+     */
+    private static final class DryingBricksProvider implements IBlockComponentProvider
+    {
+        @Override
+        public ResourceLocation getUid()
+        {
+            return DRYING_BRICKS_UID;
+        }
+
+        @Override
+        public void appendTooltip(ITooltip tooltip, BlockAccessor accessor, IPluginConfig config)
+        {
+            if (accessor.getBlockState().getValue(NTEDryingBricksBlock.DRIED))
+            {
+                tooltip.add(Component.translatable("tfc.jade.dried_mud_bricks"));
+                return;
+            }
+            if (!(accessor.getBlockEntity() instanceof TickCounterBlockEntity counter))
+            {
+                return;
+            }
+            if (accessor.getLevel().isRainingAt(accessor.getPosition().above()))
+            {
+                tooltip.add(Component.translatable("tfc.jade.raining_mud_bricks").withStyle(ChatFormatting.BLUE));
+                return;
+            }
+            final long ticksLeft = TFCConfig.SERVER.mudBricksTicks.get() - counter.getTicksSinceUpdate();
+            tooltip.add(ticksLeft > 0
+                ? Component.translatable("tfc.jade.time_left", Calendars.get(accessor.getLevel()).getTimeDelta(ticksLeft))
+                : Component.translatable("tfc.jade.mud_bricks_nearly_done"));
         }
     }
 
