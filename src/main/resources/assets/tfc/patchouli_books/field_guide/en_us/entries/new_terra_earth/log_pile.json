@@ -1,0 +1,53 @@
+{
+  "name": "Log Pile",
+  "category": "tfc:new_terra_earth",
+  "icon": "tfc:textures/item/wood/log/oak.png",
+  "sortnum": 28,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "title": "Purpose",
+      "text": "Normal logs cannot be stored in chests, but they can be placed on the ground instead: each block holds up to 16 logs, and different kinds of logs can be combined. Look at the model change or Jade to see how many logs are stacked."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Usage",
+      "text": "Hold a log and sneak-right-click the ground to place a log pile, or sneak-right-click an existing pile to keep adding logs. A normal right-click puts one log into the pile, a sneak-right-click puts in a whole stack at once, and a full pile stacks upward automatically. With an empty hand, a normal right-click takes one log out, and a sneak-right-click takes the whole top stack at once. All ArborFirmaCraft (AFC) logs and ancient woods are supported."
+    },
+    {
+      "type": "patchouli:multiblock",
+      "multiblock": {
+        "pattern": [
+          [ "X" ],
+          [ "G" ],
+          [ "0" ]
+        ],
+        "mapping": {
+          "X": "tfc:log_pile[axis=z,count=6]",
+          "G": "tfc:grass/loam"
+        }
+      },
+      "name": "Log Pile (6 Logs)",
+      "enable_visualize": false
+    },
+    {
+      "type": "patchouli:multiblock",
+      "multiblock": {
+        "pattern": [
+          [ "A" ],
+          [ "B" ],
+          [ "G" ],
+          [ "0" ]
+        ],
+        "mapping": {
+          "A": "tfc:log_pile[axis=z,count=5]",
+          "B": "tfc:log_pile[axis=z,count=16]",
+          "G": "tfc:grass/loam"
+        }
+      },
+      "name": "Log Pile (21 Logs)",
+      "enable_visualize": false
+    }
+  ],
+  "read_by_default": true
+}

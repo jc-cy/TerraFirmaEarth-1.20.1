@@ -1,0 +1,53 @@
+{
+  "name": "木柴堆",
+  "category": "tfc:new_terra_earth",
+  "icon": "tfc:textures/item/wood/log/oak.png",
+  "sortnum": 28,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "title": "作用",
+      "text": "正常原木无法放入箱子存储，但可以选择对放在地上，每一格可以堆放16根原木，可以是不同种类的原木组合，通过直接查看对应的模型变化或jade判断堆放了几根。"
+    },
+    {
+      "type": "patchouli:text",
+      "title": "用法",
+      "text": "手持原木对准地面下蹲右键放置木柴堆或对放置的木柴堆继续堆放原木。普通右键木柴堆放入一根，下蹲右键一次放入组，堆满后会自动往上叠。空手普通右键取出一根，下蹲右键一次取走最上面一组。支持AFC的全部原木和古木"
+    },
+    {
+      "type": "patchouli:multiblock",
+      "multiblock": {
+        "pattern": [
+          [ "X" ],
+          [ "G" ],
+          [ "0" ]
+        ],
+        "mapping": {
+          "X": "tfc:log_pile[axis=z,count=6]",
+          "G": "tfc:grass/loam"
+        }
+      },
+      "name": "木柴堆（6 根）",
+      "enable_visualize": false
+    },
+    {
+      "type": "patchouli:multiblock",
+      "multiblock": {
+        "pattern": [
+          [ "A" ],
+          [ "B" ],
+          [ "G" ],
+          [ "0" ]
+        ],
+        "mapping": {
+          "A": "tfc:log_pile[axis=z,count=5]",
+          "B": "tfc:log_pile[axis=z,count=16]",
+          "G": "tfc:grass/loam"
+        }
+      },
+      "name": "木柴堆（21 根）",
+      "enable_visualize": false
+    }
+  ],
+  "read_by_default": true
+}

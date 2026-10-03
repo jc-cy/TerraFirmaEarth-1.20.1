@@ -6,14 +6,14 @@
   "pages": [
     {
       "type": "patchouli:spotlight",
-      "item": "tfc:plant/goldenrod",
-      "title": "植物类型",
+      "item": "tfc:plant/arundo",
+      "title": "采集优化",
       "link_recipes": false,
-      "text": ""
+      "text": "现芦竹、干芦苇、仙人掌等植物可以从根部或中间采集了，将会完整的掉落采集产物，而不是只掉落一节的，"
     },
     {
       "type": "patchouli:text",
-      "title": "植物类型",
+      "title": "装饰性植物",
       "text": "世界中可以见到普通花草、干燥植物、短草、高草、灌木、匍匐植物、附生植物、藤本和水生植物。许多植物会随季节变色、开花或休眠；花朵通常可以在 $(l:mechanics/quern)石磨$() 中制成染料。"
     },
     {

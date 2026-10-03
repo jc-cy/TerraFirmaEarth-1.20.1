@@ -1,15 +1,15 @@
 {
-  "name": "Compatibility Features",
+  "name": "Other Compatibility",
   "category": "tfc:new_terra_earth",
   "icon": "tfe:textures/item/canola.png",
-  "sortnum": 29,
+  "sortnum": 30,
   "pages": [
     {
       "type": "patchouli:spotlight",
-      "item": "tfe:canola_oilseed",
-      "title": "Optional Mod Support",
+      "item": "tfc:metal/chisel/blue_steel",
+      "title": "TFC Native Compatibility",
       "link_recipes": false,
-      "text": ""
+      "text": "Fixed the crash that could corrupt the save when dying with a hammer and a chisel in hand while aiming at a stone block and death drops disabled; respawning now works normally.$(br2)Fish no longer spawn in water bodies smaller than 100 blocks."
     },
     {
       "type": "patchouli:text",
@@ -33,13 +33,8 @@
     },
     {
       "type": "patchouli:text",
-      "title": "Maps",
-      "text": "JourneyMap and similar map mods can identify and color the added terrain biomes."
-    },
-    {
-      "type": "patchouli:text",
-      "title": "Datapack Extensions",
-      "text": "Servers and modpacks can also extend fauna spawning, tree species, and other compatibility settings through datapacks; the bundled datapack compatibility guide is intended for players and pack authors who need those extensions."
+      "title": "Maps and Datapacks",
+      "text": "JourneyMap and similar map mods can identify and color the added terrain biomes. Servers and modpacks can also extend fauna spawning, tree species, and other compatibility settings through datapacks; the bundled datapack compatibility guide is intended for players and pack authors who need those extensions."
     },
     {
       "type": "patchouli:text",

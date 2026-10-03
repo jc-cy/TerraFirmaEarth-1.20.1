@@ -14,7 +14,7 @@
     {
       "type": "patchouli:text",
       "title": "勘探系统",
-      "text": "勘探镐会合并同种矿物、分别统计矿量，并显示最近目标的方向、高低和距离。完整制作、材质能力、问号规则和矿量等级请直接查看 $(l:mechanics/prospecting)TFC 勘探章节$()。"
+      "text": "勘探镐现在矿物种类显示会合并不同地质同种矿物、支持所有矿物包含盐煤石墨宝石等。并显示最近目标的方向、高低和距离。完整制作、材质能力、问号规则和矿量等级请直接查看 $(l:mechanics/prospecting)TFC 勘探章节$()。"
     }
   ],
   "read_by_default": true

@@ -6,6 +6,11 @@
   "pages": [
     {
       "type": "patchouli:text",
+      "title": "Two-Block Plants",
+      "text": "For two-block plants such as maize, sugarcane and tall grass, Jade now also shows the complete information when you look at the upper half."
+    },
+    {
+      "type": "patchouli:text",
       "title": "Fruit Trees, Bushes and Banana",
       "text": "Aimed at fruit tree leaves, berry bushes or banana plants, Jade shows a status line:$(br2)Leaf stage: growing leaves$(br)Flowering: in bloom$(br)Fruiting: the fruit is ripe$(br)Waiting for the growing season: it is not this species' season$(br)Environment unsuitable: temperature or hydration is outside its range$(br)Waiting for lifecycle update: the conditions are fine, waiting for the next growth check"
     },

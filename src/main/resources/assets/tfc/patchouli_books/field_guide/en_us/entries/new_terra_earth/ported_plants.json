@@ -6,14 +6,14 @@
   "pages": [
     {
       "type": "patchouli:spotlight",
-      "item": "tfc:plant/goldenrod",
-      "title": "Plant Types",
+      "item": "tfc:plant/arundo",
+      "title": "Harvesting",
       "link_recipes": false,
-      "text": ""
+      "text": "Arundo, dry phragmite, cacti and similar plants can now be harvested from their base or from their middle, dropping the full harvest instead of only a single section."
     },
     {
       "type": "patchouli:text",
-      "title": "Plant Types",
+      "title": "Decorative Plants",
       "text": "The world contains standard flowers, dry plants, short and tall grass, shrubs, creeping plants, epiphytes, vines, and water plants. Many change color, flower, or go dormant with the seasons; flowers can usually be ground into dye in a $(l:mechanics/quern)quern$()."
     },
     {

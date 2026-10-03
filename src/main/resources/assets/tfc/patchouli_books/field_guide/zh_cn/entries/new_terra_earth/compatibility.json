@@ -1,15 +1,15 @@
 {
-  "name": "兼容功能",
+  "name": "其他兼容",
   "category": "tfc:new_terra_earth",
   "icon": "tfe:textures/item/canola.png",
-  "sortnum": 29,
+  "sortnum": 30,
   "pages": [
     {
       "type": "patchouli:spotlight",
-      "item": "tfe:canola_oilseed",
-      "title": "可选模组协同",
+      "item": "tfc:metal/chisel/blue_steel",
+      "title": "TFC本体兼容",
       "link_recipes": false,
-      "text": ""
+      "text": "修复了死亡不掉落时手持凿子和锤子死亡时损坏存档，现已可以正常复活。$(br2)现在鱼类不会刷新在水体小于100格的区域。"
     },
     {
       "type": "patchouli:text",

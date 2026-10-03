@@ -19,12 +19,7 @@
     {
       "type": "patchouli:text",
       "title": "Climate Distribution",
-      "text": "Climate is not confined to tiny fixed zones: moving away from the equator generally becomes colder, while low rainfall or distance from the ocean favors arid, semi-arid, or continental climates."
-    },
-    {
-      "type": "patchouli:text",
-      "title": "Climate Factors",
-      "text": "Elevation can also push an area toward a colder class. See $(l:the_world/climate#temperature)Calendar and Climate$() for the current and average values used by the screen."
+      "text": "Climate is not confined to tiny fixed zones: moving away from the equator generally becomes colder, while low rainfall or distance from the ocean favors arid, semi-arid, or continental climates. Elevation can also push an area toward a colder class. See $(l:the_world/climate#temperature)Calendar and Climate$() for the current and average values used by the screen."
     },
     {
       "type": "patchouli:text",
@@ -58,7 +53,7 @@
     },
     {
       "type": "patchouli:text",
-      "title": "Continental Climate (3)",
+      "title": "Humid Continental Climate",
       "text": "$(li)Continental (Dfa), Cold Continental (Dfb), Subarctic (Dfc), and Cold Subarctic (Dfd): $(thing)Dfa$(), $(thing)Dfb$(), $(thing)Dfc$(), $(thing)Dfd$(). D climates are common in middle and high-latitude interiors, where annual and daily temperature swings are larger."
     },
     {
@@ -68,18 +63,13 @@
     },
     {
       "type": "patchouli:text",
-      "title": "Finding a Climate",
+      "title": "Polar Climate",
       "text": "Polar climates appear mainly at high latitudes and elevations."
     },
     {
       "type": "patchouli:text",
-      "title": "Current Location",
-      "text": "Open the Climate screen to see the classification at your position;"
-    },
-    {
-      "type": "patchouli:text",
-      "title": "Finding a Target",
-      "text": "Use its annual mean temperature and rainfall together with latitude, elevation, and distance from the coast. Seasons are six months apart between hemispheres, but the classification rules remain the same."
+      "title": "Finding a Climate",
+      "text": "Open the Climate screen to see the classification at your position; use its annual mean temperature and rainfall together with latitude, elevation, and distance from the coast. Seasons are six months apart between hemispheres, but the classification rules remain the same."
     }
   ],
   "read_by_default": true
