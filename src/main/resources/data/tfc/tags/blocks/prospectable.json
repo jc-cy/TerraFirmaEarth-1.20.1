@@ -1,6 +1,7 @@
 {
     "replace":  false,
     "values":  [
+                   "tfc:halite",
                    "tfe:ore/normal_native_copper/tuff",
                    "tfe:ore/poor_native_copper/tuff",
                    "tfe:ore/rich_native_copper/tuff",

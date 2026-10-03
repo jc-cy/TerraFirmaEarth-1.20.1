@@ -8553,6 +8553,7 @@
     "tfc.advancements.world.metallurgist.description":  "Obtain a metal-bearing specimen for every metal in TFC",
     "block.tfc.hardened_clay":  "Hardened Clay",
     "block.tfc.halite":  "Halite",
+    "block.tfc.halite.prospected":  "Halite",
     "block.tfc.golden_bamboo_block":  "Golden Bamboo Block",
     "block.tfc.plant.anemone_purple":  "Anemone Purple",
     "block.tfc.plant.anemone_green":  "Anemone Green",
