@@ -78,23 +78,40 @@ public abstract class LogPileBlockMixin
     @Overwrite(remap = true)
     public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult result)
     {
-        if (!player.isShiftKeyDown() && level.getBlockEntity(pos) instanceof LogPileBlockEntity logPile)
+        if (!(level.getBlockEntity(pos) instanceof LogPileBlockEntity logPile))
         {
-            final ItemStack stack = player.getItemInHand(hand);
-            if (!level.isClientSide())
-            {
-                if (Helpers.isItem(stack.getItem(), TFCTags.Items.LOG_PILE_LOGS))
-                {
-                    NTELogPileHelpers.insertAndPushUp(stack, state, level, pos, logPile, false);
-                }
-                else if (stack.isEmpty())
-                {
-                    NTELogPileHelpers.extractFromTop(level, pos, player, false);
-                }
-            }
-            return InteractionResult.sidedSuccess(level.isClientSide);
+            return InteractionResult.PASS;
         }
-        return InteractionResult.PASS;
+
+        final ItemStack stack = player.getItemInHand(hand);
+        if (player.isShiftKeyDown())
+        {
+            // Shift + log inserts the whole held stack and is handled earlier by InteractionManagerMixin. Shift + an
+            // empty hand is its counterpart: take one full pile (a group) from the top of the stack. Anything else (a
+            // torch to light the pile, a hammer, ...) is left untouched so the regular TFC interactions still run.
+            if (stack.isEmpty())
+            {
+                if (!level.isClientSide())
+                {
+                    NTELogPileHelpers.extractFromTop(level, pos, player, true);
+                }
+                return InteractionResult.sidedSuccess(level.isClientSide);
+            }
+            return InteractionResult.PASS;
+        }
+
+        if (!level.isClientSide())
+        {
+            if (Helpers.isItem(stack.getItem(), TFCTags.Items.LOG_PILE_LOGS))
+            {
+                NTELogPileHelpers.insertAndPushUp(stack, state, level, pos, logPile, false);
+            }
+            else if (stack.isEmpty())
+            {
+                NTELogPileHelpers.extractFromTop(level, pos, player, false);
+            }
+        }
+        return InteractionResult.sidedSuccess(level.isClientSide);
     }
 
     // These inherited Block methods are not TFC targets, so they need production runtime names in the reobf jar.

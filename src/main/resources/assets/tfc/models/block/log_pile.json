@@ -1,0 +1,22 @@
+{
+  "__comment__": "TFE: 1.21 log pile visuals. TFC's own blockstate (axis=x / axis=z, which has no count property) points here, so this model - not a blockstate override - carries the per-count visuals. ModernFix dynamic_resources resolves blockstate overrides from the opposite end of the resource stack, so overriding assets/tfc/blockstates/log_pile.json is not reliable.",
+  "loader": "tfe:log_pile",
+  "models": [
+    { "parent": "tfc:block/log_pile/log_pile_1" },
+    { "parent": "tfc:block/log_pile/log_pile_2" },
+    { "parent": "tfc:block/log_pile/log_pile_3" },
+    { "parent": "tfc:block/log_pile/log_pile_4" },
+    { "parent": "tfc:block/log_pile/log_pile_5" },
+    { "parent": "tfc:block/log_pile/log_pile_6" },
+    { "parent": "tfc:block/log_pile/log_pile_7" },
+    { "parent": "tfc:block/log_pile/log_pile_8" },
+    { "parent": "tfc:block/log_pile/log_pile_9" },
+    { "parent": "tfc:block/log_pile/log_pile_10" },
+    { "parent": "tfc:block/log_pile/log_pile_11" },
+    { "parent": "tfc:block/log_pile/log_pile_12" },
+    { "parent": "tfc:block/log_pile/log_pile_13" },
+    { "parent": "tfc:block/log_pile/log_pile_14" },
+    { "parent": "tfc:block/log_pile/log_pile_15" },
+    { "parent": "tfc:block/log_pile/log_pile_16" }
+  ]
+}

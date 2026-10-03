@@ -1,0 +1,22 @@
+{
+  "__comment__": "TFE: 1.21 burning log pile visuals, see log_pile.json. TFC's own blockstate points here for every state.",
+  "loader": "tfe:log_pile",
+  "models": [
+    { "parent": "tfc:block/log_pile/log_pile_1_burning" },
+    { "parent": "tfc:block/log_pile/log_pile_2_burning" },
+    { "parent": "tfc:block/log_pile/log_pile_3_burning" },
+    { "parent": "tfc:block/log_pile/log_pile_4_burning" },
+    { "parent": "tfc:block/log_pile/log_pile_5_burning" },
+    { "parent": "tfc:block/log_pile/log_pile_6_burning" },
+    { "parent": "tfc:block/log_pile/log_pile_7_burning" },
+    { "parent": "tfc:block/log_pile/log_pile_8_burning" },
+    { "parent": "tfc:block/log_pile/log_pile_9_burning" },
+    { "parent": "tfc:block/log_pile/log_pile_10_burning" },
+    { "parent": "tfc:block/log_pile/log_pile_11_burning" },
+    { "parent": "tfc:block/log_pile/log_pile_12_burning" },
+    { "parent": "tfc:block/log_pile/log_pile_13_burning" },
+    { "parent": "tfc:block/log_pile/log_pile_14_burning" },
+    { "parent": "tfc:block/log_pile/log_pile_15_burning" },
+    { "parent": "tfc:block/log_pile/log_pile_16_burning" }
+  ]
+}

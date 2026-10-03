@@ -39,6 +39,7 @@ import net.dries007.tfc.common.entities.prey.Pest;
 
 import com.newterraearth.tfe.NewTerraEarthMod;
 import com.newterraearth.tfe.client.model.NTEPlantBlockModel;
+import com.newterraearth.tfe.client.model.NTELogPileBlockModel;
 import com.newterraearth.tfe.client.model.entity.NTEBisonModel;
 import com.newterraearth.tfe.client.model.entity.NTEBactrianCamelModel;
 import com.newterraearth.tfe.client.render.entity.NTEBactrianCamelRenderer;
@@ -123,6 +124,7 @@ public final class NTEClientEventHandler
     private static void registerModelLoaders(ModelEvent.RegisterGeometryLoaders event)
     {
         event.register("plant", NTEPlantBlockModel.Loader.INSTANCE);
+        event.register("log_pile", NTELogPileBlockModel.Loader.INSTANCE);
     }
 
     private static void registerSpecialModels(ModelEvent.RegisterAdditional event)
