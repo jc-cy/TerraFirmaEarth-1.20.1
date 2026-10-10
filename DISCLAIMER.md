@@ -2,11 +2,10 @@
 
 Copyright (c) 2026 交错次元 and contributors.
 
-本项目采用分区许可：TFC 派生代码按 EUPL v1.2，TFC 派生美术 / 数据资源按
-CC BY-SA 4.0，作者原创代码、兼容实现、自有数据与自有资源按 ARR 处理。
-完整条款见同目录下的 [LICENSE](./LICENSE)、[LICENSE-MAP.md](./LICENSE-MAP.md)
-与 [NOTICE](./NOTICE)。本免责声明仅补充使用风险、责任范围和第三方依赖说明，
-不替代、不撤销、不收紧上述协议文件。
+本仓库整体按 European Union Public Licence v1.2（EUPL v1.2）发布；完整条款见
+同目录下的 [LICENSE](./LICENSE)，上游署名与第三方例外见 [NOTICE](./NOTICE)。
+本免责声明仅补充使用风险、责任范围和第三方依赖说明，不替代、不撤销、不收紧
+上述协议文件。
 
 ---
 
@@ -35,13 +34,11 @@ CC BY-SA 4.0，作者原创代码、兼容实现、自有数据与自有资源�
 
 ## English
 
-This project uses path-based mixed licensing: TFC-derived code is licensed under
-EUPL v1.2, TFC-derived art / data assets under CC BY-SA 4.0, and author-original
-code, compatibility implementation, own data, and own resources under ARR. See
-[LICENSE](./LICENSE), [LICENSE-MAP.md](./LICENSE-MAP.md), and [NOTICE](./NOTICE)
-for the full terms. This disclaimer only supplements usage risk, liability, and
-third-party dependency information; it does not replace, revoke, or narrow those
-license files.
+This repository as a whole is distributed under the European Union Public
+Licence v1.2 (EUPL v1.2); see [LICENSE](./LICENSE) for the full terms and
+[NOTICE](./NOTICE) for upstream attribution and third-party exceptions. This
+disclaimer only supplements usage risk, liability, and third-party dependency
+information; it does not replace, revoke, or narrow those licence files.
 
 1. **As-is basis**: This project is provided on an "as is" basis without express
    or implied warranties of availability, stability, compatibility, security,

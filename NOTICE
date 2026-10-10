@@ -3,59 +3,87 @@ TerraFirmaEarth / 群峦地形移植 — NOTICE
 
 Copyright (c) 2026 交错次元 and contributors.
 
-本项目采用分区许可：TFC 派生代码按 EUPL v1.2，TFC 派生美术 / 数据资源按
-CC BY-SA 4.0，作者原创代码、兼容实现、自有数据与自有资源按 ARR 处理。
-完整条款与路径分类见仓库根目录的 LICENSE 与 LICENSE-MAP.md 文件。
+本仓库整体按 European Union Public Licence v1.2（EUPL v1.2）发布，完整条款见
+同目录 LICENSE。
 
-This project uses path-based mixed licensing: TFC-derived code is licensed under
-the EUPL v1.2, TFC-derived art / data assets under CC BY-SA 4.0, and
-author-original code, compatibility implementation, own data, and own resources
-are ARR. See LICENSE and LICENSE-MAP.md for full terms.
-
-本文件依 EUPL v1.2 第 5 条 "Attribution right" 列示对上游作品的署名义务，及
+本文件依 EUPL v1.2 第 5 条 "Attribution right" 列示对上游作品的署名义务，以及
 本项目使用的第三方组件 / 资源的原始版权与许可信息。
 
---------------------------------------------------------------------------------
+This repository as a whole is distributed under the European Union Public
+Licence v1.2 (EUPL v1.2); see the bundled LICENSE for the full terms.
 
+This file lists, per Article 5 "Attribution right" of the EUPL v1.2, the
+attribution owed to upstream works and the original copyright and licence
+information of the third-party components and resources used by this project.
+
+--------------------------------------------------------------------------------
 1. TerraFirmaCraft (TFC) — Upstream Project
 --------------------------------------------------------------------------------
 
   Project   : TerraFirmaCraft
   Repository: https://github.com/TerraFirmaCraft/TerraFirmaCraft
   Branches  : 1.20.x（主参考分支）、1.21.x（部分 1.21 特性参考）
-  Code      : Licensed under EUPL v1.2.
-  Assets    : Licensed under Creative Commons Attribution-ShareAlike 4.0
-              International (CC BY-SA 4.0).
+  Code      : Licensed under the European Union Public Licence v1.2 (EUPL v1.2).
+  Assets    : EUPL v1.2（同上游）；音效按 CC0，另有单项例外见下。
+
+  上游 README 的授权与例外声明：
+    - Licensed under the EUPL, Version 1.2.
+    - Sounds are used under CC0 unless otherwise noted.
+    - `rock_slide_long_3` 为 CC-BY-4.0（改编自 freesound.org 的原始作品）。
 
   Original Authors / Copyright holders (non-exhaustive, see TFC git history
   for the full contributor list):
+    - Dries007, AlcatrazEscapee 2018 - ...（上游 README 口径）
     - Robert "Bioxx" Anthony
     - Amanda "Kittychanley" Halek
-    - Dries "Dries007" Dewachter
     - Alex "AlcatrazEscapee" O'Neill
-    - And all other TerraFirmaCraft contributors.
+    - 以及 TerraFirmaCraft 的其他全部贡献者
+
+  上游声明其包含部分来自 1.7.10 时代原始 TerraFirmaCraft 的编辑过的源代码，
+  在原作者书面许可下按不同协议使用。本项目对该等进一步链路不作扩展授权亦不
+  撤销，相关义务以 TFC 上游 LICENSE.txt 与其 README 为准。
 
   本项目包含复制、改写或结构性派生自 TerraFirmaCraft 1.20.x / 1.21.x 的代码、
   worldgen 配置、surface builder 语义、植物 / 作物 / 群系结构、mixin 目标、
-  注册机制及资源。上述能识别出 TFC 派生表达的部分按 EUPL v1.2 或 CC BY-SA
-  4.0 继续受约束；作者原创代码、兼容实现、自有数据与自有资源按
-  LICENSE-MAP.md 的分区分类处理。
+  注册机制及资源。该等部分同样按 EUPL v1.2 分发，上游署名保留在本文件中。
 
   This project contains code, worldgen configuration, surface builder
   semantics, plant / crop / biome structures, mixin targets, registry
   mechanisms, and resources copied from, adapted from, or structurally derived
-  from TerraFirmaCraft 1.20.x / 1.21.x. Portions with identifiable TFC-derived
-  expression remain governed by EUPL v1.2 or CC BY-SA 4.0 as applicable.
-  Author-original code, compatibility implementation, own data, and own
-  resources are classified separately in LICENSE-MAP.md.
+  from TerraFirmaCraft 1.20.x / 1.21.x. Those portions are likewise distributed
+  under the EUPL v1.2, with upstream attribution preserved in this file.
 
-  TerraFirmaCraft 自身亦包含来自更早期 TFC Classic（Bioxx 等于 1.7.10 时代
-  发布的原始 TerraFirmaCraft）的部分编辑过的源代码，TFC 上游声明该等部分
-  在原作者书面授权下按不同许可使用。本项目对这些进一步的链路不作扩展授权
-  亦不撤销，相关义务仍以 TerraFirmaCraft 上游 LICENSE.txt 与其 README 中的
-  相关说明为准。
+--------------------------------------------------------------------------------
+2. 上游移植与派生清单 / List of Upstream Ports and Derivatives
+--------------------------------------------------------------------------------
 
-2. FastNoiseLite (Single-file Library)
+  - `src/main/java/com/newterraearth/tfe/api/climate/NTE121SolarCalculator.java`
+    ：TFC 1.21 `SolarCalculator` 与 `SkyPos` 的太阳位置、太阳时与角度数据移植。
+  - `src/main/java/com/newterraearth/tfe/common/entity/ai/NTERammingPreyAi.java`、
+    `NTEPrepareRamNearestTarget.java`、`NTERamTarget.java`：TFC 1.21 `RammingPrey`
+    冲撞脑、冲撞准备与命中行为移植。
+  - `src/main/java/com/newterraearth/tfe/client/model/entity/` 下的
+    `NTEArcticCharModel`、`NTEBurbotModel`、`NTEMuksunModel`、
+    `NTENorthernPikeModel`、`NTEPacuModel`、`NTEPeacockBassModel`、
+    `NTERedPiranhaModel`、`NTESpottedGudgeonModel`、`NTETilapiaModel`、
+    `NTEBactrianCamelModel`：TFC 4.2.9 专用鱼类 / 双峰骆驼模型表达移植。
+  - `src/main/java/com/newterraearth/tfe/client/animation/NTEBactrianCamelAnimation.java`、
+    `src/main/java/com/newterraearth/tfe/client/render/entity/NTEBactrianCamelRenderer.java`
+    ：TFC 4.2.9 双峰骆驼状态动画与专用 renderer 移植。
+  - `src/main/java/com/newterraearth/tfe/common/block/rope/**`、
+    `src/main/java/com/newterraearth/tfe/common/item/NTERopeItem.java`、
+    `src/main/java/com/newterraearth/tfe/common/entity/misc/NTERopeKnot.java`
+    ：TFC 4.2.9 攀爬绳索方块、物品、锚点与绳结行为移植。
+  - `src/main/java/com/newterraearth/tfe/world/surface/NormalAlternateSurfaceBuilder.java`
+    ：TFC 4.2.9 `NormalAlternateSurfaceBuilder` 河谷普通地表分支移植。
+  - `src/main/resources/data/tfc/**`、`src/main/resources/assets/tfc/**`、
+    `src/main/resources/tfe_server_data_overrides/data/tfc/**`
+    ：TFC 命名空间数据、worldgen、手册、贴图与语言资源的同路径覆盖或改写。
+  - 上述文件头部均带 `Licensed under the EUPL, Version 1.2.` 与来源 / 修改说明；
+    清单为便于回查而列，不作为授权范围的分界。
+
+--------------------------------------------------------------------------------
+3. FastNoiseLite (Single-file Library)
 --------------------------------------------------------------------------------
 
   若本项目的构建产物或源码中保留了来自 TerraFirmaCraft 的 `FastNoiseLite.java`
@@ -81,7 +109,8 @@ are ARR. See LICENSE and LICENSE-MAP.md for full terms.
 
       THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND.
 
-3. Star Catalog Data — bsc5p_radec_min.json
+--------------------------------------------------------------------------------
+4. Star Catalog Data — bsc5p_radec_min.json
 --------------------------------------------------------------------------------
 
   若本项目沿用了来自 TFC 的 `bsc5p_radec_min.json`（恒星方位数据，源自
@@ -89,7 +118,18 @@ are ARR. See LICENSE and LICENSE-MAP.md for full terms.
   Attribution 4.0 International (CC BY 4.0) 继续适用，原始来源可参见 TFC
   上游 README 中的相关说明。
 
-4. Minecraft / Forge / Mojang Trademarks
+--------------------------------------------------------------------------------
+5. Minecraft 资产兼容适配
+--------------------------------------------------------------------------------
+
+  `NTEArmadilloModel.java`、`assets/tfc/textures/entity/animal/armadillo.png`
+  与 `assets/tfc/textures/item/armadillo_scute.png` 是本地 Minecraft 1.21.1
+  客户端模型 / 贴图的 1.20 兼容适配，供本附属模组在 1.20.1 上运行使用。该等
+  内容属于 Minecraft 官方资产，按其官方条款使用；本项目不对此另行主张授权，
+  也不因本项目采用 EUPL v1.2 而改变其原始权利归属。
+
+--------------------------------------------------------------------------------
+6. Minecraft / Forge / Mojang Trademarks
 --------------------------------------------------------------------------------
 
   "Minecraft" 与相关名称、标识为 Mojang Studios / Microsoft 的注册商标。
@@ -97,10 +137,12 @@ are ARR. See LICENSE and LICENSE-MAP.md for full terms.
   依赖关系或适用范围时使用上述名称，不构成对任何前述权利人的隶属、合作、
   授权或背书关系。
 
-5. 第三方依赖（运行期）
+--------------------------------------------------------------------------------
+7. 第三方依赖（运行期）/ Third-Party Dependencies (runtime)
 --------------------------------------------------------------------------------
 
-  - TerraFirmaCraft (`tfc`)：必需依赖，EUPL v1.2 / CC BY-SA 4.0。
+  - TerraFirmaCraft (`tfc`)：必需依赖，EUPL v1.2（音效 CC0，`rock_slide_long_3`
+    为 CC-BY-4.0）。
   - Another Forest Compat (`afc`) 等可选兼容模组：本项目仅在运行期通过反射 /
     数据包覆盖与之交互，不分发其源码或资源；其各自协议仍由上游决定。
 

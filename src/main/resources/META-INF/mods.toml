@@ -1,6 +1,6 @@
 modLoader = "javafml"
 loaderVersion = "[47,)"
-license = "Mixed: EUPL-1.2 for TFC-derived code, CC-BY-SA-4.0 for TFC-derived assets/data, ARR for author-original portions"
+license = "EUPL-1.2"
 
 [[mods]]
 modId = "tfe"
@@ -56,8 +56,8 @@ TerraFirmaEarth / 群峦地球
 • 数据包接入说明：随附 GitHub 上的《数据包兼容写法教程》，方便个人使用者或整合包作者添加生物刷新、追加 fauna、协调 AFC 兼容。
 
 授权与声明
-• 本模组采用分区许可：TFC 派生代码按 EUPL v1.2；TFC 派生美术 / 模型 / 数据包 JSON 等资源按 CC BY-SA 4.0；作者原创代码、兼容实现、自有数据与自有资源按 ARR 处理。
-• TFC 上游和其他第三方材料继续遵守其原始许可；完整条款详见随附 LICENSE / LICENSE-MAP.md / NOTICE / DISCLAIMER.md。
+• 本模组整体按 EUPL v1.2（European Union Public Licence v1.2）发布：你可以自由使用、修改与再分发，再分发衍生作品时继续适用 EUPL v1.2 并保留署名。
+• 完整条款见随附 LICENSE；上游署名、移植清单与第三方例外见 NOTICE；使用风险与责任范围见 DISCLAIMER.md。
 
 English Summary
 TerraFirmaEarth is an addon for 1.20 TFC: it syncs a large amount of newer-version content, and also adds and reworks a great deal of its own.
@@ -104,12 +104,8 @@ Added or reworked by this mod (not an exhaustive list; the field guide is author
 • Datapack integration: the Datapack Compatibility Guide on GitHub helps personal users and modpack authors add mob spawning, extend fauna, and coordinate AFC compatibility.
 
 License Notice
-This mod uses path-based mixed licensing.
-• TFC-derived code: EUPL v1.2.
-• TFC-derived art / data assets: CC BY-SA 4.0.
-• Author-original code, compatibility implementation, own data, and own resources: ARR.
-TFC upstream and other third-party materials remain under their original licenses.
-See the bundled LICENSE, LICENSE-MAP.md, NOTICE and DISCLAIMER.md for the full terms.
+This mod is distributed as a whole under the EUPL v1.2 (European Union Public Licence v1.2): you may freely use, modify and redistribute it, and redistributed derivative works remain under the EUPL v1.2 with attribution preserved.
+See the bundled LICENSE for the full terms; upstream attribution, the port list and third-party exceptions are in NOTICE; usage risk and liability are in DISCLAIMER.md.
 '''
 
 [[dependencies.tfe]]

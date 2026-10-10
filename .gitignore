@@ -32,7 +32,7 @@
 # 根目录 JAR 任务显式打包的许可与声明文件
 !/LICENSE
 !/NOTICE
-!/LICENSE-MAP.md
 !/DISCLAIMER.md
+!/README.md
 !/数据包兼容写法教程.md
 !/更新日志.md

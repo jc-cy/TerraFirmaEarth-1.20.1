@@ -112,9 +112,6 @@ jar {
     from('NOTICE') {
         into ''
     }
-    from('LICENSE-MAP.md') {
-        into ''
-    }
     from('DISCLAIMER.md') {
         into ''
     }
@@ -140,9 +137,6 @@ tasks.register('stageReleaseDocs', Copy) {
     }
     from('NOTICE') {
         rename { "${releaseArtifactBaseName}-NOTICE.txt" }
-    }
-    from('LICENSE-MAP.md') {
-        rename { "${releaseArtifactBaseName}-LICENSE-MAP.md" }
     }
     from('DISCLAIMER.md') {
         rename { "${releaseArtifactBaseName}-DISCLAIMER.md" }

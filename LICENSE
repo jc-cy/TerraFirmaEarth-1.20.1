@@ -1,54 +1,37 @@
-TerraFirmaEarth / 群峦地形移植 — License Notice
-================================================
+TerraFirmaEarth / 群峦地形移植 — License
+========================================
 
 Copyright (c) 2026 交错次元 and contributors.
 
-本项目（"TerraFirmaEarth" / "群峦地形移植"）是面向 TerraFirmaCraft (TFC)
-1.20.x 的附属与移植项目，部分内容复制、改写或结构性派生自 TFC 1.20.x /
-1.21.x，TFC 本体遵循 European Union Public Licence v1.2（EUPL v1.2）与
-Creative Commons Attribution-ShareAlike 4.0 International（CC BY-SA 4.0）。
-本项目采用分区许可（mixed license）方式发布，具体路径分类见随附
-LICENSE-MAP.md：
+本仓库整体（源代码、数据、资源与文档）按 European Union Public Licence v1.2
+（EUPL v1.2）发布。你可以自由使用、复制、修改、再分发本项目及其衍生作品；再
+分发衍生作品时继续适用 EUPL v1.2 或该协议允许的更高版本，并保留署名、许可
+声明与修改声明。
 
-  - 能识别出复制、改写或结构性派生自 TFC 表达的代码部分：
-        Licensed under the EUPL v1.2 (or, at your option, any later version).
-        EUPL v1.2 全文随附于本文件 "Section A" 之后，亦可在
-        https://eupl.eu/1.2/en/ 取得多语言官方版本。
-
-  - 能识别出复制、改写或结构性派生自 TFC 的美术 / 模型 / 贴图 / 音效 /
-    数据包 JSON 等非软件资源：
-        Licensed under Creative Commons Attribution-ShareAlike 4.0 International
-        (CC BY-SA 4.0).
-        协议全文：https://creativecommons.org/licenses/by-sa/4.0/legalcode
-
-  - 本项目作者原创的代码、兼容实现、运行时桥接、配置、自有数据与自有资源，
-    以及 LICENSE-MAP.md 中列为 ARR 的部分：
-        All Rights Reserved.
-
-  - 第三方上游组件按其自身原始协议继续受约束（详见随附 NOTICE 文件），本声明
-    不替代、不撤销、不收紧任何上游许可。
+  - 署名与第三方材料：见同目录 [`NOTICE`](NOTICE)。第三方材料按其原始协议
+    继续适用，本许可不替代、不撤销、不收紧其原始许可。
+  - 使用风险与责任范围：见同目录 [`DISCLAIMER.md`](DISCLAIMER.md)。
+  - 协议正文：见本文件下方 "EUPL v1.2 (verbatim, official English text)" 一节。
 
 English summary:
 
-This project is a TerraFirmaCraft (TFC) 1.20.x addon / porting project. Some
-parts are copied from, adapted from, or structurally derived from TFC 1.20.x /
-1.21.x. This project uses path-based mixed licensing; see LICENSE-MAP.md.
+This repository as a whole — source code, data, resources and documents — is
+distributed under the European Union Public Licence v1.2 (EUPL-1.2). You may
+freely use, copy, modify and redistribute this project and its derivative
+works; redistributed derivative works remain under the EUPL v1.2, or a later
+version where that licence permits, keeping attribution, licence notices and
+modification notices.
 
-  - TFC-derived code is licensed under EUPL v1.2, or a later version where
-    permitted.
-
-  - TFC-derived art, models, textures, sounds, and data-pack JSON are licensed
-    under CC BY-SA 4.0.
-
-  - Author-original code, compatibility implementation, runtime logic,
-    configuration, own data, and own resources are All Rights Reserved.
-
-  - Third-party upstream components remain governed by their original licenses;
-    see NOTICE for attribution.
+  - Attribution and third-party materials: see [`NOTICE`](NOTICE). Third-party
+    materials remain under their original licences; this licence does not
+    replace, revoke, or narrow those original licences.
+  - Usage risk and liability: see [`DISCLAIMER.md`](DISCLAIMER.md).
+  - Licence text: see the "EUPL v1.2 (verbatim, official English text)" section
+    below in this file.
 
 
 ================================================================================
-Section A — EUPL v1.2 (verbatim, official English text)
+EUPL v1.2 (verbatim, official English text)
 ================================================================================
 
 
@@ -342,81 +325,62 @@ EUPL version.
 
 
 ================================================================================
-Section B — Notes on this Project
+Notes on this Project
 ================================================================================
 
 ## 中文说明
 
-1. 衍生内容
+1. 署名与修改声明
 
-本项目的部分代码、数据结构、配置文件、注册项、surface builder、世界生成参数、
-mixin 目标、植物 / 作物 / 群系定义等参考自或派生自上游 TerraFirmaCraft（TFC）
-1.20.x / 1.21.x 源码，TFC 本体遵循 EUPL v1.2。能识别出复制、改写或结构性派生
-自 TFC 表达的代码部分按 EUPL v1.2（或更高版本）发布，并在 NOTICE 文件中保留
-对上游作者的署名。
+按 EUPL v1.2 第 5 条 Attribution right，上游版权与许可声明列在 `NOTICE`；本
+项目对上游内容的复制、改写与结构性移植在对应文件头部注明
+`Licensed under the EUPL, Version 1.2.` 与来源 / 修改说明。
 
-仅调用 / 注入 / 兼容 TFC API 或行为，或独立实现兼容效果的作者原创代码，按
-LICENSE-MAP.md 的路径分类归 ARR 处理。
+2. 第三方例外
 
-2. 资源与数据
+TFC 音效按上游声明为 CC0（其中 `rock_slide_long_3` 为 CC-BY-4.0）、
+`FastNoiseLite.java` 为 MIT、恒星方位数据 `bsc5p_radec_min.json` 为 CC-BY-4.0。
+其余第三方材料按其原始协议继续适用，详见 `NOTICE`。
 
-本仓库中源自或结构性派生自 TFC 本体的非软件资源（贴图、模型、音效、数据包
-JSON 等）继续受 TFC 上游 CC-BY-SA 4.0 协议约束。本项目自有数据与自有资源是否
-开放，按 LICENSE-MAP.md 的路径分类为准。
+3. 源码可得性
 
-按 EUPL v1.2 第 5 条 Compatibility 与 Appendix，CC-BY-SA 系列被列为非软件作品的
-兼容协议；本项目对 TFC 派生资源适用 CC-BY-SA 4.0，与 TFC 派生代码侧的 EUPL
-v1.2 在分发时同时适用。
+按 EUPL v1.2 第 3 条与第 5 条，本项目的源码仓库地址见 `NOTICE` 与
+`README.md`；分发可执行产物时同时提供可自由访问的源码仓库。
 
-3. 第三方组件
+4. 商标
 
-详见仓库根目录的 `NOTICE` 文件。第三方组件按其原始许可证继续受约束，本协议不
-替代、不撤销、不收紧任何上游许可。
-
-4. 商标与署名
-
-"Minecraft" 是 Mojang Studios / Microsoft 的注册商标；"TerraFirmaCraft" 与 "TFC"
-名称归其各自权利人所有。本项目为非官方衍生作品，不构成对前述任何第三方的隶属、
-合作、授权、代言或背书。本项目按 EUPL v1.2 第 5 条 Legal Protection 仅在描述
-作品来源、兼容关系与依赖范围时使用上述名称。
+"Minecraft" 是 Mojang Studios / Microsoft 的注册商标；"TerraFirmaCraft" 与
+"TFC" 名称归其各自权利人所有。本项目为非官方项目，不构成对前述任何第三方的
+隶属、合作、授权、代言或背书关系，仅在描述来源、兼容关系与依赖范围时使用上述
+名称。
 
 ## English Notes
 
-1. Derived portions
+1. Attribution and modification notices
 
-Some code, data structures, configuration files, registry entries, surface
-builder semantics, world generation parameters, mixin targets, plant / crop /
-biome definitions, and related materials in this project reference or derive
-from upstream TerraFirmaCraft (TFC) 1.20.x / 1.21.x sources. Any code portion
-with identifiable copied, adapted, or structurally derived TFC expression is
-licensed under EUPL v1.2, or a later version where permitted, with upstream
-attribution preserved in NOTICE.
+Per Article 5 "Attribution right" of the EUPL v1.2, the upstream copyright,
+licence notices are listed in `NOTICE`; this project marks the copied, adapted
+and structurally ported upstream content with
+`Licensed under the EUPL, Version 1.2.` and its origin / modification notes in
+the corresponding file headers.
 
-Author-original code that uses, injects into, or targets TFC APIs or behavior,
-or independently implements compatibility behavior, is classified as ARR according
-to the path-based classification in LICENSE-MAP.md.
+2. Third-party exceptions
 
-2. Resources and data
+TFC sounds are CC0 per the upstream statement (of which `rock_slide_long_3` is
+CC-BY-4.0), `FastNoiseLite.java` is MIT, and the star-position data
+`bsc5p_radec_min.json` is CC-BY-4.0. All other third-party materials remain
+under their original licences; see `NOTICE` for details.
 
-Non-software assets derived from TFC, including textures, models, sounds, and
-data-pack JSON, remain subject to TFC's upstream CC BY-SA 4.0 terms. Project-
-owned data and resources are governed by the path-based classification in
-LICENSE-MAP.md.
+3. Source availability
 
-Under the EUPL v1.2 compatibility clause and appendix, the CC BY-SA family is
-listed as compatible for works other than software. CC BY-SA 4.0 applies to
-TFC-derived resources in this project alongside EUPL v1.2 for TFC-derived code.
+Per Articles 3 and 5 of the EUPL v1.2, the source repository address of this
+project is stated in `NOTICE` and `README.md`; whenever executable artifacts are
+distributed, a freely accessible source repository is provided as well.
 
-3. Third-party components
+4. Trademarks
 
-See the repository-root `NOTICE` file. Third-party components remain governed
-by their original licenses. This license notice does not replace, revoke, or
-narrow any upstream license.
-
-4. Trademarks and attribution
-
-"Minecraft" is a trademark of Mojang Studios / Microsoft. "TerraFirmaCraft"
-and "TFC" belong to their respective rights holders. This project is an
-unofficial compatibility / porting project and does not imply affiliation,
-partnership, authorization, endorsement, or sponsorship by those third parties.
-Those names are used only to describe origin, compatibility, and dependencies.
+"Minecraft" is a trademark of Mojang Studios / Microsoft. "TerraFirmaCraft" and
+"TFC" belong to their respective rights holders. This project is an unofficial
+project and does not imply affiliation, partnership, authorization, endorsement,
+or sponsorship by any of those third parties; those names are used only to
+describe origin, compatibility, and dependencies.

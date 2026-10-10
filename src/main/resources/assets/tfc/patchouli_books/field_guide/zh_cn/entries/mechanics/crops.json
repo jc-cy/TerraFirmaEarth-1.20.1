@@ -1031,8 +1031,8 @@
     {
       "type": "patchouli:text",
       "anchor": "green_bean",
-      "text": "$(bold)$(l:the_world/climate#temperature)温度$()：3 - 28 °C$(br)$(bold)$(l:mechanics/hydration)湿度$()：25 - 90 %$(br)$(bold)营养物质$()：氮$(br2)青豆是一种攀爬作物。如果耕地上插有木棍，青豆能长到两格高。种植青豆会产出$(thing)青豆$()和$(thing)青豆种子$()。",
-      "title": "青豆"
+      "text": "$(bold)$(l:the_world/climate#temperature)温度$()：3 - 28 °C$(br)$(bold)$(l:mechanics/hydration)湿度$()：25 - 90 %$(br)$(bold)营养物质$()：氮$(br2)四季豆是一种攀爬作物。如果耕地上插有木棍，四季豆能长到两格高。种植四季豆会产出$(thing)四季豆$()和$(thing)四季豆种子$()。",
+      "title": "四季豆"
     },
     {
       "type": "tfc:multimultiblock",
