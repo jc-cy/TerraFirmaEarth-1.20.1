@@ -65,6 +65,13 @@ final class NTEHeadwaterNetwork
     private static final double SOURCE_CHANNEL_RADIUS = 0.65d;
     private static final double CENTER_SURFACE_INSET = 1.25d;
     private static final double BANK_FREEBOARD = 0.10d;
+    /**
+     * Steepest water drop the planned grade may realize per horizontal block.
+     * The grade follows the terrain envelope anyway (measured creek grades
+     * average well under one block per block), so this only bites at genuinely
+     * vertical terrain drops. Confluence leveling never raises it: the required
+     * descent is spread further upstream instead.
+     */
     private static final double MAX_CASCADE_SLOPE = 1.0d;
     private static final double MAX_NORMAL_INCISION = 5.0d;
     private static final double FEEDER_RECEIVER_WIDTH_SCALE = 0.36d;
@@ -2093,20 +2100,55 @@ final class NTEHeadwaterNetwork
             rightRoute,
             sharedOutlet ? 4d : SHARED_CORRIDOR_MIN_LENGTH
         );
+        Route leftCoordinated = leftRoute;
+        Route rightCoordinated = rightRoute;
+        boolean confluenceLeveled = false;
+        if (sharedOutlet)
+        {
+            // Two leaf routes which end at the same receiver are already two
+            // curves crossing each other; nothing about their geometry needs
+            // rebuilding. The only thing missing at the crossing is a level
+            // confluence, so pull the higher branch's water down onto the lower
+            // one and leave both polylines exactly as they were planned. How far
+            // upstream that pull reaches is decided by the height difference
+            // itself, never by a fixed window; rebuilding the polylines is what
+            // moved beds that never belonged to the confluence.
+            final RouteIntersection confluence = findRouteIntersection(leftRoute, rightRoute);
+            final boolean confluenceUpstreamOfCorridor = confluence != null
+                && (overlap == null
+                    || confluence.leftAlong() < overlap.leftStartAlong() - 1.0e-6d
+                    || confluence.rightAlong() < overlap.rightStartAlong() - 1.0e-6d);
+            if (confluenceUpstreamOfCorridor)
+            {
+                final double confluenceWater = Math.min(
+                    leftRoute.sampleWaterYAtAlong(confluence.leftAlong()),
+                    rightRoute.sampleWaterYAtAlong(confluence.rightAlong())
+                );
+                leftCoordinated = leftRoute.withWaterPull(
+                    confluence.leftAlong(),
+                    confluenceWater
+                );
+                rightCoordinated = rightRoute.withWaterPull(
+                    confluence.rightAlong(),
+                    confluenceWater
+                );
+                confluenceLeveled = true;
+            }
+        }
         if (overlap != null)
         {
-            left.route = leftRoute.withSharedProfile(
+            left.route = leftCoordinated.withSharedProfile(
                 overlap.leftStartAlong(),
                 overlap.leftEndAlong(),
-                rightRoute,
+                rightCoordinated,
                 overlap.rightStartAlong(),
                 overlap.rightEndAlong(),
                 heights
             );
-            right.route = rightRoute.withSharedProfile(
+            right.route = rightCoordinated.withSharedProfile(
                 overlap.rightStartAlong(),
                 overlap.rightEndAlong(),
-                leftRoute,
+                leftCoordinated,
                 overlap.leftStartAlong(),
                 overlap.leftEndAlong(),
                 heights
@@ -2117,6 +2159,14 @@ final class NTEHeadwaterNetwork
         }
         if (sharedOutlet)
         {
+            if (confluenceLeveled)
+            {
+                left.route = leftCoordinated;
+                right.route = rightCoordinated;
+                left.junctionPeers.add(right);
+                right.junctionPeers.add(left);
+                return true;
+            }
             return false;
         }
 
@@ -2125,6 +2175,25 @@ final class NTEHeadwaterNetwork
         {
             return false;
         }
+        coordinateJunction(left, right, leftRoute, rightRoute, intersection, heights);
+        return true;
+    }
+
+    /**
+     * Insert one shared confluence node into both routes. Water descends to the
+     * lower of the two levels and the higher branch is pulled down over the
+     * profile transition leading into the node, so the merge is level instead of
+     * two stacked water surfaces. Both routes keep their own source and outlet.
+     */
+    private static void coordinateJunction(
+        Headwater left,
+        Headwater right,
+        Route leftRoute,
+        Route rightRoute,
+        RouteIntersection intersection,
+        HeightSampler heights
+    )
+    {
         final double junctionWater = Math.min(
             leftRoute.sampleWaterYAtAlong(intersection.leftAlong()),
             rightRoute.sampleWaterYAtAlong(intersection.rightAlong())
@@ -2170,7 +2239,6 @@ final class NTEHeadwaterNetwork
         );
         left.junctionPeers.add(right);
         right.junctionPeers.add(left);
-        return true;
     }
 
     /**
@@ -2281,13 +2349,22 @@ final class NTEHeadwaterNetwork
         double bestDistanceSq = Double.POSITIVE_INFINITY;
         for (int leftSegment = 0; leftSegment < left.x.length - 1; leftSegment++)
         {
-            final Vec leftStart = new Vec(left.x[leftSegment], left.z[leftSegment]);
-            final Vec leftEnd = new Vec(left.x[leftSegment + 1], left.z[leftSegment + 1]);
+            final double leftStartX = left.x[leftSegment];
+            final double leftStartZ = left.z[leftSegment];
+            final double leftEndX = left.x[leftSegment + 1];
+            final double leftEndZ = left.z[leftSegment + 1];
             for (int rightSegment = 0; rightSegment < right.x.length - 1; rightSegment++)
             {
-                final Vec rightStart = new Vec(right.x[rightSegment], right.z[rightSegment]);
-                final Vec rightEnd = new Vec(right.x[rightSegment + 1], right.z[rightSegment + 1]);
-                final SegmentApproach approach = segmentApproach(leftStart, leftEnd, rightStart, rightEnd);
+                final SegmentApproach approach = segmentApproach(
+                    leftStartX,
+                    leftStartZ,
+                    leftEndX,
+                    leftEndZ,
+                    right.x[rightSegment],
+                    right.z[rightSegment],
+                    right.x[rightSegment + 1],
+                    right.z[rightSegment + 1]
+                );
                 final double leftAlong = Mth.lerp(
                     approach.leftDelta(),
                     left.distance[leftSegment],
@@ -2356,14 +2433,29 @@ final class NTEHeadwaterNetwork
         return best;
     }
 
-    private static SegmentApproach segmentApproach(Vec leftStart, Vec leftEnd, Vec rightStart, Vec rightEnd)
+    /**
+     * Scalar form on purpose: the segment pair loop runs every left segment
+     * against every right segment, so building temporary points for each pair
+     * dominated the allocation of the whole coordination pass. The arithmetic
+     * is the identical expression order as the vector form it replaced.
+     */
+    private static SegmentApproach segmentApproach(
+        double leftStartX,
+        double leftStartZ,
+        double leftEndX,
+        double leftEndZ,
+        double rightStartX,
+        double rightStartZ,
+        double rightEndX,
+        double rightEndZ
+    )
     {
-        final double ux = leftEnd.x() - leftStart.x();
-        final double uz = leftEnd.z() - leftStart.z();
-        final double vx = rightEnd.x() - rightStart.x();
-        final double vz = rightEnd.z() - rightStart.z();
-        final double wx = leftStart.x() - rightStart.x();
-        final double wz = leftStart.z() - rightStart.z();
+        final double ux = leftEndX - leftStartX;
+        final double uz = leftEndZ - leftStartZ;
+        final double vx = rightEndX - rightStartX;
+        final double vz = rightEndZ - rightStartZ;
+        final double wx = leftStartX - rightStartX;
+        final double wz = leftStartZ - rightStartZ;
         final double a = ux * ux + uz * uz;
         final double b = ux * vx + uz * vz;
         final double c = vx * vx + vz * vz;
@@ -2376,14 +2468,16 @@ final class NTEHeadwaterNetwork
         leftDelta = a <= 1.0e-9d ? 0d : Mth.clamp((b * rightDelta - d) / a, 0d, 1d);
         rightDelta = c <= 1.0e-9d ? 0d : Mth.clamp((b * leftDelta + e) / c, 0d, 1d);
 
-        final Vec leftPoint = lerp(leftStart, leftEnd, leftDelta);
-        final Vec rightPoint = lerp(rightStart, rightEnd, rightDelta);
+        final double leftPointX = Mth.lerp(leftDelta, leftStartX, leftEndX);
+        final double leftPointZ = Mth.lerp(leftDelta, leftStartZ, leftEndZ);
+        final double rightPointX = Mth.lerp(rightDelta, rightStartX, rightEndX);
+        final double rightPointZ = Mth.lerp(rightDelta, rightStartZ, rightEndZ);
         return new SegmentApproach(
             leftDelta,
             rightDelta,
-            distanceSq(leftPoint, rightPoint),
-            leftPoint,
-            rightPoint
+            distanceSq(leftPointX, leftPointZ, rightPointX, rightPointZ),
+            new Vec(leftPointX, leftPointZ),
+            new Vec(rightPointX, rightPointZ)
         );
     }
 
@@ -2910,6 +3004,36 @@ final class NTEHeadwaterNetwork
                 waterY[i] = Math.max(outletWater, Math.min(waterY[i - 1], capacity[i]));
             }
             waterY[pointCount - 1] = outletWater;
+            if (TRACE)
+            {
+                // How much of this grade the cascade cap actually removes.
+                // rawDropOver5 counts the segments which stay steep at the
+                // current cap; rawDropOver1 is what the old 1.0 cap flattened.
+                int overOne = 0;
+                int overFive = 0;
+                double steepest = 0d;
+                for (int i = pointCount - 2; i >= 0; i--)
+                {
+                    final double segmentLength = Math.max(1.0e-6d, distance[i + 1] - distance[i]);
+                    final double rawDrop = (waterY[i] - waterY[i + 1]) / segmentLength;
+                    if (rawDrop > 1d)
+                    {
+                        overOne++;
+                    }
+                    if (rawDrop > 5d)
+                    {
+                        overFive++;
+                    }
+                    steepest = Math.max(steepest, rawDrop);
+                }
+                LOGGER.info(
+                    "[TFE][CascadeGrade] points={} rawDropOver1={} rawDropOver5={} steepest={}",
+                    pointCount,
+                    overOne,
+                    overFive,
+                    steepest
+                );
+            }
             for (int i = pointCount - 2; i >= 0; i--)
             {
                 final double segmentLength = Math.max(1.0e-6d, distance[i + 1] - distance[i]);
@@ -5140,6 +5264,77 @@ final class NTEHeadwaterNetwork
         }
 
         /**
+         * Level this route's water onto a confluence node without touching any
+         * geometry: the polyline, its samples and its radius all stay exactly
+         * as planned, and only the water surface is pulled down. The descent is
+         * never asked to beat the cascade cap: starting at the node, upstream
+         * points are visited in order and lowered onto the "one block per
+         * horizontal block" line, and the walk simply keeps going upstream for
+         * as long as the original grade still sits above that line. A small
+         * height difference is absorbed by the first point or two, a large one
+         * spreads toward the source instead of building a wall, and the range
+         * is decided by the height difference itself rather than a constant.
+         */
+        private Route withWaterPull(double nodeAlong, double nodeWater)
+        {
+            int nodeIndex = 0;
+            while (nodeIndex + 2 < distance.length && distance[nodeIndex + 1] < nodeAlong)
+            {
+                nodeIndex++;
+            }
+            final double[] pulledWater = waterY.clone();
+            pulledWater[nodeIndex] = Math.min(pulledWater[nodeIndex], nodeWater);
+            int pulledPoints = 0;
+            double deepestPull = 0d;
+            for (int i = nodeIndex - 1; i >= 0; i--)
+            {
+                final double gap = distance[nodeIndex] - distance[i];
+                final double cappedWater = nodeWater + gap * MAX_CASCADE_SLOPE;
+                if (pulledWater[i] <= cappedWater)
+                {
+                    break;
+                }
+                deepestPull = Math.max(deepestPull, pulledWater[i] - cappedWater);
+                pulledWater[i] = cappedWater;
+                pulledPoints++;
+            }
+            if (TRACE && pulledPoints > 0)
+            {
+                LOGGER.info(
+                    "[TFE][WaterPull] nodeAlong={} nodeWater={} heightDrop={} pulledPoints={} deepestPull={} spreadAlong={}",
+                    nodeAlong,
+                    nodeWater,
+                    waterY[nodeIndex] - nodeWater,
+                    pulledPoints,
+                    deepestPull,
+                    distance[nodeIndex] - distance[Math.max(0, nodeIndex - pulledPoints)]
+                );
+            }
+            for (int i = nodeIndex + 1; i < pulledWater.length; i++)
+            {
+                pulledWater[i] = Math.min(pulledWater[i - 1], pulledWater[i]);
+            }
+            return new Route(
+                x,
+                z,
+                terrainY,
+                pulledWater,
+                radius,
+                distance,
+                totalLength,
+                receiverMouth,
+                receiverAlignment,
+                receiverWaterY,
+                mouthTransitionLength,
+                subterranean,
+                tunnelCeilingY,
+                subterraneanRuns,
+                caveSeed,
+                junctionFlowAnchors
+            );
+        }
+
+        /**
          * Collapse a sustained high/low double route into one physical
          * corridor. Geometry, water and width are blended into the same
          * shared profile, with short transitions at both ends so neither
@@ -5386,6 +5581,24 @@ final class NTEHeadwaterNetwork
                 coordinatedWater[i] = Math.min(coordinatedWater[i - 1], coordinatedWater[i]);
             }
             coordinatedWater[size - 1] = waterY[waterY.length - 1];
+            if (TRACE)
+            {
+                final StringBuilder upstream = new StringBuilder();
+                for (int i = Math.max(0, junctionIndex - 16); i <= junctionIndex; i++)
+                {
+                    upstream.append(String.format("%.1f->%.2f ", coordinatedDistance[i], coordinatedWater[i]));
+                }
+                LOGGER.info(
+                    "[TFE][JunctionProfile] junction=({},{}) node=({},{}) water={} radius={} upstream={}",
+                    junction.x(),
+                    junction.z(),
+                    coordinatedX[junctionIndex],
+                    coordinatedZ[junctionIndex],
+                    junctionWater,
+                    junctionRadius,
+                    upstream.toString()
+                );
+            }
 
             final List<JunctionFlowAnchor> coordinatedFlowAnchors = new ArrayList<>(junctionFlowAnchors);
             if (junctionAnchorFlowAt(junction) == null)
@@ -5781,6 +5994,13 @@ final class NTEHeadwaterNetwork
     {
         final double dx = right.x() - left.x();
         final double dz = right.z() - left.z();
+        return dx * dx + dz * dz;
+    }
+
+    private static double distanceSq(double leftX, double leftZ, double rightX, double rightZ)
+    {
+        final double dx = rightX - leftX;
+        final double dz = rightZ - leftZ;
         return dx * dx + dz * dz;
     }
 
