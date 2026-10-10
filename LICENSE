@@ -3,10 +3,13 @@ TerraFirmaEarth / 群峦地形移植 — License
 
 Copyright (c) 2026 交错次元 and contributors.
 
+Licensed under the EUPL, Version 1.2.
+You may obtain a copy of the Licence at:
+https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
+
 本仓库整体（源代码、数据、资源与文档）按 European Union Public Licence v1.2
 （EUPL v1.2）发布。你可以自由使用、复制、修改、再分发本项目及其衍生作品；再
-分发衍生作品时继续适用 EUPL v1.2 或该协议允许的更高版本，并保留署名、许可
-声明与修改声明。
+分发衍生作品时继续适用 EUPL v1.2，并保留署名、许可声明与修改声明。
 
   - 署名与第三方材料：见同目录 [`NOTICE`](NOTICE)。第三方材料按其原始协议
     继续适用，本许可不替代、不撤销、不收紧其原始许可。
@@ -18,9 +21,8 @@ English summary:
 This repository as a whole — source code, data, resources and documents — is
 distributed under the European Union Public Licence v1.2 (EUPL-1.2). You may
 freely use, copy, modify and redistribute this project and its derivative
-works; redistributed derivative works remain under the EUPL v1.2, or a later
-version where that licence permits, keeping attribution, licence notices and
-modification notices.
+works; redistributed derivative works remain under the EUPL v1.2, keeping
+attribution, licence notices and modification notices.
 
   - Attribution and third-party materials: see [`NOTICE`](NOTICE). Third-party
     materials remain under their original licences; this licence does not

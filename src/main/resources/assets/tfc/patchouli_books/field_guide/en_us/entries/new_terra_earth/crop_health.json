@@ -13,8 +13,18 @@
     },
     {
       "type": "patchouli:text",
-      "title": "Crop Health Rules",
-      "text": "Crops start at 100% health. Suitable temperature and hydration allow normal growth and restore health; mild stress stops growth and gradually drains health.$(br2)Temperatures more than 10°C beyond either limit kill the crop immediately. Jade can show the current health value."
+      "title": "How Health Changes",
+      "text": "Crops start at 100% health. Suitable temperature and hydration allow normal growth and gradually restore health; mild stress stops growth and gradually drains health.$(br2)Every check costs or restores 4%, and it takes 25 bad checks in a row to kill the crop."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Fertilizer and Maturity",
+      "text": "While the farmland still holds the nutrient the crop needs, health recovers twice as fast.$(br2)Once a crop is mature its health stays at 100%: it no longer dies from health and only over-ripens as TFC normally does.$(br2)Jade can show the current health value; see the $(l:mechanics/crops)Crops chapter$() for how to plant them."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Extreme Temperatures",
+      "text": "Temperatures more than 10°C beyond either limit cost 45% health per check instead of killing the crop immediately; it takes three such checks in a row to kill it."
     }
   ],
   "read_by_default": true

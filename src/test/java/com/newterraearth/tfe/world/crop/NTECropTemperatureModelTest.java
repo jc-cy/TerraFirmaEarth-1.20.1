@@ -43,19 +43,49 @@ class NTECropTemperatureModelTest
     @Test
     void climateStressAccumulatesAndRecovers()
     {
-        assertEquals(1, NTECropTemperatureModel.updateStress(0, false));
-        assertEquals(15, NTECropTemperatureModel.updateStress(14, false));
-        assertEquals(20, NTECropTemperatureModel.updateStress(19, false));
-        assertEquals(20, NTECropTemperatureModel.updateStress(20, false));
-        assertEquals(20, NTECropTemperatureModel.updateStress(20, true));
-        assertEquals(13, NTECropTemperatureModel.updateStress(14, true));
-        assertEquals(0, NTECropTemperatureModel.updateStress(0, true));
-        assertFalse(NTECropTemperatureModel.hasFatalStress(19));
-        assertTrue(NTECropTemperatureModel.hasFatalStress(20));
+        // 每次气候判定损失 4%：连续 25 次不适才会枯死。
+        assertEquals(4, NTECropTemperatureModel.TICK_DAMAGE);
+        assertEquals(25, NTECropTemperatureModel.STRESS_LIMIT / NTECropTemperatureModel.TICK_DAMAGE);
+        assertEquals(4, NTECropTemperatureModel.updateStress(0, false, false));
+        assertEquals(8, NTECropTemperatureModel.updateStress(4, false, true));
+        assertEquals(60, NTECropTemperatureModel.updateStress(56, false, false));
+        assertEquals(100, NTECropTemperatureModel.updateStress(96, false, false));
+        assertEquals(100, NTECropTemperatureModel.updateStress(100, false, false));
+        assertEquals(100, NTECropTemperatureModel.updateStress(100, true, false));
+
+        // 条件合适时恢复 4%；耕地有肥料时恢复速度翻倍（8%）。
+        assertEquals(52, NTECropTemperatureModel.updateStress(56, true, false));
+        assertEquals(48, NTECropTemperatureModel.updateStress(56, true, true));
+        assertEquals(0, NTECropTemperatureModel.updateStress(0, true, false));
+        assertEquals(0, NTECropTemperatureModel.updateStress(4, true, false));
+        assertEquals(0, NTECropTemperatureModel.updateStress(4, true, true));
+
+        assertFalse(NTECropTemperatureModel.hasFatalStress(99));
+        assertTrue(NTECropTemperatureModel.hasFatalStress(100));
         assertEquals(100, NTECropTemperatureModel.healthPercent(0));
-        assertEquals(95, NTECropTemperatureModel.healthPercent(1));
-        assertEquals(5, NTECropTemperatureModel.healthPercent(19));
-        assertEquals(0, NTECropTemperatureModel.healthPercent(20));
+        assertEquals(96, NTECropTemperatureModel.healthPercent(4));
+        assertEquals(1, NTECropTemperatureModel.healthPercent(99));
+        assertEquals(0, NTECropTemperatureModel.healthPercent(100));
+    }
+
+    @Test
+    void extremeTemperatureDrainsHealthInsteadOfKillingInstantly()
+    {
+        // 极端温度每次扣 45%：第一、二次活下来，第三次才枯死。
+        assertEquals(45, NTECropTemperatureModel.HARD_DAMAGE);
+        assertEquals(45, NTECropTemperatureModel.applyHardDamage(0));
+        assertEquals(90, NTECropTemperatureModel.applyHardDamage(45));
+        assertEquals(100, NTECropTemperatureModel.applyHardDamage(90));
+        assertFalse(NTECropTemperatureModel.hasFatalStress(NTECropTemperatureModel.applyHardDamage(45)));
+        assertTrue(NTECropTemperatureModel.hasFatalStress(NTECropTemperatureModel.applyHardDamage(90)));
+    }
+
+    @Test
+    void matureCropsStayAtFullHealth()
+    {
+        assertEquals(0, NTECropTemperatureModel.MATURE_STRESS);
+        assertEquals(100, NTECropTemperatureModel.healthPercent(NTECropTemperatureModel.MATURE_STRESS));
+        assertFalse(NTECropTemperatureModel.hasFatalStress(NTECropTemperatureModel.MATURE_STRESS));
     }
 
     @Test

@@ -7,6 +7,9 @@
 
 ## 许可
 
+`Licensed under the EUPL, Version 1.2.` 协议全文随仓库提供，亦可在
+https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12 取得。
+
 - 仓库整体按 **EUPL v1.2**（European Union Public Licence v1.2）发布：你可以自由
   使用、修改与再分发；再分发衍生作品时继续适用 EUPL v1.2，并保留署名与修改声明。
 - 完整条款见 [LICENSE](LICENSE)；上游署名、移植清单与第三方例外见
@@ -41,6 +44,10 @@ modify the source of TFC, ImmersiveEngineering or Firmalife; everything is
 implemented through registration, Mixin, events, datapacks and resource packs.
 
 ### Licence
+
+`Licensed under the EUPL, Version 1.2.` The full licence text is bundled with
+the repository and is also available at
+https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12 .
 
 - The repository as a whole is distributed under the **EUPL v1.2** (European
   Union Public Licence v1.2): you may freely use, modify and redistribute it;

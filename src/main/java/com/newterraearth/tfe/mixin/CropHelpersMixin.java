@@ -80,19 +80,52 @@ public abstract class CropHelpersMixin
     )
     {
         final NTECropTemperatureAccess stress = (NTECropTemperatureAccess) (Object) crop;
+        final int currentStress = stress.tfe$getTemperatureStress();
+
+        // 成熟后健康固定为满值：不再累计损失，也不会因健康枯死，只保留 TFC 自身的过熟（expiry）死亡。
+        if (crop.getGrowth() >= CropHelpers.GROWTH_LIMIT)
+        {
+            stress.tfe$setTemperatureStress(NTECropTemperatureModel.MATURE_STRESS);
+            return true;
+        }
+
         if (!allowWiggle)
         {
             final boolean climateValid = range.checkBoth(hydration, fromTemperature, false)
                 && range.checkTemperature(toTemperature, false) == Result.VALID;
-            final int updatedStress = NTECropTemperatureModel.updateStress(stress.tfe$getTemperatureStress(), climateValid);
+            final int updatedStress = NTECropTemperatureModel.updateStress(
+                currentStress,
+                climateValid,
+                tfe$hasFertilizer(level, pos, state)
+            );
             stress.tfe$setTemperatureStress(updatedStress);
             return climateValid && !NTECropTemperatureModel.hasFatalStress(updatedStress);
         }
 
-        final boolean temperatureSafe = withinDeathRange(range, fromTemperature)
-            && withinDeathRange(range, toTemperature);
-        return temperatureSafe
-            && !NTECropTemperatureModel.hasFatalStress(stress.tfe$getTemperatureStress());
+        if (withinDeathRange(range, fromTemperature) && withinDeathRange(range, toTemperature))
+        {
+            return !NTECropTemperatureModel.hasFatalStress(currentStress);
+        }
+
+        // 极端温度不再一击枯死：每次扣 45% 健康，连续三次才会枯死。
+        final int updatedStress = NTECropTemperatureModel.applyHardDamage(currentStress);
+        stress.tfe$setTemperatureStress(updatedStress);
+        return !NTECropTemperatureModel.hasFatalStress(updatedStress);
+    }
+
+    /**
+     * 耕地仍有该作物需要的养分（施过肥或尚未耗尽）时，健康恢复速度翻倍。判定取作物的主养分槽，
+     * 避免被上茬作物留下的其他养分误判成「有肥料」。
+     */
+    private static boolean tfe$hasFertilizer(Level level, BlockPos pos, BlockState state)
+    {
+        if (!(state.getBlock() instanceof ICropBlock cropBlock)
+            || !(level.getBlockEntity(pos.below()) instanceof IFarmland farmland))
+        {
+            return false;
+        }
+        final FarmlandBlockEntity.NutrientType type = cropBlock.getPrimaryNutrient();
+        return type != null && farmland.getNutrient(type) > 0;
     }
 
     private static boolean withinDeathRange(ClimateRange range, float temperature)

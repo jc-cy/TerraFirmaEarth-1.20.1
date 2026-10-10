@@ -56,6 +56,7 @@ TerraFirmaEarth / 群峦地球
 • 数据包接入说明：随附 GitHub 上的《数据包兼容写法教程》，方便个人使用者或整合包作者添加生物刷新、追加 fauna、协调 AFC 兼容。
 
 授权与声明
+• Licensed under the EUPL, Version 1.2. 协议全文随附于 LICENSE，亦可在 https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12 取得。
 • 本模组整体按 EUPL v1.2（European Union Public Licence v1.2）发布：你可以自由使用、修改与再分发，再分发衍生作品时继续适用 EUPL v1.2 并保留署名。
 • 完整条款见随附 LICENSE；上游署名、移植清单与第三方例外见 NOTICE；使用风险与责任范围见 DISCLAIMER.md。
 
@@ -104,6 +105,7 @@ Added or reworked by this mod (not an exhaustive list; the field guide is author
 • Datapack integration: the Datapack Compatibility Guide on GitHub helps personal users and modpack authors add mob spawning, extend fauna, and coordinate AFC compatibility.
 
 License Notice
+Licensed under the EUPL, Version 1.2. The full licence text is bundled in LICENSE and is also available at https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12 .
 This mod is distributed as a whole under the EUPL v1.2 (European Union Public Licence v1.2): you may freely use, modify and redistribute it, and redistributed derivative works remain under the EUPL v1.2 with attribution preserved.
 See the bundled LICENSE for the full terms; upstream attribution, the port list and third-party exceptions are in NOTICE; usage risk and liability are in DISCLAIMER.md.
 '''
