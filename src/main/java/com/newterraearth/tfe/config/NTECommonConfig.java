@@ -1,5 +1,7 @@
 package com.newterraearth.tfe.config;
 
+import java.util.List;
+
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.registries.ForgeRegistries;
@@ -67,6 +69,14 @@ public final class NTECommonConfig
     private static final ForgeConfigSpec.DoubleValue HEADWATER_MOUTH_NOISE;
     private static final ForgeConfigSpec.DoubleValue HEADWATER_MOUTH_MAX_SLOPE;
     private static final ForgeConfigSpec.DoubleValue HEADWATER_MOUTH_MAX_LENGTH;
+
+    private static final ForgeConfigSpec.DoubleValue RICH_SOIL_FERTILITY_LUSH;
+    private static final ForgeConfigSpec.DoubleValue RICH_SOIL_FERTILITY_ENRICHED;
+    private static final ForgeConfigSpec.DoubleValue RICH_SOIL_FERTILITY_NORMAL;
+    private static final ForgeConfigSpec.DoubleValue RICH_SOIL_FERTILITY_BARREN;
+    private static final ForgeConfigSpec.DoubleValue RICH_SOIL_FERTILITY_RECLAIMED;
+
+    private static final ForgeConfigSpec.ConfigValue<List<? extends Double>> RICH_SOIL_EXTRA_FERTILIZER;
 
     static
     {
@@ -227,6 +237,29 @@ public final class NTECommonConfig
         HEADWATER_MOUTH_MAX_LENGTH = builder
             .comment("洞口纵向斜坡的长度上限，单位为方块。超过上限的落差只能靠更陡的坡度吸收。")
             .defineInRange("mouth_max_length", 48.0d, 4.0d, 256.0d);
+        builder.pop();
+
+        builder.comment("农夫乐事（Farmer's Delight）沃土耕地与生存者的沃土扩展（Survivor's Rich Soils）五档耕地的兼容数值。"
+            + "两类耕地都按方块 id 识别（不限命名空间），与来源模组无关；默认值等于对方当前版本的实际数值。");
+        builder.push("rich_soil_farmland");
+        builder.comment("本模组给这些耕地登记的土壤肥力倍率，实际生效：影响施肥投喂量、作物生长与成熟估算、Jade 提示。")
+            .comment("按档位从高到低依次为 lush / enriched / normal / barren / reclaimed。");
+        builder.push("fertility");
+        RICH_SOIL_FERTILITY_LUSH = builder.comment("富饶沃土耕地（lush）。").defineInRange("lush", 1.3d, 0.0d, 10.0d);
+        RICH_SOIL_FERTILITY_ENRICHED = builder.comment("肥沃沃土耕地（enriched）。").defineInRange("enriched", 1.2d, 0.0d, 10.0d);
+        RICH_SOIL_FERTILITY_NORMAL = builder.comment("普通沃土耕地（normal）。").defineInRange("normal", 1.1d, 0.0d, 10.0d);
+        RICH_SOIL_FERTILITY_BARREN = builder.comment("贫瘠沃土耕地（barren）。").defineInRange("barren", 1.0d, 0.0d, 10.0d);
+        RICH_SOIL_FERTILITY_RECLAIMED = builder.comment("复垦沃土耕地（reclaimed）。").defineInRange("reclaimed", 0.9d, 0.0d, 10.0d);
+        builder.pop();
+        builder.comment("这里填写具体的额外肥料数值：只在 Jade 预测作物还需要多少肥料时使用的额外修正值。")
+            .comment("沃土模组对施肥倍率有额外修改（档位越高、一次施肥投进去的养分越多），预测需求时要按它的倍率折算，")
+            .comment("详细说明见帕秋莉手册「土壤肥力」条目最后的兼容说明。改这里不会改变实际施肥效果，只影响 Jade 的估算。")
+            .comment("按档位从高到低填写，依次是 lush / enriched / normal / barren / reclaimed。");
+        RICH_SOIL_EXTRA_FERTILIZER = builder.defineList(
+            "extra_fertilizer",
+            List.of(1.2d, 1.1d, 1.0d, 0.9d, 0.8d),
+            NTECommonConfig::isFertilizerValue
+        );
         builder.pop();
 
         SPEC = builder.build();
@@ -637,6 +670,77 @@ public final class NTECommonConfig
     public static double getHeadwaterMouthMaxLength()
     {
         return Math.max(4d, worldGenValue(HEADWATER_MOUTH_MAX_LENGTH));
+    }
+
+    /**
+     * 沃土耕地的土壤肥力倍率。tier 取 {@code lush / enriched / normal / barren / reclaimed}，
+     * 未知档位按普通土壤 {@code 1.0} 处理。
+     */
+    public static float getRichSoilFertility(String tier)
+    {
+        return switch (tier)
+        {
+            case "lush" -> RICH_SOIL_FERTILITY_LUSH.get().floatValue();
+            case "enriched" -> RICH_SOIL_FERTILITY_ENRICHED.get().floatValue();
+            case "normal" -> RICH_SOIL_FERTILITY_NORMAL.get().floatValue();
+            case "barren" -> RICH_SOIL_FERTILITY_BARREN.get().floatValue();
+            case "reclaimed" -> RICH_SOIL_FERTILITY_RECLAIMED.get().floatValue();
+            default -> 1.0f;
+        };
+    }
+
+    /**
+     * Jade 肥料需求预测用的额外修正值，按 lush / enriched / normal / barren / reclaimed 从高到低排列。
+     * 未知档位、列表缺项或写不出数字时按普通土壤 {@code 1.0} 处理。
+     */
+    public static float getRichSoilExtraFertilizer(String tier)
+    {
+        final int index = switch (tier)
+        {
+            case "lush" -> 0;
+            case "enriched" -> 1;
+            case "normal" -> 2;
+            case "barren" -> 3;
+            case "reclaimed" -> 4;
+            default -> -1;
+        };
+        if (index < 0)
+        {
+            return 1.0f;
+        }
+        final List<? extends Double> values = RICH_SOIL_EXTRA_FERTILIZER.get();
+        if (index >= values.size())
+        {
+            return 1.0f;
+        }
+        final Double parsed = parseFertilizerValue(values.get(index));
+        return parsed == null ? 1.0f : parsed.floatValue();
+    }
+
+    /** 列表项允许数字或数字文本：TOML 里写出来是数字，手改成 {@code "1.2"} 也接受。 */
+    private static boolean isFertilizerValue(Object value)
+    {
+        final Double parsed = parseFertilizerValue(value);
+        return parsed != null && parsed >= 0.0d && parsed <= 10.0d;
+    }
+
+    private static Double parseFertilizerValue(Object value)
+    {
+        if (value instanceof Number number)
+        {
+            return number.doubleValue();
+        }
+        if (value instanceof String text)
+        {
+            try
+            {
+                return Double.parseDouble(text.trim());
+            }
+            catch (NumberFormatException ignored)
+            {
+            }
+        }
+        return null;
     }
 
 }

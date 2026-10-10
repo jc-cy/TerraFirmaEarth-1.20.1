@@ -176,12 +176,12 @@
     {
       "type": "patchouli:text",
       "title": "农夫乐事",
-      "text": "安装了农夫乐事（Farmer's Delight）时，它的$(thing)沃土耕地$()（Rich Soil Farmland）在本模组中有着 30% 的土壤肥力，相当于比黑土再多 10%。"
+      "text": "安装了农夫乐事（Farmer's Delight）时，它的$(thing)沃土耕地$()（Rich Soil Farmland）在本模组中有着 30% 的土壤肥力，相当于比黑土再多 10%。该倍率可在配置中调整。"
     },
     {
       "type": "patchouli:text",
       "title": "幸存者的沃土扩展",
-      "text": "安装了幸存者的沃土扩展（Survivor's Rich Soils）时，它的五档沃土耕地各按制作材料再高 10% 的档位生效：$(li)$(thing)富饶沃土耕地$()（Lush Rich Soil Farmland）：提升 30%$(li)$(thing)肥沃沃土耕地$()（Enriched Rich Soil Farmland）：提升 20%$(li)$(thing)普通沃土耕地$()（Normal Rich Soil Farmland）：提升 10%$(li)$(thing)贫瘠沃土耕地$()（Barren Rich Soil Farmland）：与普通土壤相同$(li)$(thing)复垦沃土耕地$()（Reclaimed Rich Soil Farmland）：降低 10%"
+      "text": "安装了幸存者的沃土扩展（Survivor's Rich Soils）时，它的五档沃土耕地各按制作材料再高 10% 的档位生效：$(li)$(thing)富饶沃土耕地$()（Lush Rich Soil Farmland）：提升 30%$(li)$(thing)肥沃沃土耕地$()（Enriched Rich Soil Farmland）：提升 20%$(li)$(thing)普通沃土耕地$()（Normal Rich Soil Farmland）：提升 10%$(li)$(thing)贫瘠沃土耕地$()（Barren Rich Soil Farmland）：与普通土壤相同$(li)$(thing)复垦沃土耕地$()（Reclaimed Rich Soil Farmland）：降低 10%$(br2)以上档位可在配置中调整。"
     }
   ],
   "read_by_default": true,

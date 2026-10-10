@@ -176,12 +176,12 @@
     {
       "type": "patchouli:text",
       "title": "Farmer's Delight",
-      "text": "With Farmer's Delight installed, its $(thing)Rich Soil Farmland$() has 30% soil fertility in this mod — 10% more than Mollisol."
+      "text": "With Farmer's Delight installed, its $(thing)Rich Soil Farmland$() has 30% soil fertility in this mod — 10% more than Mollisol. This multiplier can be adjusted in the configuration."
     },
     {
       "type": "patchouli:text",
       "title": "Survivor's Rich Soils",
-      "text": "With Survivor's Rich Soils installed, its five rich soil farmland variants work one tier above the soil they are crafted from:$(li)$(thing)Lush Rich Soil Farmland$(): +30%$(li)$(thing)Enriched Rich Soil Farmland$(): +20%$(li)$(thing)Normal Rich Soil Farmland$(): +10%$(li)$(thing)Barren Rich Soil Farmland$(): same as typical soil$(li)$(thing)Reclaimed Rich Soil Farmland$(): -10%"
+      "text": "With Survivor's Rich Soils installed, its five rich soil farmland variants work one tier above the soil they are crafted from:$(li)$(thing)Lush Rich Soil Farmland$(): +30%$(li)$(thing)Enriched Rich Soil Farmland$(): +20%$(li)$(thing)Normal Rich Soil Farmland$(): +10%$(li)$(thing)Barren Rich Soil Farmland$(): same as typical soil$(li)$(thing)Reclaimed Rich Soil Farmland$(): -10%$(br2)These tiers can be adjusted in the configuration."
     }
   ],
   "read_by_default": true,

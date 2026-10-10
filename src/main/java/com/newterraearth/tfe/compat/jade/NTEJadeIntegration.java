@@ -39,6 +39,7 @@ import net.dries007.tfc.util.calendar.ICalendar;
 import com.newterraearth.tfe.NewTerraEarthMod;
 import com.newterraearth.tfe.common.block.NTEDryingBricksBlock;
 import com.newterraearth.tfe.common.block.rope.NTEMetalRopeAnchorBlock;
+import com.newterraearth.tfe.config.NTECommonConfig;
 import com.newterraearth.tfe.mixin.GrowingFruitTreeBranchBlockAccessor;
 import com.newterraearth.tfe.mixin.SeasonalPlantBlockAccessor;
 import com.newterraearth.tfe.world.NTESeasonalHelpers;
@@ -422,18 +423,18 @@ public final class NTEJadeIntegration implements snownee.jade.api.IWailaPlugin
 
     /**
      * 第三方模组在同一处 {@code addNutrients} 上额外叠加的施肥倍率。这类倍率是注入在调用点上的常量，
-     * 没有标签、配置或数据出口可供读取，所以只能按方块 id 认出来后写死一份；它与
+     * 对方没有标签、配置或数据出口可供读取，所以只能按方块 id 认出来，数值走本模组配置；它与
      * {@link NTESoilFertility} 的土壤肥力档是两套不同数值，前者是别人的施肥加成，后者是本模组的肥力。
      */
     private static float externalFertilizerMultiplier(BlockState state)
     {
         return switch (BuiltInRegistries.BLOCK.getKey(state.getBlock()).getPath())
         {
-            case "rich_soil_farmland/lush" -> 1.2f;
-            case "rich_soil_farmland/enriched" -> 1.1f;
-            case "rich_soil_farmland/normal" -> 1.0f;
-            case "rich_soil_farmland/barren" -> 0.9f;
-            case "rich_soil_farmland/reclaimed" -> 0.8f;
+            case "rich_soil_farmland/lush" -> NTECommonConfig.getRichSoilExtraFertilizer("lush");
+            case "rich_soil_farmland/enriched" -> NTECommonConfig.getRichSoilExtraFertilizer("enriched");
+            case "rich_soil_farmland/normal" -> NTECommonConfig.getRichSoilExtraFertilizer("normal");
+            case "rich_soil_farmland/barren" -> NTECommonConfig.getRichSoilExtraFertilizer("barren");
+            case "rich_soil_farmland/reclaimed" -> NTECommonConfig.getRichSoilExtraFertilizer("reclaimed");
             default -> 1.0f;
         };
     }
