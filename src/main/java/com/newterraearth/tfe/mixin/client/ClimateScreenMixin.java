@@ -16,10 +16,10 @@ import net.dries007.tfc.client.screen.ClimateScreen;
 import net.dries007.tfc.client.screen.TFCContainerScreen;
 import net.dries007.tfc.common.container.Container;
 import net.dries007.tfc.config.TFCConfig;
-import net.dries007.tfc.config.TemperatureDisplayStyle;
 
 import com.newterraearth.tfe.client.NTEClimateRenderCacheBridge;
 import com.newterraearth.tfe.client.NTEClimateRenderHelpers;
+import com.newterraearth.tfe.client.NTEClimateTemperatureDisplayCompat;
 import com.newterraearth.tfe.client.NTEKoppenClimateClassification;
 
 @Mixin(value = ClimateScreen.class, remap = false)
@@ -61,13 +61,13 @@ public abstract class ClimateScreenMixin extends TFCContainerScreen<Container>
             : "tfc.tooltip.climate_peak_rainfall_january";
         final NTEKoppenClimateClassification classification = NTEKoppenClimateClassification.classify(averageTemp, averageRainfall, rainVariance, northernHemisphere);
 
-        final TemperatureDisplayStyle style = TFCConfig.CLIENT.climateTooltipStyle.get();
+        final Object style = TFCConfig.CLIENT.climateTooltipStyle.get();
 
         nte$drawLine(stack, Component.translatable(classification.translationKey()), NTE_ALIGN_CENTER, 18);
 
         nte$drawLine(stack, Component.translatable("tfc.tooltip.climate_temperature_name"), NTE_ALIGN_LEFT, 32);
-        nte$drawLine(stack, Component.translatable("tfc.tooltip.climate_temperature_average", style.format(averageTemp, true)), NTE_ALIGN_LEFT, -1, 36, 32);
-        nte$drawLine(stack, Component.translatable("tfc.tooltip.climate_temperature_now", style.format(currentTemp, true)), NTE_ALIGN_LEFT, -1, 96, 32);
+        nte$drawLine(stack, Component.translatable("tfc.tooltip.climate_temperature_average", NTEClimateTemperatureDisplayCompat.format(style, averageTemp)), NTE_ALIGN_LEFT, -1, 36, 32);
+        nte$drawLine(stack, Component.translatable("tfc.tooltip.climate_temperature_now", NTEClimateTemperatureDisplayCompat.format(style, currentTemp)), NTE_ALIGN_LEFT, -1, 96, 32);
 
         nte$drawLine(stack, Component.translatable("tfc.tooltip.climate_rainfall_name"), NTE_ALIGN_LEFT, 0x202080, 46);
         nte$drawLine(stack, Component.translatable("tfc.tooltip.climate_rainfall_average", String.format("%.0f", averageRainfall)), NTE_ALIGN_LEFT, 0x202080, 36, 46);
