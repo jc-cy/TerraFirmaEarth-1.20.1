@@ -6,6 +6,7 @@ import java.nio.file.Path;
 
 import org.junit.jupiter.api.Test;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
@@ -43,6 +44,20 @@ class NTEMetalRopeAnchorResourceTest
             assertTrue(zhLang.contains("\"block.tfe." + name + "\""), name);
             assertTrue(enLang.contains("\"block.tfe." + name + "\""), name);
         }
+    }
+
+    @Test
+    void wroughtIronAnchorRemeitsIntoCastIron() throws IOException
+    {
+        final Path heatingDir = Path.of("src/main/resources/data/tfe/recipes/heating");
+        for (String metal : METALS)
+        {
+            final String json = Files.readString(heatingDir.resolve(metal + "_rope_anchor.json"));
+            final String expectedMetal = metal.equals("wrought_iron") ? "cast_iron" : metal;
+            assertTrue(json.contains("\"fluid\": \"tfc:metal/" + expectedMetal + "\""), metal);
+        }
+        assertFalse(Files.readString(heatingDir.resolve("wrought_iron_rope_anchor.json"))
+            .contains("\"fluid\": \"tfc:metal/wrought_iron\""));
     }
 
     @Test
